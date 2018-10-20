@@ -61,11 +61,18 @@ tuple * order(relation * rel, uint32_t * startingPositions){
     return ordered;
 }
 
+// Takes A as input and returns A'
 tuple * bucketify(relation * rel){
+    // Calculate histograms
     uint32_t * histogram = calculateHistogram(rel);
+
+    // Calculate starting position of each bucket
     uint32_t * startingPositions = calculateStartingPositions(histogram);
+
+    // Order the given touples bucket by bucket (basically produces A' from A)
     tuple * ordered = order(rel,startingPositions);
-    
+
+    // Free allocated memory
     delete[] histogram;
     delete[] startingPositions;
     
