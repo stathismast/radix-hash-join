@@ -1,3 +1,3 @@
 all:
 	@echo Compiling...
-	@g++ *.cpp
+	@g++ -g3 *.cpp

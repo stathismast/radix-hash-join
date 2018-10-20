@@ -19,6 +19,11 @@ relation * randomRelation(uint32_t size){
     return rel;
 }
 
+void deleteRelation(relation * rel){
+    delete[] rel->column;
+    delete rel;
+}
+
 void printRelation(relation * rel){
     for(uint32_t i=0; i<rel->size; i++){
         std::cout << rel->column[i].rowid << "\t|\t" 

@@ -60,3 +60,14 @@ tuple * order(relation * rel, uint32_t * startingPositions){
     }
     return ordered;
 }
+
+tuple * bucketify(relation * rel){
+    uint32_t * histogram = calculateHistogram(rel);
+    uint32_t * startingPositions = calculateStartingPositions(histogram);
+    tuple * ordered = order(rel,startingPositions);
+    
+    delete[] histogram;
+    delete[] startingPositions;
+    
+    return ordered;
+}
