@@ -1,5 +1,6 @@
 #include "h1.hpp"
 
+// Number of least significant bits that are used in the hash function
 #define BITS 3
 
 // Hash fucntion
