@@ -6,7 +6,7 @@ int32_t h2(int32_t value, uint32_t start){
 }
 
 void test_nextPrime(uint32_t upTo){
-    std::cout << "Testing nextPrime up to" << upTo << std::endl;
+    std::cout << "Testing nextPrime up to " << upTo << std::endl;
     for(uint32_t i=0; i<upTo; i++){
         std::cout << i << ". " << nextPrime(i) << std::endl;
     }
