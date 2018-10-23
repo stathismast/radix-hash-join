@@ -1,5 +1,6 @@
 #include <iostream>
 #include "h1.hpp"
+#include "h2.hpp"
 
 using namespace std;
 
@@ -26,4 +27,9 @@ int main(){
     deleteRelation(B);
     delete[] orderedA;
     delete[] orderedB;
+
+    test_nextPrime(200);
+
+    cout << h2(50,100) << endl;
+    cout << h2(24,13) << endl;
 }
