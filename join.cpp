@@ -1,5 +1,7 @@
 #include "join.hpp"
 
+extern int numberOfBuckets;
+
 void join(relation * A, relation * B){
     // Order given touples bucket by bucket (basically produces A' and B')
     uint32_t * histogramA;

@@ -3,6 +3,8 @@
 // Number of least significant bits that are used in the hash function
 #define BITS 3
 
+int numberOfBuckets = 1 << BITS;
+
 // Hash fucntion
 int32_t h1(int32_t value){
     return value & ((1 << BITS) - 1);
@@ -10,8 +12,6 @@ int32_t h1(int32_t value){
 
 // Takes a relation & returns an array with the num of tuples in each bucket
 uint32_t * calculateHistogram(relation * rel){
-    int numberOfBuckets = 1 << BITS;
-
     // Create and initialize histogram
     uint32_t * histogram = new uint32_t[numberOfBuckets];
     for(uint32_t i=0; i<numberOfBuckets; i++)
@@ -25,8 +25,6 @@ uint32_t * calculateHistogram(relation * rel){
 
 // Calculate starting position of every bucket
 uint32_t * calculateStartingPositions(uint32_t * histogram){
-    int numberOfBuckets = 1 << BITS;
-
     // Create and nitialize starting positions array
     uint32_t * startingPositions = new uint32_t[numberOfBuckets];
     startingPositions[0] = 0;
@@ -39,7 +37,6 @@ uint32_t * calculateStartingPositions(uint32_t * histogram){
 
 // Print a given histogram (works with every uint32_t array of size = 1<<BITS)
 void printHistogram(uint32_t * histogram){
-    int numberOfBuckets = 1 << BITS;
     for(uint32_t i=0; i<numberOfBuckets; i++)
         std::cout << i << ". " << histogram[i] << std::endl;
     std::cout << std::endl;
