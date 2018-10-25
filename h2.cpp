@@ -59,7 +59,7 @@ tuple* bucketify2 (relation * rel,
 
     // Normaly buckets, which is the number of buckets, would be based on our
     // hash function which won't be neccessarily a mod with a prime
-    // For starters we take it that way so we can see it works
+    // For starters we take it that way so we can see if it works
     uint32_t i, j, buckets;
     int prime = nextPrime(bucket_size), bucket, chain_pos;
     buckets = prime;
@@ -77,16 +77,17 @@ tuple* bucketify2 (relation * rel,
     // Find in which bucket each element is and make the arrays for the bucket
     // and the chain
     for (i = start; i < bucket_size + start; i++) {
+        // Find in which bucket the current value is
         bucket = h2(rel->column[i].value, prime);
 
-        // If there is nothong in the bucket the current value is then the
-        // the bucket will only point at it
+        // If there is nothing in the bucket then the bucket will only ppoint
+        // at it
         if ((*bucket_array)[bucket] == -1) {
-            (*bucket_array)[bucket] = i;
+            (*bucket_array)[bucket] = i - start;
         }
         else {
             // If we have a collision we need to add a value in the chain array
-            // We look in order to find where was the last element added to this
+            // We look in order to find which was the last element added to this
             // bucket
             chain_pos = (*bucket_array)[bucket];
             while ((*chain_array)[chain_pos] != -1) {
@@ -94,8 +95,8 @@ tuple* bucketify2 (relation * rel,
             }
             // After we find it we change its value so it will point in the
             // current element
-            (*chain_array)[chain_pos] = i;
-            // (*chain_array)[i] = -1;   //most likel not necessary
+            (*chain_array)[chain_pos] = i - start;
+            // (*chain_array)[i] = -1;   //most likely not necessary
         }
     }
 
