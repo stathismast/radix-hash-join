@@ -45,16 +45,23 @@ void printHistogram(uint32_t * histogram){
 // Create an array of tuples ordered by buckets
 tuple * order(relation * rel, uint32_t * startingPositions){
     tuple * ordered = new tuple[rel->size];
+
+    uint32_t * offsets = new uint32_t[numberOfBuckets];
+    memcpy(offsets, startingPositions, numberOfBuckets * sizeof(uint32_t));
+
     for(uint32_t i=0; i<rel->size; i++){
         int32_t val = rel->column[i].value;
 
         // Store value & rowid of tuple in the appropriate position
-        ordered[startingPositions[h1(val)]].value = val;
-        ordered[startingPositions[h1(val)]].rowid = rel->column[i].rowid;
+        ordered[offsets[h1(val)]].value = val;
+        ordered[offsets[h1(val)]].rowid = rel->column[i].rowid;
 
         // Increment starting position of the bucket since we just added to it
-        startingPositions[h1(val)]++;
+        offsets[h1(val)]++;
     }
+
+    delete[] offsets;
+
     return ordered;
 }
 
