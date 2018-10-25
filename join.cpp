@@ -36,4 +36,7 @@ void join(relation * A, relation * B){
     delete[] orderedB;
     delete[] histogramB;
     delete[] startingPosB;
+
+    delete[] bucket_array;
+    delete[] chain_array;
 }
