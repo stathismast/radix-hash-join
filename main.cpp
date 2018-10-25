@@ -12,8 +12,8 @@ int main(){
 
     join(A,B);
 
-    test_nextPrime(200);
+    // test_nextPrime(200);
 
-    cout << h2(50,100) << endl;
-    cout << h2(24,13) << endl;
+    // cout << h2(50,100) << endl;
+    // cout << h2(24,13) << endl;
 }
