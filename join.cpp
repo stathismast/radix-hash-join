@@ -22,7 +22,9 @@ void join(relation * A, relation * B){
     //     std::cout << h1(orderedB[i].value) << std::endl;
     // }
 
-    bucketify2(A, histogramA[0], 0, &bucket_array, &chain_array);
+    std::cout << "histogramA[0] = " << histogramA[0] << '\n';
+    std::cout << "startingPosA[0] = " << startingPosA[0] << '\n';
+    bucketify2(A, histogramA[0], startingPosA[0], &bucket_array, &chain_array);
 
     deleteRelation(A);
     deleteRelation(B);

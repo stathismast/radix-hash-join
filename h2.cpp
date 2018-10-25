@@ -67,7 +67,7 @@ tuple* bucketify2 (relation * rel,
     *chain_array = new int[bucket_size];
 
     // Initialise our arrays
-    for (j = 0; j < rel->size; j++) {
+    for (j = 0; j < bucket_size; j++) {
         (*chain_array)[j] = -1;
     }
     for (j = 0; j < buckets; j++) {
@@ -88,6 +88,7 @@ tuple* bucketify2 (relation * rel,
             // If we have a collision we need to add a value in the chain array
             // We look in order to find where was the last element added to this
             // bucket
+            chain_pos = (*bucket_array)[bucket];
             while ((*chain_array)[chain_pos] != -1) {
                 chain_pos = (*chain_array)[chain_pos];
             }
