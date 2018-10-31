@@ -57,45 +57,48 @@ tuple* bucketify2 (relation * rel,
                     int ** bucket_array,
                     int ** chain_array) {
 
-    // Normaly buckets, which is the number of buckets, would be based on our
-    // hash function which won't be neccessarily a mod with a prime
+    // Normaly bucket_count, which is the number of buckets, would be based on
+    // our hash function which won't be neccessarily a mod with a prime
     // For starters we take it that way so we can see if it works
-    uint32_t i, j, buckets;
-    int prime = nextPrime(bucket_size), bucket, chain_pos;
-    buckets = prime;
-    *bucket_array = new int[buckets];
+    uint32_t i, j, bucket_count;
+    int prime = nextPrime(bucket_size), hash_value, chain_pos;
+    bucket_count = prime;
+    *bucket_array = new int[bucket_count];
     *chain_array = new int[bucket_size];
 
     // Initialise our arrays
     for (j = 0; j < bucket_size; j++) {
         (*chain_array)[j] = -1;
     }
-    for (j = 0; j < buckets; j++) {
+    for (j = 0; j < bucket_count; j++) {
         (*bucket_array)[j] = -1;
     }
 
     // Find in which bucket each element is and make the arrays for the bucket
     // and the chain
-    for (i = start; i < bucket_size + start; i++) {
+    // for (i = start; i < bucket_size + start; i++) {
+    for (i = bucket_size + start - 1; i > start; i--) {
         // Find in which bucket the current value is
-        bucket = h2(rel->column[i].value, prime);
+        hash_value = h2(rel->column[i].value, prime);
 
-        // If there is nothing in the bucket then the bucket will only ppoint
+        // If there is nothing in the bucket then the bucket will only point
         // at it
-        if ((*bucket_array)[bucket] == -1) {
-            (*bucket_array)[bucket] = i - start;
+        if ((*bucket_array)[hash_value] == -1) {
+            (*bucket_array)[hash_value] = i - start;
+            // (*bucket_array)[hash_value] = start - i;
         }
         else {
             // If we have a collision we need to add a value in the chain array
             // We look in order to find which was the last element added to this
             // bucket
-            chain_pos = (*bucket_array)[bucket];
+            chain_pos = (*bucket_array)[hash_value];
             while ((*chain_array)[chain_pos] != -1) {
                 chain_pos = (*chain_array)[chain_pos];
             }
             // After we find it we change its value so it will point in the
             // current element
             (*chain_array)[chain_pos] = i - start;
+            // (*chain_array)[chain_pos] = start - i;
             // (*chain_array)[i] = -1;   //most likely not necessary
         }
     }
@@ -108,7 +111,7 @@ tuple* bucketify2 (relation * rel,
     std::cout << std::endl;
 
     std::cout << "Bucket_array:" << std::endl;
-    for (uint32_t i = 0; i < buckets; i++) {
+    for (uint32_t i = 0; i < bucket_count; i++) {
         std::cout << "\t" << i << ": " << (*bucket_array)[i] << std::endl;
     }
     std::cout << std::endl;
