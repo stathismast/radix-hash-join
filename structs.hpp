@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <ctime>
 #include <cstdlib>
+#include <cstring>  // For memcpy
 
 #ifndef STRUCTS_HPP
 #define STRUCTS_HPP

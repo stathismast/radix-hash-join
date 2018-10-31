@@ -6,6 +6,8 @@ void join(relation * A, relation * B){
     // Order given touples bucket by bucket (basically produces A' and B')
     uint32_t * histogramA;
     uint32_t * startingPosA;
+    int * bucket_array;
+    int * chain_array;
     tuple * orderedA = bucketify(A,&histogramA,&startingPosA);
 
     uint32_t * histogramB;
@@ -14,13 +16,22 @@ void join(relation * A, relation * B){
 
     // Print out the hashed values of A' and B'
     // to confirm that they are in order
-    std::cout << std::endl << "A\'\t|\tB\'" << std::endl;
-    for(uint32_t i=0; i<A->size; i++){
-        std::cout << h1(orderedA[i].value) << "\t|\t";
-        std::cout << h1(orderedB[i].value) << std::endl;
-    }
+    // std::cout << std::endl << "A\'\t|\tB\'" << std::endl;
+    // for(uint32_t i=0; i<A->size; i++){
+    //     std::cout << h1(orderedA[i].value) << "\t|\t";
+    //     std::cout << h1(orderedB[i].value) << std::endl;
+    // }
 
-    // Code for the second part of the joining process should be here
+    for (int i = 0; i < numberOfBuckets; i++) {
+        std::cout << "Bucket " << i << std::endl << std::endl;
+        bucketify2(A, histogramA[i], startingPosA[i], &bucket_array, &chain_array);
+
+        // Compare goes here
+
+        delete[] bucket_array;
+        delete[] chain_array;
+        std::cout << "----------------------------------------------------------" << '\n';
+    }
 
     deleteRelation(A);
     deleteRelation(B);
@@ -32,4 +43,5 @@ void join(relation * A, relation * B){
     delete[] orderedB;
     delete[] histogramB;
     delete[] startingPosB;
+
 }
