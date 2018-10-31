@@ -1,57 +1,51 @@
 /***************************************************************************************
 Header file : ResultsList.hpp
-Description : Declaration of classes PL_Node,PostingList which are used to
+Description : Declaration of structs Node,Result which are used to
               represent results list which contains all the results of a join query.
 ****************************************************************************************/
-#ifndef RES_LIST_H
-#define RES_LIST_H
+#ifndef LIST_H
+#define LIST_H
 
-// #define BUCKET_SIZE 1024*1024
-#define BUCKET_SIZE 10*10
-#define RESULT_SIZE_VAL1 15
-#define RESULT_SIZE_VAL2 7
+// #define BUFFER_SIZE 20
+#define BUFFER_SIZE 1024*1024
 
 #include <stdint.h>
 #include <cstring>
 #include <cstdlib>
 #include <iostream>
 
-struct Result{
-    int32_t* value1; /* To be changed */
-    int32_t* value2; /* To be changed */
-};
+typedef struct Header* Result;
+typedef struct Bucket* BucketPtr;
 
-class BucketNode{
+typedef struct Bucket{
+    uint32_t* buffer;
+    BucketPtr next;
+    uint32_t total_entries;
+    uint32_t offset;
+} Bucket;
 
-private:
-        BucketNode *next;
-        int offset; /* Current offset from the beggining of the current bucket */
-public:
-        int32_t* my_results; /* This field is public so as we can use it from ResultsList class */
-        BucketNode();
-        ~BucketNode();
-        BucketNode* GetNext();
-        void SetNext(BucketNode* my_next);
-        int GetOffset();
-        void SetOffset( int new_offset );
-};
+typedef struct Header{
+    BucketPtr first;
+    BucketPtr last;
+    uint32_t buckets_num;
+    uint32_t total_entries;
+} Header;
 
-class ResultsList{
+Result newResult();
+void destroyResult(Result this_result);
+bool isEmptyResult(Result this_result);
+void printResult(Result this_result);
+BucketPtr getResultFirstBucket(Result this_result);
+void insertResult(Result this_result,uint32_t rowidA,uint32_t rowidB);
+uint32_t* getResultEntry(Result this_result,uint32_t index);
+void prepareNextResult(Result this_result);
 
-private:
-        BucketNode *first;
-        BucketNode *last;
-        int num_of_buckets;
-        int num_of_results;
-public:
-        ResultsList();
-        ~ResultsList();
-        void Insert( Result& result_to_insert );
-        int GetBucketsNum();
-        int GetResultsNum();
-        bool IsEmpty();
-        void PrintResults();
-        BucketNode* GetFirst();
-};
+BucketPtr newBucket();
+void destroyBucket(BucketPtr this_bucket);
+void setNextBucket(BucketPtr this_bucket,BucketPtr next_node);
+BucketPtr getNextBucket(BucketPtr this_bucket);
+void insertBucketEntry(BucketPtr this_bucket,uint32_t rowidA,uint32_t rowidB);
+void printBucketResult(BucketPtr this_bucket);
+uint32_t* getBucketEntry(BucketPtr this_bucket,uint32_t index);
 
-#endif /* RES_LIST_H */
+#endif /* LIST_H */
