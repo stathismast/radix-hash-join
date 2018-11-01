@@ -22,9 +22,17 @@ void join(relation * A, relation * B){
     //     std::cout << h1(orderedB[i].value) << std::endl;
     // }
 
+    // bucketify2(A, histogramA[0], startingPosA[0], &bucket_array, &chain_array);
     for (int i = 0; i < numberOfBuckets; i++) {
-        std::cout << "Bucket " << i << std::endl << std::endl;
-        bucketify2(A, histogramA[i], startingPosA[i], &bucket_array, &chain_array);
+        // std::cout << "Bucket " << i << std::endl << std::endl;
+        // make the second hash to the smallest bucket
+        if (histogramA[i] < histogramB[i]) {
+            bucketify2(A, histogramA[i], startingPosA[i], &bucket_array, &chain_array);
+            // compare();
+        }
+        else {
+            bucketify2(A, histogramB[i], startingPosB[i], &bucket_array, &chain_array);
+        }
 
         // Compare goes here
 
@@ -43,5 +51,31 @@ void join(relation * A, relation * B){
     delete[] orderedB;
     delete[] histogramB;
     delete[] startingPosB;
+
+}
+
+
+/*Relation A will contain the bigger array*/
+void compare(relation * resA,
+            relation * resB,
+            uint32_t * histogramA,
+            uint32_t * startingPosA,
+            uint32_t * histogramB,
+            uint32_t * startingPosB,
+            int * bucket_array,
+            int* chain_array,
+            int bucket_num) {
+
+    // sizeA =
+    uint32_t i;
+    int hash_value, prime = nextPrime(histogramB[bucket_num]);
+    for (i = startingPosA[bucket_num]; i < histogramA[bucket_num]; i++) {
+        hash_value = h2(resA->column[i].value, prime);
+
+    }
+
+
+
+
 
 }
