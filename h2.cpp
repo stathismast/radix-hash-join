@@ -56,7 +56,6 @@ tuple* bucketify2 (relation * rel,
                     uint32_t start,
                     int ** bucket_array,
                     int ** chain_array) {
-
     // Normaly bucket_count, which is the number of buckets, would be based on
     // our hash function which won't be neccessarily a mod with a prime
     // For starters we take it that way so we can see if it works
@@ -104,22 +103,22 @@ tuple* bucketify2 (relation * rel,
     }
 
     // Debugging prints
-    std::cout << "Ordered bucket:" << std::endl;
-    for (uint32_t i = 0; i < bucket_size; i++) {
-        std::cout << "\t"<< i << ": " << rel->column[i].value << std::endl;
-    }
-    std::cout << std::endl;
-
-    std::cout << "Bucket_array:" << std::endl;
-    for (uint32_t i = 0; i < bucket_count; i++) {
-        std::cout << "\t" << i << ": " << (*bucket_array)[i] << std::endl;
-    }
-    std::cout << std::endl;
-
-    std::cout << "Chain_array:" << std::endl;
-    for (uint32_t i = 0; i < bucket_size; i++) {
-        std::cout << "\t" << i << ": " << (*chain_array)[i] << std::endl;
-    }
+    // std::cout << "Ordered bucket:" << std::endl;
+    // for (uint32_t i = 0; i < bucket_size; i++) {
+    //     std::cout << "\t"<< i << ": " << rel->column[i].value << std::endl;
+    // }
+    // std::cout << std::endl;
+    //
+    // std::cout << "Bucket_array:" << std::endl;
+    // for (uint32_t i = 0; i < bucket_count; i++) {
+    //     std::cout << "\t" << i << ": " << (*bucket_array)[i] << std::endl;
+    // }
+    // std::cout << std::endl;
+    //
+    // std::cout << "Chain_array:" << std::endl;
+    // for (uint32_t i = 0; i < bucket_size; i++) {
+    //     std::cout << "\t" << i << ": " << (*chain_array)[i] << std::endl;
+    // }
 
 
     return NULL;
