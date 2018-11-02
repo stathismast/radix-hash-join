@@ -6,8 +6,8 @@ void join(relation * A, relation * B){
     // Order given touples bucket by bucket (basically produces A' and B')
     uint32_t * histogramA;
     uint32_t * startingPosA;
-    int * bucket_array;
-    int * chain_array;
+    int * bucketArray;
+    int * chainArray;
     tuple * orderedA = bucketify(A,&histogramA,&startingPosA);
 
     uint32_t * histogramB;
@@ -24,14 +24,14 @@ void join(relation * A, relation * B){
     //     std::cout << h1(orderedB[i].value) << std::endl;
     // }
 
-    // bucketify2(A, histogramA[0], startingPosA[0], &bucket_array, &chain_array);
-    // bucketify2(B, histogramB[1], startingPosB[1], &bucket_array, &chain_array);
+    // bucketify2(A, histogramA[0], startingPosA[0], &bucketArray, &chainArray);
+    // bucketify2(B, histogramB[1], startingPosB[1], &bucketArray, &chainArray);
+
     for (int i = 0; i < numberOfBuckets; i++) {
-    // for (int i = 2; i < 3; i++) {
-        // Compare goes here
         // std::cout << "Checking for bucket " << i << '\n';
 
-        // make the second hash to the smallest bucket
+        // For each bucket find the smaller one and make an index with h2 for
+        // that one. Then find the equal values and store them in result
         if (histogramA[i] >= histogramB[i]) {
             // std::cout << "Bucket A is bigger\n\n";
             // std::cout << std::endl;
@@ -45,9 +45,9 @@ void join(relation * A, relation * B){
             //     std::cout << "\t"<< j << ": " << B->column[j + startingPosB[i]].value << std::endl;
             // }
             // std::cout << std::endl;
-            bucketify2(B, histogramB[i], startingPosB[i], &bucket_array, &chain_array);
-            compare(A, B, histogramA, startingPosA, histogramB, startingPosB, \
-                bucket_array, chain_array, i, &result, 0);
+            bucketify2(B, histogramB[i], startingPosB[i], &bucketArray, &chainArray);
+            compare(A, B,histogramA[i], startingPosA[i], histogramB[i], \
+                startingPosB[i], bucketArray, chainArray, &result, 0);
         }
         else {
             // std::cout << "Bucket B is bigger\n\n";
@@ -62,13 +62,13 @@ void join(relation * A, relation * B){
             //     std::cout << "\t"<< j << ": " << A->column[j + startingPosA[i]].value << std::endl;
             // }
             // std::cout << std::endl;
-            bucketify2(A, histogramA[i], startingPosA[i], &bucket_array, &chain_array);
-            compare(B, A, histogramB, startingPosB, histogramA, startingPosA, \
-                bucket_array, chain_array, i, &result, 1);
+            bucketify2(A, histogramA[i], startingPosA[i], &bucketArray, &chainArray);
+            compare(B, A, histogramB[i], startingPosB[i], histogramA[i], \
+                startingPosA[i], bucketArray, chainArray, &result, 1);
         }
 
-        delete[] bucket_array;
-        delete[] chain_array;
+        delete[] bucketArray;
+        delete[] chainArray;
         // std::cout << "----------------------------------------------------------" << '\n';
     }
 
@@ -85,42 +85,63 @@ void join(relation * A, relation * B){
 
 }
 
-
-/*Relation A will contain the bigger array*/
-void compare(relation * relA,
-            relation * relB,
-            uint32_t * histogramA,
-            uint32_t * startingPosA,
-            uint32_t * histogramB,
-            uint32_t * startingPosB,
-            int * bucket_array,
-            int * chain_array,
-            int bucket_num,
+void compare(relation * relBig,
+            relation * relSmall,
+            uint32_t bucketSizeSmall,
+            uint32_t startIndexSmall,
+            uint32_t bucketSizeBig,
+            uint32_t startIndexBig,
+            int * bucketArray,
+            int * chainArray,
             Result ** result,
-            char fag) {
-    int rowId, normRowId;
+            char flag) {
     uint32_t i;
-    int32_t valueA, valueB;
-    int hash_value, prime = nextPrime(histogramB[bucket_num]);
-    // std::cout << "prime = " << prime << '\n';
-    // std::cout << "startingPosA = " << startingPosA[bucket_num] << " and \
-    // histogramA = " << histogramA[bucket_num] << '\n';
-    for (i = startingPosA[bucket_num]; i < histogramA[bucket_num] + startingPosA[bucket_num]; i++) {
-        valueA = relA->column[i].value;
+    int32_t valueA;
+    int hash_value, prime = nextPrime(bucketSizeBig);
+    // Compare every value of the bigger relation with the values of the smaller
+    // one but are on the same bucket of h2
+    for (i = startIndexSmall; i < bucketSizeSmall + startIndexSmall; i++) {
+        valueA = relBig->column[i].value;
         hash_value = h2(valueA, prime);
-        // std::cout << valueA << " hashes to " << hash_value << '\n';
-        rowId = bucket_array[hash_value];
-        while (rowId != -1) {
-            // We need to normalse the rowid because it has values from -1 to
-            // the size of the bucket. But we are using the actual array
-            normRowId = rowId + startingPosB[bucket_num];
-            valueB = relB->column[normRowId].value;
-            if (valueA == valueB) {
-                // insert to list actually
-                // std::cout << "Equal:" << valueA << " = " << valueB << ", " <<\
-                //     i - startingPosA[bucket_num] << ":" << rowId << '\n';
-            }
-            rowId = chain_array[rowId];
-        }
+        checkEquals(valueA, hash_value, relSmall, bucketSizeBig, startIndexBig, \
+            bucketArray, chainArray, result, flag, i);
     }
+}
+
+void checkEquals(int32_t valueA,
+                int hash_value,
+                relation * relB,
+                uint32_t bucketSizeBig,
+                uint32_t startIndexBig,
+                int * bucketArray,
+                int * chainArray,
+                Result ** result,
+                char flag,
+                int rowIdA) {
+    int32_t valueB;
+    // Get the rowId of the first value in the current bucket
+    int rowId = bucketArray[hash_value], normRowId;
+    while (rowId != -1) {
+        // We need to normalse the rowid because it has values from -1 to
+        // the size of the bucket but we are using the actual array
+        normRowId = rowId + startIndexBig;
+        // Get the value from the bigger array
+        valueB = relB->column[normRowId].value;
+        // Compare the values and add them in the list if they are wqual
+        if (valueA == valueB) {
+            // We need this flag so we will know which rowId goes first and
+            // which second
+            if (flag == 0) {
+                std::cout << "Equal:" << valueA << " = " << valueB << ", " <<\
+                rowId << ":" << rowIdA << '\n';
+            }
+            else {
+                std::cout << "Equal:" << valueA << " = " << valueB << ", " <<\
+                rowIdA << ":" << rowId << '\n';
+            }
+        }
+        // Find the next element in the current bucket
+        rowId = chainArray[rowId];
+    }
+
 }
