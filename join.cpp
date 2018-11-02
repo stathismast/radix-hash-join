@@ -25,38 +25,39 @@ void join(relation * A, relation * B){
     // }
 
     // bucketify2(A, histogramA[0], startingPosA[0], &bucket_array, &chain_array);
+    bucketify2(B, histogramB[1], startingPosB[1], &bucket_array, &chain_array);
     for (int i = 0; i < numberOfBuckets; i++) {
         // Compare goes here
-        std::cout << "Bucket " << i << std::endl << std::endl;
-        std::cout << "Checking for bucket " << i << '\n';
-
-        std::cout << "Ordered bucket A:" << std::endl;
-        for (uint32_t j = 0; j < histogramA[i]; j++) {
-            std::cout << "\t"<< j << ": " << A->column[j].value << std::endl;
-        }
-        std::cout << std::endl;
-        std::cout << "Ordered bucket B:" << std::endl;
-        for (uint32_t j = 0; j < histogramB[i]; j++) {
-            std::cout << "\t"<< j << ": " << B->column[j].value << std::endl;
-        }
-        std::cout << std::endl;
-        // make the second hash to the smallest bucket
-        if (histogramA[i] >= histogramB[i]) {
-            std::cout << "Bucket A is bigger" << '\n';
-            bucketify2(B, histogramB[i], startingPosB[i], &bucket_array, &chain_array);
-            compare(A, B, histogramA, startingPosA, histogramB, startingPosB, \
-            bucket_array, chain_array, i, &result, 0);
-        }
-        else {
-            std::cout << "Bucket B is bigger" << '\n';
-            bucketify2(A, histogramA[i], startingPosA[i], &bucket_array, &chain_array);
-            compare(B, A, histogramB, startingPosB, histogramA, startingPosA, \
-            bucket_array, chain_array, i, &result, 1);
-        }
-
-        delete[] bucket_array;
-        delete[] chain_array;
-        std::cout << "----------------------------------------------------------" << '\n';
+        // std::cout << "Bucket " << i << std::endl << std::endl;
+        // std::cout << "Checking for bucket " << i << '\n';
+        //
+        // std::cout << "Ordered bucket A:" << std::endl;
+        // for (uint32_t j = 0; j < histogramA[i]; j++) {
+        //     std::cout << "\t"<< j << ": " << A->column[j].value << std::endl;
+        // }
+        // std::cout << std::endl;
+        // std::cout << "Ordered bucket B:" << std::endl;
+        // for (uint32_t j = 0; j < histogramB[i]; j++) {
+        //     std::cout << "\t"<< j << ": " << B->column[j].value << std::endl;
+        // }
+        // std::cout << std::endl;
+        // // make the second hash to the smallest bucket
+        // if (histogramA[i] >= histogramB[i]) {
+        //     std::cout << "Bucket A is bigger" << '\n';
+        //     bucketify2(B, histogramB[i], startingPosB[i], &bucket_array, &chain_array);
+        //     compare(A, B, histogramA, startingPosA, histogramB, startingPosB, \
+        //     bucket_array, chain_array, i, &result, 0);
+        // }
+        // else {
+        //     std::cout << "Bucket B is bigger" << '\n';
+        //     bucketify2(A, histogramA[i], startingPosA[i], &bucket_array, &chain_array);
+        //     compare(B, A, histogramB, startingPosB, histogramA, startingPosA, \
+        //     bucket_array, chain_array, i, &result, 1);
+        // }
+        //
+        // delete[] bucket_array;
+        // delete[] chain_array;
+        // std::cout << "----------------------------------------------------------" << '\n';
     }
 
     deleteRelation(A);

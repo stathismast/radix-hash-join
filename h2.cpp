@@ -76,9 +76,13 @@ tuple* bucketify2 (relation * rel,
     // Find in which bucket each element is and make the arrays for the bucket
     // and the chain
     // for (i = start; i < bucket_size + start; i++) {
-    for (i = bucket_size + start - 1; i > start; i--) {
+    std::cout << "prime = " << prime << '\n';
+    std::cout << "1 mod 11 = " << 1 % 11 << '\n';
+    for (i = bucket_size + start - 1; i >= start; i--) {
         // Find in which bucket the current value is
         hash_value = h2(rel->column[i].value, prime);
+        std::cout << "(" <<  i - start << ", " << rel->column[i].value << ") goes to bucket " << hash_value << '\n';
+        // std::cout << "up here" << '\n';
 
         // If there is nothing in the bucket then the bucket will only point
         // at it
@@ -100,25 +104,30 @@ tuple* bucketify2 (relation * rel,
             // (*chain_array)[chain_pos] = start - i;
             // (*chain_array)[i] = -1;   //most likely not necessary
         }
+        // because i is unsigned it will never drop below 0 and the condition
+        // will never be false in the first loop
+        if (i == 0) {
+            break;
+        }
     }
 
     // Debugging prints
-    // std::cout << "Ordered bucket:" << std::endl;
-    // for (uint32_t i = 0; i < bucket_size; i++) {
-    //     std::cout << "\t"<< i << ": " << rel->column[i].value << std::endl;
-    // }
-    // std::cout << std::endl;
-    //
-    // std::cout << "Bucket_array:" << std::endl;
-    // for (uint32_t i = 0; i < bucket_count; i++) {
-    //     std::cout << "\t" << i << ": " << (*bucket_array)[i] << std::endl;
-    // }
-    // std::cout << std::endl;
-    //
-    // std::cout << "Chain_array:" << std::endl;
-    // for (uint32_t i = 0; i < bucket_size; i++) {
-    //     std::cout << "\t" << i << ": " << (*chain_array)[i] << std::endl;
-    // }
+    std::cout << "Ordered bucket:" << std::endl;
+    for (i = start; i < bucket_size + start; i++) {
+        std::cout << "\t"<<  i - start << ": " << rel->column[i].value << std::endl;
+    }
+    std::cout << std::endl;
+
+    std::cout << "Bucket_array:" << std::endl;
+    for (uint32_t i = 0; i < bucket_count; i++) {
+        std::cout << "\t" << i << ": " << (*bucket_array)[i] << std::endl;
+    }
+    std::cout << std::endl;
+
+    std::cout << "Chain_array:" << std::endl;
+    for (uint32_t i = 0; i < bucket_size; i++) {
+        std::cout << "\t" << i << ": " << (*chain_array)[i] << std::endl;
+    }
 
 
     return NULL;

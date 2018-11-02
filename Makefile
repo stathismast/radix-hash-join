@@ -3,9 +3,7 @@ OBJS = h1.o h2.o join.o main.o structs.o
 FLAGS = -g3 -Wall
 
 all:$(OBJS)
-	@echo Compiling...
-	@$(CC) -o join $(OBJS) $(FLAGS)
-
+	$(CC) -o join $(OBJS) $(FLAGS)
 
 h1.o:h1.cpp
 	$(CC) -c h1.cpp $(FLAGS)
@@ -13,14 +11,14 @@ h1.o:h1.cpp
 h2.o:h2.cpp
 	$(CC) -c h2.cpp $(FLAGS)
 
-join.o:h1.cpp
+join.o:join.cpp
 	$(CC) -c join.cpp $(FLAGS)
 
-main.o:h1.cpp
+main.o:main.cpp
 	$(CC) -c main.cpp $(FLAGS)
 
-structs.o:h1.cpp
+structs.o:structs.cpp
 	$(CC) -c structs.cpp $(FLAGS)
 
 clean:
-	rm -rf *.o a.out
+	rm -rf *.o a.out join *.gch
