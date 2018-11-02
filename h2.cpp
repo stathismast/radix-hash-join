@@ -75,42 +75,8 @@ void bucketify2 (relation * rel,
 
     // Find in which bucket each element is and make the arrays for the bucket
     // and the chain
-    // for (i = bucket_size + start - 1; i >= start; i--) {
-    //     hash_value = h2(rel->column[i].value, prime);
-    //     std::cout << "(" <<  i - start << ", " << rel->column[i].value << ") goes to bucket " << hash_value << '\n';
-    //
-    //     // If there is nothing in the bucket then the bucket will only point
-    //     // at it
-    //     if ((*bucket_array)[hash_value] == -1) {
-    //         (*bucket_array)[hash_value] = i - start;
-    //     }
-    //     else {
-    //         // If we have a collision we need to add a value in the chain array
-    //         // We look in order to find which was the last element added to this
-    //         // bucket
-    //         chain_pos = (*bucket_array)[hash_value];
-    //         while ((*chain_array)[chain_pos] != -1) {
-    //             chain_pos = (*chain_array)[chain_pos];
-    //         }
-    //         // After we find it we change its value so it will point in the
-    //         // current element
-    //         (*chain_array)[chain_pos] = i - start;
-    //     }
-    //     // because i is unsigned it will never drop below 0 and the condition
-    //     // will never be false in the first loop
-    //     if (i == 0) {
-    //         break;
-    //     }
-    // }
-    if (bucket_size == 0) {
-        return;
-    }
-
-    i = bucket_size + start - 1;
-    do {
+    for (i = bucket_size + start - 1; i >= start; i--) {
         hash_value = h2(rel->column[i].value, prime);
-        std::cout << "(" <<  i - start << ", " << rel->column[i].value << ") goes to bucket " << hash_value << '\n';
-
         // If there is nothing in the bucket then the bucket will only point
         // at it
         if ((*bucket_array)[hash_value] == -1) {
@@ -128,28 +94,28 @@ void bucketify2 (relation * rel,
             // current element
             (*chain_array)[chain_pos] = i - start;
         }
-        i--;
-    } while(i != 0);
-
+        // because i is unsigned it will never drop below 0 and the condition
+        // will never be false in the first loop
+        if (i == 0) {
+            break;
+        }
+    }
 
     // Debugging prints
-    std::cout << "Ordered bucket:" << std::endl;
-    for (i = start; i < bucket_size + start; i++) {
-        std::cout << "\t"<<  i - start << ": " << rel->column[i].value << std::endl;
-    }
-    std::cout << std::endl;
-
-    std::cout << "Bucket_array:" << std::endl;
-    for (uint32_t i = 0; i < bucket_count; i++) {
-        std::cout << "\t" << i << ": " << (*bucket_array)[i] << std::endl;
-    }
-    std::cout << std::endl;
-
-    std::cout << "Chain_array:" << std::endl;
-    for (uint32_t i = 0; i < bucket_size; i++) {
-        std::cout << "\t" << i << ": " << (*chain_array)[i] << std::endl;
-    }
-
-
-    // return NULL;
+    // std::cout << "Ordered bucket:" << std::endl;
+    // for (i = start; i < bucket_size + start; i++) {
+    //     std::cout << "\t"<<  i - start << ": " << rel->column[i].value << std::endl;
+    // }
+    // std::cout << std::endl;
+    //
+    // std::cout << "Bucket_array:" << std::endl;
+    // for (uint32_t i = 0; i < bucket_count; i++) {
+    //     std::cout << "\t" << i << ": " << (*bucket_array)[i] << std::endl;
+    // }
+    // std::cout << std::endl;
+    //
+    // std::cout << "Chain_array:" << std::endl;
+    // for (uint32_t i = 0; i < bucket_size; i++) {
+    //     std::cout << "\t" << i << ": " << (*chain_array)[i] << std::endl;
+    // }
 }
