@@ -1,6 +1,6 @@
 #include "h1.hpp"
 #include "h2.hpp"
-#include "list.hpp"
+#include "result.hpp"
 
 void join(relation * A, relation * B);
 

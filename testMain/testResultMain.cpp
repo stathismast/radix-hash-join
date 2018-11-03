@@ -1,4 +1,4 @@
-#include "../list.hpp"
+#include "../result.hpp"
 
 int main(int argc, char const *argv[]) {
     Result* my_results;
