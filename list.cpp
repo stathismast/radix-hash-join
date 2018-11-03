@@ -8,10 +8,10 @@ Description : Implementation of methods of structs Node and Result,
 
 #define CHECK_OR_EXIT(value)                                        \
 {                                                                   \
-	if (value == NULL) {                                            \
-		std::cout << "Error at memory allocation." << std::endl;    \
-		exit(EXIT_FAILURE);                                         \
-	}                                                               \
+    if (value == NULL) {                                            \
+        std::cout << "Error at memory allocation." << std::endl;    \
+        exit(EXIT_FAILURE);                                         \
+    }                                                               \
 }
 
 Result * newResult(){
