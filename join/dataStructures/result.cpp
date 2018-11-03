@@ -22,7 +22,7 @@ Result * newResult(){
 
     res->first = newNode();
     res->last = res->first;
-    res->nodesNum = res->totalEntries = 1;
+    res->nodesNum = res->totalEntries = 0;
 
     return res;
 }

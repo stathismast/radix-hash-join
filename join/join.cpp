@@ -51,9 +51,6 @@ Result * join(relation * A, relation * B){
 
     printResult(result);
 
-    deleteRelation(A);
-    deleteRelation(B);
-
     delete[] orderedA;
     delete[] histogramA;
     delete[] startingPosA;
