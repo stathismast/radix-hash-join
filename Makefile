@@ -1,28 +1,28 @@
 CC = g++
-OBJS = ./exec/h1.o ./exec/h2.o ./exec/join.o ./exec/main.o \
-		./exec/structs.o ./exec/result.o
+OBJS = ./join/hashFunctions/h1.o ./join/hashFunctions/h2.o ./join/join.o main.o \
+		./join/dataStructures/structs.o ./join/dataStructures/result.o
 FLAGS = -g3 -Wall
 
 all:$(OBJS)
-	$(CC) -o ./exec/joinTest $(OBJS) $(FLAGS)
+	$(CC) -o joinTest $(OBJS) $(FLAGS)
 
-./exec/h1.o:./join/hashFunctions/h1.cpp
-	$(CC) -c ./join/hashFunctions/h1.cpp $(FLAGS) -o ./exec/h1.o
+./join/hashFunctions/h1.o:./join/hashFunctions/h1.cpp
+	$(CC) -c ./join/hashFunctions/h1.cpp $(FLAGS) -o ./join/hashFunctions/h1.o
 
-./exec/h2.o:./join/hashFunctions/h2.cpp
-	$(CC) -c ./join/hashFunctions/h2.cpp $(FLAGS) -o ./exec/h2.o
+./join/hashFunctions/h2.o:./join/hashFunctions/h2.cpp
+	$(CC) -c ./join/hashFunctions/h2.cpp $(FLAGS) -o ./join/hashFunctions/h2.o
 
-./exec/join.o:./join/join.cpp
-	$(CC) -c ./join/join.cpp $(FLAGS) -o ./exec/join.o
+./join/join.o:./join/join.cpp
+	$(CC) -c ./join/join.cpp $(FLAGS) -o ./join/join.o
 
-./exec/result.o:./join/dataStructures/result.cpp
-	$(CC) -c ./join/dataStructures/result.cpp $(FLAGS) -o ./exec/result.o
+./join/dataStructures/result.o:./join/dataStructures/result.cpp
+	$(CC) -c ./join/dataStructures/result.cpp $(FLAGS) -o ./join/dataStructures/result.o
 
-./exec/main.o:main.cpp
-	$(CC) -c main.cpp $(FLAGS) -o ./exec/main.o
+main.o:main.cpp
+	$(CC) -c main.cpp $(FLAGS) -o main.o
 
-./exec/structs.o:./join/dataStructures/structs.cpp
-	$(CC) -c ./join/dataStructures/structs.cpp $(FLAGS) -o ./exec/structs.o
+./join/dataStructures/structs.o:./join/dataStructures/structs.cpp
+	$(CC) -c ./join/dataStructures/structs.cpp $(FLAGS) -o ./join/dataStructures/structs.o
 
 clean:
-	rm -rf ./exec/*.o a.out ./exec/joinTest *.gch
+	rm -rf ./*/*.o *.o ./*/*/*.o a.out joinTest *.gch
