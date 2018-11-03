@@ -4,11 +4,10 @@
 
 void join(relation * A, relation * B);
 
-void compare(relation * relA, relation * relB, uint32_t histogramA, \
-    uint32_t startingPosA, uint32_t histogramB, uint32_t startingPosB, \
-    uint32_t * bucket_array, uint32_t * chain_array, Result ** result, \
-    char fag);
+void compare(tuple * orderedBig, tuple * orderedSmall, uint32_t bucketSizeSmall,\
+    uint32_t startIndexSmall, uint32_t bucketSizeBig, uint32_t startIndexBig, \
+    uint32_t * bucketArray, uint32_t * chainArray, Result ** result, char flag);
 
-void checkEquals(int32_t valueA, int hash_value, relation * relB, \
-    uint32_t bucketSizeB, uint32_t startingPosB, uint32_t * bucket_array, \
-    uint32_t * chain_array, Result ** result, char flag, int rowIdA);
+void checkEquals(int32_t valueA, int hash_value, tuple * orderedSmall, \
+    uint32_t bucketSizeBig, uint32_t startIndexBig, uint32_t * bucketArray, \
+    uint32_t * chainArray, Result ** result, char flag, int rowIdBig);

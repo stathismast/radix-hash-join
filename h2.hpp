@@ -6,7 +6,7 @@ char isPrime(uint32_t i);
 
 void test_nextPrime(uint32_t upTo);
 
-void bucketify2 (relation * rel,
+void bucketify2 (tuple * rel,
                     uint32_t bucket_size,
                     uint32_t start,
                     uint32_t ** bucket_array,

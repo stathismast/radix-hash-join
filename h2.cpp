@@ -51,7 +51,7 @@ char isPrime(uint32_t i){
     return flag;
 }
 
-void bucketify2(relation * rel,
+void bucketify2(tuple * rel,
                 uint32_t bucketSize,
                 uint32_t startingPos,
                 uint32_t ** bucketArray,
@@ -75,14 +75,14 @@ void bucketify2(relation * rel,
     for (uint32_t i = startingPos + bucketSize - 1; i >= startingPos; i--) {
 
         // Get the hashed value
-        int32_t hashValue = h2(rel->column[i].value, prime);
+        int32_t hashValue = h2(rel[i].value, prime);
 
         // If the corresponding bucket is currently empty
         if ((*bucketArray)[hashValue] == (uint32_t) -1) {
             (*bucketArray)[hashValue] = i - startingPos;
         }
         else {
-            // If the bucket is not empty, we have a collision, 
+            // If the bucket is not empty, we have a collision,
             // so we need to add a value in the chain array
             int32_t chainPos = (*bucketArray)[hashValue];
             while ((*chainArray)[chainPos] != (uint32_t) -1) {
@@ -91,7 +91,7 @@ void bucketify2(relation * rel,
             (*chainArray)[chainPos] = i - startingPos;
         }
 
-        // Since 'i' is unsigned it will never drop below 0 and 
+        // Since 'i' is unsigned it will never drop below 0 and
         // the condition will never be false in the first loop
         if (i == 0) {
             break;
@@ -107,13 +107,13 @@ void bucketify2(relation * rel,
     //     << prime << std::endl;
     // }
     // std::cout << std::endl;
-    
+
     // std::cout << "bucketArray:" << std::endl;
     // for (uint32_t i = 0; i < prime; i++) {
     //     std::cout << "\t" << i << ": " << (*bucketArray)[i] << std::endl;
     // }
     // std::cout << std::endl;
-    
+
     // std::cout << "chainArray:" << std::endl;
     // for (uint32_t i = 0; i < bucketSize; i++) {
     //     std::cout << "\t" << i << ": " << (*chainArray)[i] << std::endl;
