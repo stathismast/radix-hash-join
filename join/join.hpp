@@ -11,3 +11,5 @@ void compare(tuple * orderedBig, tuple * orderedSmall, uint32_t bucketSizeSmall,
 void checkEquals(tuple * valueA, int hash_value, tuple * orderedSmall, \
     uint32_t bucketSizeBig, uint32_t startIndexBig, uint32_t * bucketArray, \
     uint32_t * chainArray, Result * result, char flag, int rowIdBig);
+
+int naiveJoin(relation * A, relation * B);

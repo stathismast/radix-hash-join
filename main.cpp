@@ -10,8 +10,12 @@ int main(){
     relation * A = randomRelation(20);
     relation * B = randomRelation(20);
 
+    std::cout << "Total equals = " << naiveJoin(A, B) << '\n';
     Result * result = join(A,B);
+    std::cout << "Result entries = " << result->totalEntries << '\n';
     deleteResult(result);
+
+
 
     // test_nextPrime(200);
 

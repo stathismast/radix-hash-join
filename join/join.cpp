@@ -36,7 +36,7 @@ Result * join(relation * A, relation * B){
         // that one. Then find the equal values and store them in result
         if (histogramA[i] >= histogramB[i]) {
             bucketify2(orderedB, histogramB[i], startingPosB[i], &bucketArray, &chainArray);
-            compare(orderedA, orderedB,histogramA[i], startingPosA[i], histogramB[i], \
+            compare(orderedA, orderedB, histogramA[i], startingPosA[i], histogramB[i], \
                 startingPosB[i], bucketArray, chainArray, result, 0);
         }
         else {
@@ -67,23 +67,23 @@ Result * join(relation * A, relation * B){
 
 void compare(tuple * orderedBig,
             tuple * orderedSmall,
-            uint32_t bucketSizeSmall,
-            uint32_t startIndexSmall,
             uint32_t bucketSizeBig,
             uint32_t startIndexBig,
+            uint32_t bucketSizeSmall,
+            uint32_t startIndexSmall,
             uint32_t * bucketArray,
             uint32_t * chainArray,
             Result * result,
             char flag) {
 
-    int hash_value, prime = nextPrime(bucketSizeBig);
+    int hash_value, prime = nextPrime(bucketSizeSmall);
     // Compare every value of the bigger relation with the values of the smaller
     // one but are on the same bucket of h2
-    for (uint32_t i = startIndexSmall;
-                  i < bucketSizeSmall + startIndexSmall;
+    for (uint32_t i = startIndexBig;
+                  i < bucketSizeBig + startIndexBig;
                   i++) {
         hash_value = h2(orderedBig[i].value, prime);
-        checkEquals(&orderedBig[i], hash_value, orderedSmall, bucketSizeBig, startIndexBig, \
+        checkEquals(&orderedBig[i], hash_value, orderedSmall, bucketSizeSmall, startIndexSmall, \
             bucketArray, chainArray, result, flag, i);
     }
 }
@@ -91,8 +91,8 @@ void compare(tuple * orderedBig,
 void checkEquals(tuple * tupleA,
                 int hash_value,
                 tuple * orderedSmall,
-                uint32_t bucketSizeBig,
-                uint32_t startIndexBig,
+                uint32_t bucketSizeSmall,
+                uint32_t startIndexSmall,
                 uint32_t * bucketArray,
                 uint32_t * chainArray,
                 Result * result,
@@ -104,7 +104,7 @@ void checkEquals(tuple * tupleA,
     while (rowIdSmall != -1) {
         // We need to normalse the rowid because it has values from -1 to
         // the size of the bucket but we are using the actual array
-        normRowId = rowIdSmall + startIndexBig;
+        normRowId = rowIdSmall + startIndexSmall;
         // Get the value from the bigger array
         tupleB = &orderedSmall[normRowId];
         // Compare the values and add them in the list if they are wqual
@@ -122,4 +122,17 @@ void checkEquals(tuple * tupleA,
         rowIdSmall = chainArray[rowIdSmall];
     }
 
+}
+
+// Returns the number of matches between the two given relations
+int naiveJoin(relation * A, relation * B) {
+    int counter = 0;
+    for(uint32_t i=0; i<A->size; i++){
+        for(uint32_t j=0; j<B->size; j++){
+            if(A->column[i].value == B->column[j].value){
+                counter++;
+            }
+        }
+    }
+    return counter;
 }
