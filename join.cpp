@@ -14,20 +14,20 @@ void join(relation * A, relation * B){
 
     Result * result;
 
-    // std::cout << "Original A array:" << std::endl;
-    // printRelation(A);
-    // std::cout << "Original B array:" << std::endl;
-    // printRelation(B);
+    std::cout << "Original A array:" << std::endl;
+    printRelation(A);
+    std::cout << "Original B array:" << std::endl;
+    printRelation(B);
 
     // Print out the hashed values of A' and B'
     // to confirm that they are in order
-    std::cout << std::endl << "index\tA\' Bu\t|\tB\' Bu" << std::endl;
-    for(uint32_t i=0; i<A->size; i++){
-        std::cout << h1(orderedA[i].value) << "\t|\t";
-        std::cout << h1(orderedB[i].value) << std::endl;
-        // std::cout << i << "\t" << h1(orderedA[i].value) << "  " << orderedA[i].value << "\t|\t";
-        // std::cout << "\t" << h1(orderedB[i].value) << "  " << orderedB[i].value <<std::endl;
-    }
+    // std::cout << std::endl << "index\tA\' Bu\t|\tB\' Bu" << std::endl;
+    // for(uint32_t i=0; i<A->size; i++){
+    //     std::cout << h1(orderedA[i].value) << "\t|\t";
+    //     std::cout << h1(orderedB[i].value) << std::endl;
+    //     std::cout << i << "\t" << h1(orderedA[i].value) << "  " << orderedA[i].value << "\t|\t";
+    //     std::cout << "\t" << h1(orderedB[i].value) << "  " << orderedB[i].value <<std::endl;
+    // }
 
     uint32_t * bucketArray;
     uint32_t * chainArray;
@@ -74,21 +74,19 @@ void compare(tuple * orderedBig,
             Result ** result,
             char flag) {
 
-    int32_t valueA;
     int hash_value, prime = nextPrime(bucketSizeBig);
     // Compare every value of the bigger relation with the values of the smaller
     // one but are on the same bucket of h2
     for (uint32_t i = startIndexSmall;
                   i < bucketSizeSmall + startIndexSmall;
                   i++) {
-        valueA = orderedBig[i].value;
-        hash_value = h2(valueA, prime);
-        checkEquals(valueA, hash_value, orderedSmall, bucketSizeBig, startIndexBig, \
+        hash_value = h2(orderedBig[i].value, prime);
+        checkEquals(&orderedBig[i], hash_value, orderedSmall, bucketSizeBig, startIndexBig, \
             bucketArray, chainArray, result, flag, i);
     }
 }
 
-void checkEquals(int32_t valueA,
+void checkEquals(tuple * tupleA,
                 int hash_value,
                 tuple * orderedSmall,
                 uint32_t bucketSizeBig,
@@ -98,7 +96,7 @@ void checkEquals(int32_t valueA,
                 Result ** result,
                 char flag,
                 int rowIdBig) {
-    int32_t valueB;
+    tuple * tupleB;
     // Get the rowId of the first value in the current bucket
     int rowIdSmall = bucketArray[hash_value], normRowId;
     while (rowIdSmall != -1) {
@@ -106,18 +104,18 @@ void checkEquals(int32_t valueA,
         // the size of the bucket but we are using the actual array
         normRowId = rowIdSmall + startIndexBig;
         // Get the value from the bigger array
-        valueB = orderedSmall[normRowId].value;
+        tupleB = &orderedSmall[normRowId];
         // Compare the values and add them in the list if they are wqual
-        if (valueA == valueB) {
+        if (tupleA->value == tupleB->value) {
             // We need this flag so we will know which rowId goes first and
             // which second
             if (flag == 0) {
                 // insert(rowIdBig, normRowId)
-                std::cout << "1 (" << rowIdBig << ", " << normRowId << ")" << '\n';
+                std::cout << "1 (" << tupleA->rowid << ", " << tupleB->rowid << ")" << '\n';
             }
             else {
                 // insert(normRowI, rowIdBig)
-                std::cout << "2 (" << normRowId << ", " << rowIdBig << ")" << '\n';
+                std::cout << "2 (" << tupleB->rowid << ", " << tupleA->rowid << ")" << '\n';
             }
         }
         // Find the next element in the current bucket
