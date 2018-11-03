@@ -23,3 +23,6 @@ tuple * randomColumn(uint32_t size);
 relation * randomRelation(uint32_t size);
 void deleteRelation(relation * rel);
 void printRelation(relation * rel);
+
+relation * segFaultTupleA();
+relation * segFaultTupleB();
