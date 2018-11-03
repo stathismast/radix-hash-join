@@ -11,6 +11,6 @@ int main(int argc, char const *argv[]) {
 
     printResult(my_results);
 
-    destroyResult(my_results);
+    deleteResult(my_results);
     return 0;
 }

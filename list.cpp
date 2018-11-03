@@ -15,18 +15,19 @@ Description : Implementation of methods of structs Node and Result,
 }
 
 Result* newResult(){
-    Result* temp;
+    Result* res;
 
-    temp = new Result;
-    CHECK_OR_EXIT(temp);
+    res = new Result;
+    CHECK_OR_EXIT(res);
 
-    temp->first = temp->last = NULL;
-    temp->nodesNum = temp->totalEntries = 0;
+    res->first = newNode();
+    res->last = res->first;
+    res->nodesNum = res->totalEntries = 1;
 
-    return temp;
+    return res;
 }
 
-void destroyResult(Result* res){
+void deleteResult(Result* res){
     Node* current;
     Node* temp;
 
@@ -36,7 +37,7 @@ void destroyResult(Result* res){
     while(current != NULL){
         temp = current;
         current = current->next;
-        destroyNode(temp);
+        deleteNode(temp);
     }
     delete res;
 }
@@ -59,21 +60,15 @@ void printResult(Result* res){
 
 void insertResult(Result* res,uint32_t rowidA,uint32_t rowidB){
 
-    if(isEmptyResult(res)){ //it's first time
-        res->first = newNode();
-        res->last = res->first;
-        res->nodesNum ++;
-    }
+    checkFullness(res);
 
-    prepareInsertion(res);
-
-    insertNodeEntry(res->last,rowidA,rowidB);
+    insertToNode(res->last,rowidA,rowidB);
     res->totalEntries ++;
 
 }
 
 /* If there is no space to insert new entry make a new node */
-void prepareInsertion(Result* res){
+void checkFullness(Result* res){
     Node* temp;
     if(res->last->count == ENTRIES_PER_NODE){
         //we need a new node
@@ -105,12 +100,12 @@ Node* newNode(){
     return temp;
 }
 
-void destroyNode(Node* node){
+void deleteNode(Node* node){
     delete[] node->buffer;
     delete node;
 }
 
-void insertNodeEntry(Node* node,uint32_t rowidA,uint32_t rowidB){
+void insertToNode(Node* node,uint32_t rowidA,uint32_t rowidB){
     if(node->count < ENTRIES_PER_NODE){ //just a check for security
         uint32_t offset = node->count * ENTRY_SIZE;
         memcpy(node->buffer + offset,&rowidA,sizeof(uint32_t));

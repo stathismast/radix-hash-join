@@ -32,16 +32,16 @@ typedef struct Result{
 } Result;
 
 Result* newResult();
-void destroyResult(Result* res);
+void deleteResult(Result* res);
 bool isEmptyResult(Result* res);
 void printResult(Result* res);
 void insertResult(Result* res,uint32_t rowidA,uint32_t rowidB);
 uint32_t* getResultEntry(Result* res,uint32_t index);
-void prepareInsertion(Result* res);
+void checkFullness(Result* res);
 
 Node* newNode();
-void destroyNode(Node* node);
-void insertNodeEntry(Node* node,uint32_t rowidA,uint32_t rowidB);
+void deleteNode(Node* node);
+void insertToNode(Node* node,uint32_t rowidA,uint32_t rowidB);
 void printNodeResult(Node* node);
 uint32_t* getNodeEntry(Node* node,uint32_t index);
 
