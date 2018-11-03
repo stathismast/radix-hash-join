@@ -9,5 +9,5 @@ void test_nextPrime(uint32_t upTo);
 void bucketify2 (relation * rel,
                     uint32_t bucket_size,
                     uint32_t start,
-                    int ** bucket_array,
-                    int ** chain_array);
+                    uint32_t ** bucket_array,
+                    uint32_t ** chain_array);

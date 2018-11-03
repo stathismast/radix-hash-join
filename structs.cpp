@@ -26,7 +26,8 @@ void deleteRelation(relation * rel){
 
 void printRelation(relation * rel){
     for(uint32_t i=0; i<rel->size; i++){
-        std::cout << rel->column[i].rowid << "\t|\t"
+        std::cout << rel->column[i].rowid << ". "
              << rel->column[i].value << std::endl;
     }
+    std::cout << std::endl;
 }

@@ -3,7 +3,7 @@
 // Number of least significant bits that are used in the hash function
 #define BITS 3
 
-int numberOfBuckets = 1 << BITS;
+uint32_t numberOfBuckets = 1 << BITS;
 
 // Hash fucntion
 int32_t h1(int32_t value){

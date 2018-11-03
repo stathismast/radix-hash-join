@@ -51,53 +51,48 @@ char isPrime(uint32_t i){
     return flag;
 }
 
-void bucketify2 (relation * rel,
-                    uint32_t bucketSize,
-                    uint32_t startIndex,
-                    int ** bucketArray,
-                    int ** chainArray) {
-    // Normaly numOfBuckets would be based on our hash function which won't be
-    //  neccessarily a mod with a prime. For starters we take it that way so
-    // we can see if it works
-    uint32_t i, j, numOfBuckets;
-    int prime = nextPrime(bucketSize), hashValue, chainPos;
-    numOfBuckets = prime;
-    *bucketArray = new int[numOfBuckets];
-    *chainArray = new int[bucketSize];
+void bucketify2(relation * rel,
+                uint32_t bucketSize,
+                uint32_t startingPos,
+                uint32_t ** bucketArray,
+                uint32_t ** chainArray) {
+
+    uint32_t prime = nextPrime(bucketSize);
+
+    *bucketArray = new uint32_t[prime];
+    *chainArray = new uint32_t[bucketSize];
 
     // Initialise our arrays
-    for (j = 0; j < bucketSize; j++) {
+    for (uint32_t j = 0; j < bucketSize; j++) {
         (*chainArray)[j] = -1;
     }
-    for (j = 0; j < numOfBuckets; j++) {
+    for (uint32_t j = 0; j < prime; j++) {
         (*bucketArray)[j] = -1;
     }
 
     // Find in which bucket each element is and make the arrays for the bucket
     // and the chain
-    for (i = bucketSize + startIndex - 1; i >= startIndex; i--) {
-        // Find the hashValue which will tell us in which bucket every value
-        // should go
-        hashValue = h2(rel->column[i].value, prime);
-        // If there is nothing in the bucket then the bucket will only point
-        // at the value
-        if ((*bucketArray)[hashValue] == -1) {
-            (*bucketArray)[hashValue] = i - startIndex;
+    for (uint32_t i = startingPos + bucketSize - 1; i >= startingPos; i--) {
+
+        // Get the hashed value
+        int32_t hashValue = h2(rel->column[i].value, prime);
+
+        // If the corresponding bucket is currently empty
+        if ((*bucketArray)[hashValue] == (uint32_t) -1) {
+            (*bucketArray)[hashValue] = i - startingPos;
         }
         else {
-            // If we have a collision we need to add a value in the chain array
-            // We look in order to find which was the last element added to this
-            // bucket
-            chainPos = (*bucketArray)[hashValue];
-            while ((*chainArray)[chainPos] != -1) {
+            // If the bucket is not empty, we have a collision, 
+            // so we need to add a value in the chain array
+            int32_t chainPos = (*bucketArray)[hashValue];
+            while ((*chainArray)[chainPos] != (uint32_t) -1) {
                 chainPos = (*chainArray)[chainPos];
             }
-            // After we find it we change its value so it will point in the
-            // current element
-            (*chainArray)[chainPos] = i - startIndex;
+            (*chainArray)[chainPos] = i - startingPos;
         }
-        // because i is unsigned it will never drop below 0 and the condition
-        // will never be false in the first loop
+
+        // Since 'i' is unsigned it will never drop below 0 and 
+        // the condition will never be false in the first loop
         if (i == 0) {
             break;
         }
@@ -105,17 +100,20 @@ void bucketify2 (relation * rel,
 
     // Debugging prints
     // std::cout << "Ordered bucket:" << std::endl;
-    // for (i = start; i < bucketSize + start; i++) {
-    //     std::cout << "\t"<<  i - start << ": " << rel->column[i].value << std::endl;
+    // for (uint32_t i = startingPos; i < bucketSize + startingPos; i++) {
+    //     std::cout << "\t"<<  i - startingPos  << ": "
+    //     << rel->column[i].value << ": "
+    //     << h2(rel->column[i].value, prime) << ": "
+    //     << prime << std::endl;
     // }
     // std::cout << std::endl;
-    //
+    
     // std::cout << "bucketArray:" << std::endl;
-    // for (uint32_t i = 0; i < bucket_count; i++) {
+    // for (uint32_t i = 0; i < prime; i++) {
     //     std::cout << "\t" << i << ": " << (*bucketArray)[i] << std::endl;
     // }
     // std::cout << std::endl;
-    //
+    
     // std::cout << "chainArray:" << std::endl;
     // for (uint32_t i = 0; i < bucketSize; i++) {
     //     std::cout << "\t" << i << ": " << (*chainArray)[i] << std::endl;
