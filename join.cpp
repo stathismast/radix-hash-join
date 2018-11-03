@@ -2,7 +2,7 @@
 
 extern uint32_t numberOfBuckets;
 
-void join(relation * A, relation * B){
+Result * join(relation * A, relation * B){
     // Order given touples bucket by bucket (basically produces A' and B')
     uint32_t * histogramA;
     uint32_t * startingPosA;
@@ -11,8 +11,6 @@ void join(relation * A, relation * B){
     uint32_t * histogramB;
     uint32_t * startingPosB;
     tuple * orderedB = bucketify(B,&histogramB,&startingPosB);
-
-    Result * result;
 
     std::cout << "Original A array:" << std::endl;
     printRelation(A);
@@ -31,6 +29,7 @@ void join(relation * A, relation * B){
 
     uint32_t * bucketArray;
     uint32_t * chainArray;
+    Result * result = newResult();
     for (uint32_t i = 0; i < numberOfBuckets; i++) {
 
         // For each bucket find the smaller one and make an index with h2 for
@@ -38,17 +37,19 @@ void join(relation * A, relation * B){
         if (histogramA[i] >= histogramB[i]) {
             bucketify2(orderedB, histogramB[i], startingPosB[i], &bucketArray, &chainArray);
             compare(orderedA, orderedB,histogramA[i], startingPosA[i], histogramB[i], \
-                startingPosB[i], bucketArray, chainArray, &result, 0);
+                startingPosB[i], bucketArray, chainArray, result, 0);
         }
         else {
             bucketify2(orderedA, histogramA[i], startingPosA[i], &bucketArray, &chainArray);
             compare(orderedB, orderedA, histogramB[i], startingPosB[i], histogramA[i], \
-                startingPosA[i], bucketArray, chainArray, &result, 1);
+                startingPosA[i], bucketArray, chainArray, result, 1);
         }
 
         delete[] bucketArray;
         delete[] chainArray;
     }
+
+    printResult(result);
 
     deleteRelation(A);
     deleteRelation(B);
@@ -61,6 +62,7 @@ void join(relation * A, relation * B){
     delete[] histogramB;
     delete[] startingPosB;
 
+    return result;
 }
 
 void compare(tuple * orderedBig,
@@ -71,7 +73,7 @@ void compare(tuple * orderedBig,
             uint32_t startIndexBig,
             uint32_t * bucketArray,
             uint32_t * chainArray,
-            Result ** result,
+            Result * result,
             char flag) {
 
     int hash_value, prime = nextPrime(bucketSizeBig);
@@ -93,7 +95,7 @@ void checkEquals(tuple * tupleA,
                 uint32_t startIndexBig,
                 uint32_t * bucketArray,
                 uint32_t * chainArray,
-                Result ** result,
+                Result * result,
                 char flag,
                 int rowIdBig) {
     tuple * tupleB;
@@ -112,10 +114,12 @@ void checkEquals(tuple * tupleA,
             if (flag == 0) {
                 // insert(rowIdBig, normRowId)
                 std::cout << "1 (" << tupleA->rowid << ", " << tupleB->rowid << ")" << '\n';
+                insertResult(result,tupleA->rowid, tupleB->rowid);
             }
             else {
                 // insert(normRowI, rowIdBig)
                 std::cout << "2 (" << tupleB->rowid << ", " << tupleA->rowid << ")" << '\n';
+                insertResult(result,tupleB->rowid, tupleA->rowid);
             }
         }
         // Find the next element in the current bucket

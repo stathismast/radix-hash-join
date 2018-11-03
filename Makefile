@@ -1,5 +1,5 @@
 CC = g++
-OBJS = h1.o h2.o join.o main.o structs.o
+OBJS = h1.o h2.o join.o main.o structs.o result.o
 FLAGS = -g3 -Wall
 
 all:$(OBJS)
@@ -13,6 +13,9 @@ h2.o:h2.cpp
 
 join.o:join.cpp
 	$(CC) -c join.cpp $(FLAGS)
+
+result.o:result.cpp
+	$(CC) -c result.cpp $(FLAGS)
 
 main.o:main.cpp
 	$(CC) -c main.cpp $(FLAGS)
