@@ -1,7 +1,7 @@
 #include "../list.hpp"
 
 int main(int argc, char const *argv[]) {
-    Result my_results;
+    Result* my_results;
     my_results = newResult();
 
     insertResult(my_results,1,2);
