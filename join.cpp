@@ -104,7 +104,7 @@ void compare(relation * relBig,
         valueA = relBig->column[i].value;
         hash_value = h2(valueA, prime);
         checkEquals(valueA, hash_value, relSmall, bucketSizeBig, startIndexBig, \
-            bucketArray, chainArray, result, flag, i);
+            bucketArray, chainArray, result, flag, i + startIndexBig);
     }
 }
 
