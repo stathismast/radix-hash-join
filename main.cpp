@@ -10,7 +10,8 @@ int main(){
     relation * A = randomRelation(20);
     relation * B = randomRelation(20);
 
-    join(A,B);
+    Result * result = join(A,B);
+    deleteResult(result);
 
     // test_nextPrime(200);
 
