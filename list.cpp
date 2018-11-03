@@ -6,16 +6,16 @@ Description : Implementation of methods of structs Node and Result,
 
 #include "list.hpp"
 
-#define CHECK_OR_EXIT(value)     \
-{                           \
-	if (value == NULL) {      \
-		std::cout << "Error at memory allocation! New() returned NULL! Program must exit!!" << std::endl;\
-		exit(EXIT_FAILURE);           \
-	}                         \
+#define CHECK_OR_EXIT(value)                                        \
+{                                                                   \
+	if (value == NULL) {                                            \
+		std::cout << "Error at memory allocation." << std::endl;    \
+		exit(EXIT_FAILURE);                                         \
+	}                                                               \
 }
 
-Result* newResult(){
-    Result* res;
+Result * newResult(){
+    Result * res;
 
     res = new Result;
     CHECK_OR_EXIT(res);
@@ -27,7 +27,7 @@ Result* newResult(){
     return res;
 }
 
-void deleteResult(Result* res){
+void deleteResult(Result * res){
     Node* current;
     Node* temp;
 
@@ -42,7 +42,7 @@ void deleteResult(Result* res){
     delete res;
 }
 
-bool isEmptyResult(Result* res){
+bool isEmptyResult(Result * res){
     return (res->first == NULL);
 }
 
@@ -58,20 +58,17 @@ void printResult(Result* res){
     }
 }
 
-void insertResult(Result* res,uint32_t rowidA,uint32_t rowidB){
-
+void insertResult(Result * res, uint32_t rowidA, uint32_t rowidB){
     checkFullness(res);
-
     insertToNode(res->last,rowidA,rowidB);
     res->totalEntries ++;
-
 }
 
 /* If there is no space to insert new entry make a new node */
-void checkFullness(Result* res){
+void checkFullness(Result * res){
     Node* temp;
     if(res->last->count == ENTRIES_PER_NODE){
-        //we need a new node
+        // We need a new node
         temp = newNode();
         res->last->next = temp;
         res->last = temp;
@@ -79,12 +76,12 @@ void checkFullness(Result* res){
     }
 }
 
-uint32_t* getResultEntry(Result* res,uint32_t index){
+uint32_t * getResultEntry(Result * res, uint32_t index){
     return NULL; //to be implemented
 }
 
 
-Node* newNode(){
+Node * newNode(){
     Node* temp;
 
     temp = new Node;
@@ -92,7 +89,6 @@ Node* newNode(){
 
     temp->count = 0;
     temp->next = NULL;
-
     temp->buffer = new uint32_t[BUFFER_SIZE];
     CHECK_OR_EXIT(temp->buffer);
 
@@ -100,22 +96,20 @@ Node* newNode(){
     return temp;
 }
 
-void deleteNode(Node* node){
+void deleteNode(Node * node){
     delete[] node->buffer;
     delete node;
 }
 
-void insertToNode(Node* node,uint32_t rowidA,uint32_t rowidB){
-    if(node->count < ENTRIES_PER_NODE){ //just a check for security
-        uint32_t offset = node->count * ENTRY_SIZE;
-        memcpy(node->buffer + offset,&rowidA,sizeof(uint32_t));
-        offset += sizeof(uint32_t);
-        memcpy(node->buffer + offset,&rowidB,sizeof(uint32_t));
-        node->count ++;
-    }
+void insertToNode(Node * node, uint32_t rowidA, uint32_t rowidB){
+    uint32_t offset = node->count * ENTRY_SIZE;
+    memcpy(node->buffer + offset,&rowidA,sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(node->buffer + offset,&rowidB,sizeof(uint32_t));
+    node->count ++;
 }
 
-void printNodeResult(Node* node){
+void printNodeResult(Node * node){
     uint32_t rowidA,rowidB,offset=0;
     // std::cout << "count:" << node->count << '\n';
     for (uint32_t i = 0; i < node->count; i++) {
@@ -127,6 +121,6 @@ void printNodeResult(Node* node){
     }
 }
 
-uint32_t* getNodeEntry(Node* res,uint32_t index){
+uint32_t * getNodeEntry(Node * res, uint32_t index){
     return NULL; //to be implemented
 }
