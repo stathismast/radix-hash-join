@@ -1,27 +1,28 @@
 CC = g++
-OBJS = h1.o h2.o join.o main.o structs.o result.o
+OBJS = ./exec/h1.o ./exec/h2.o ./exec/join.o ./exec/main.o \
+		./exec/structs.o ./exec/result.o
 FLAGS = -g3 -Wall
 
 all:$(OBJS)
-	$(CC) -o join $(OBJS) $(FLAGS)
+	$(CC) -o ./exec/joinTest $(OBJS) $(FLAGS)
 
-h1.o:h1.cpp
-	$(CC) -c h1.cpp $(FLAGS)
+./exec/h1.o:./join/hashFunctions/h1.cpp
+	$(CC) -c ./join/hashFunctions/h1.cpp $(FLAGS) -o ./exec/h1.o
 
-h2.o:h2.cpp
-	$(CC) -c h2.cpp $(FLAGS)
+./exec/h2.o:./join/hashFunctions/h2.cpp
+	$(CC) -c ./join/hashFunctions/h2.cpp $(FLAGS) -o ./exec/h2.o
 
-join.o:join.cpp
-	$(CC) -c join.cpp $(FLAGS)
+./exec/join.o:./join/join.cpp
+	$(CC) -c ./join/join.cpp $(FLAGS) -o ./exec/join.o
 
-result.o:result.cpp
-	$(CC) -c result.cpp $(FLAGS)
+./exec/result.o:./join/dataStructures/result.cpp
+	$(CC) -c ./join/dataStructures/result.cpp $(FLAGS) -o ./exec/result.o
 
-main.o:main.cpp
-	$(CC) -c main.cpp $(FLAGS)
+./exec/main.o:main.cpp
+	$(CC) -c main.cpp $(FLAGS) -o ./exec/main.o
 
-structs.o:structs.cpp
-	$(CC) -c structs.cpp $(FLAGS)
+./exec/structs.o:./join/dataStructures/structs.cpp
+	$(CC) -c ./join/dataStructures/structs.cpp $(FLAGS) -o ./exec/structs.o
 
 clean:
-	rm -rf *.o a.out join *.gch
+	rm -rf ./exec/*.o a.out ./exec/joinTest *.gch
