@@ -112,13 +112,9 @@ void checkEquals(tuple * tupleA,
             // We need this flag so we will know which rowId goes first and
             // which second
             if (flag == 0) {
-                // insert(rowIdBig, normRowId)
-                std::cout << "1 (" << tupleA->rowid << ", " << tupleB->rowid << ")" << '\n';
                 insertResult(result,tupleA->rowid, tupleB->rowid);
             }
-            else {
-                // insert(normRowI, rowIdBig)
-                std::cout << "2 (" << tupleB->rowid << ", " << tupleA->rowid << ")" << '\n';
+            else{
                 insertResult(result,tupleB->rowid, tupleA->rowid);
             }
         }
