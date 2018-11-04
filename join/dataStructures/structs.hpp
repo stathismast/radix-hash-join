@@ -21,5 +21,11 @@ struct Relation{
 
 Tuple * randomColumn(uint32_t size);
 Relation * randomRelation(uint32_t size);
+Tuple * serialColumn(uint32_t size);
+Relation * serialRelation(uint32_t size);
+Tuple * oddColumn(uint32_t size);
+Relation * oddRelation(uint32_t size);
+Tuple * evenColumn(uint32_t size);
+Relation * evenRelation(uint32_t size);
 void deleteRelation(Relation * rel);
 void printRelation(Relation * rel);

@@ -1,6 +1,12 @@
 CC = g++
 OBJS = ./join/hashFunctions/h1.o ./join/hashFunctions/h2.o ./join/join.o main.o \
 		./join/dataStructures/structs.o ./join/dataStructures/result.o
+SERIAL_OBJS = ./join/hashFunctions/h1.o ./join/hashFunctions/h2.o ./join/join.o \
+		./join/dataStructures/structs.o ./join/dataStructures/result.o \
+		./testMain/testSerial.o
+ODD_EVEN_OBJS = ./join/hashFunctions/h1.o ./join/hashFunctions/h2.o ./join/join.o \
+		./join/dataStructures/structs.o ./join/dataStructures/result.o \
+		./testMain/testOddEven.o
 FLAGS = -g3 -Wall
 
 all:$(OBJS)
@@ -24,5 +30,18 @@ main.o:main.cpp
 ./join/dataStructures/structs.o:./join/dataStructures/structs.cpp
 	$(CC) -c ./join/dataStructures/structs.cpp $(FLAGS) -o ./join/dataStructures/structs.o
 
+testSerial:$(SERIAL_OBJS)
+	$(CC) -o joinTestSerial $(SERIAL_OBJS) $(FLAGS)
+
+./testMain/testSerial.o:./testMain/testSerial.cpp
+	$(CC) -c ./testMain/testSerial.cpp $(FLAGS) -o ./testMain/testSerial.o
+
+testOddEven:$(ODD_EVEN_OBJS)
+	$(CC) -o joinTestOddEven $(ODD_EVEN_OBJS) $(FLAGS)
+
+./testMain/testOddEven.o:./testMain/testOddEven.cpp
+	$(CC) -c ./testMain/testOddEven.cpp $(FLAGS) -o ./testMain/testOddEven.o
+
 clean:
-	rm -rf ./*/*.o *.o ./*/*/*.o a.out joinTest ./*/*.gch *.gch ./*/*/*.gch
+	rm -rf ./*/*.o *.o ./*/*/*.o a.out joinTest ./joinTestSerial \
+		./joinTestOddEven ./*/*.gch *.gch ./*/*/*.gch
