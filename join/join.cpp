@@ -6,11 +6,11 @@ Result * join(Relation * A, Relation * B){
     // Order given touples bucket by bucket (basically produces A' and B')
     uint32_t * histogramA;
     uint32_t * startingPosA;
-    Tuple * orderedA = bucketify(A,&histogramA,&startingPosA);
+    Tuple * orderedA = bucketify(A, &histogramA, &startingPosA);
 
     uint32_t * histogramB;
     uint32_t * startingPosB;
-    Tuple * orderedB = bucketify(B,&histogramB,&startingPosB);
+    Tuple * orderedB = bucketify(B, &histogramB, &startingPosB);
 
     // std::cout << "Original A array:" << std::endl;
     // printRelation(A);

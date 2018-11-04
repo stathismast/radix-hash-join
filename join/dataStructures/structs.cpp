@@ -11,7 +11,6 @@ Tuple * randomColumn(uint32_t size){
     return array;
 }
 
-
 // Create and return a Relation with serial values
 Relation * randomRelation(uint32_t size){
     Relation * rel = new Relation;
@@ -19,6 +18,7 @@ Relation * randomRelation(uint32_t size){
     rel->size = size;
     return rel;
 }
+
 
 // Create and return a Tuplearray with serial values
 Tuple * serialColumn(uint32_t size){

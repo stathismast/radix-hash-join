@@ -5,7 +5,7 @@ int32_t h2(int32_t value, uint32_t prime){
     return value % prime;
 }
 
-void test_nextPrime(uint32_t upTo){
+void testNextPrime(uint32_t upTo){
     std::cout << "Testing nextPrime up to " << upTo << std::endl;
     for(uint32_t i=0; i<upTo; i++){
         std::cout << i << ". " << nextPrime(i) << std::endl;

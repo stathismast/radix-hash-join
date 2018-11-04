@@ -52,7 +52,7 @@ Tuple * order(Relation * rel, uint32_t * startingPositions){
     for(uint32_t i=0; i<rel->size; i++){
         int32_t val = rel->column[i].value;
 
-        // Store value & rowid of Tuplein the appropriate position
+        // Store value & rowid of Tuple in the appropriate position
         ordered[offsets[h1(val)]].value = val;
         ordered[offsets[h1(val)]].rowid = rel->column[i].rowid;
 

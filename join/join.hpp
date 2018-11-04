@@ -9,7 +9,7 @@ void compare(Tuple * orderedBig, Tuple * orderedSmall, uint32_t bucketSizeSmall,
     uint32_t * bucketArray, uint32_t * chainArray, Result * result, bool flag);
 
 void checkEquals(Tuple * valueA, int hash_value, Tuple * orderedSmall, \
-    uint32_t startIndexBig, uint32_t * bucketArray, \
-    uint32_t * chainArray, Result * result, bool flag, int rowIdBig);
+    uint32_t startIndexBig, uint32_t * bucketArray, uint32_t * chainArray, \
+    Result * result, bool flag, int rowIdBig);
 
 int naiveJoin(Relation * A, Relation * B);
