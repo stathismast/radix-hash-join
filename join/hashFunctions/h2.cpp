@@ -57,8 +57,6 @@ void bucketify2(tuple * rel,
                 uint32_t ** bucketArray,
                 uint32_t ** chainArray) {
 
-    if(bucketSize == 0) return;
-
     uint32_t prime = nextPrime(bucketSize);
 
     *bucketArray = new uint32_t[prime];

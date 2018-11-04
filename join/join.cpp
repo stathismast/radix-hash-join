@@ -32,6 +32,11 @@ Result * join(relation * A, relation * B){
     Result * result = newResult();
     for (uint32_t i = 0; i < numberOfBuckets; i++) {
 
+        if(histogramA[i] == 0 || histogramB[i] == 0){
+            //the one bucket is empty so there is nothing to compare with
+            //the other bucket
+            continue;
+        }
         // For each bucket find the smaller one and make an index with h2 for
         // that one. Then find the equal values and store them in result
         if (histogramA[i] >= histogramB[i]) {
