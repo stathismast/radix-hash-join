@@ -12,10 +12,10 @@ Result * join(relation * A, relation * B){
     uint32_t * startingPosB;
     tuple * orderedB = bucketify(B,&histogramB,&startingPosB);
 
-    std::cout << "Original A array:" << std::endl;
-    printRelation(A);
-    std::cout << "Original B array:" << std::endl;
-    printRelation(B);
+    // std::cout << "Original A array:" << std::endl;
+    // printRelation(A);
+    // std::cout << "Original B array:" << std::endl;
+    // printRelation(B);
 
     // Print out the hashed values of A' and B'
     // to confirm that they are in order
@@ -54,7 +54,7 @@ Result * join(relation * A, relation * B){
         delete[] chainArray;
     }
 
-    printResult(result);
+    //printResult(result);
 
     delete[] orderedA;
     delete[] histogramA;

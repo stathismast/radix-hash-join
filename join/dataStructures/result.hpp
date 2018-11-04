@@ -6,8 +6,8 @@ Description : Declaration of structs Node and Result which are used to
 #ifndef LIST_H
 #define LIST_H
 
-#define BUFFER_SIZE 16
-// #define BUFFER_SIZE (1024*1024)
+//#define BUFFER_SIZE 16
+#define BUFFER_SIZE (1024*1024)
 
 #define ENTRY_SIZE (sizeof(uint32_t) + sizeof(uint32_t))
 

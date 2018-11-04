@@ -6,7 +6,7 @@ tuple * randomColumn(uint32_t size){
     tuple * array = new tuple[size];
     for(uint32_t i = 0; i<size; i++){
         array[i].rowid = i+1;
-        array[i].value = rand()%10;
+        array[i].value = rand()%2000;
     }
     return array;
 }

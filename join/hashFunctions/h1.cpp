@@ -1,7 +1,7 @@
 #include "h1.hpp"
 
 // Number of least significant bits that are used in the hash function
-#define BITS 3
+#define BITS 8
 
 uint32_t numberOfBuckets = 1 << BITS;
 
@@ -16,7 +16,7 @@ uint32_t * calculateHistogram(relation * rel){
     uint32_t * histogram = new uint32_t[numberOfBuckets];
     for(uint32_t i=0; i<numberOfBuckets; i++)
         histogram[i] = 0;
-    
+
     // Add up the number of tuples in each bucket
     for(uint32_t i=0; i<rel->size; i++)
         histogram[h1(rel->column[i].value)]++;
@@ -78,6 +78,6 @@ tuple * bucketify(relation * rel,
 
     // Order the given touples bucket by bucket (basically produces A' from A)
     tuple * ordered = order(rel,*startingPositions);
-    
+
     return ordered;
 }
