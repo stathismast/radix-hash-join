@@ -19,6 +19,7 @@ Result * newResult(){
 
     res = new Result;
     CHECK_OR_EXIT(res);
+
     res->first = newNode();
     res->last = res->first;
     res->nodesNum = res->totalEntries = 0;
