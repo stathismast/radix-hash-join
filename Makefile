@@ -3,14 +3,14 @@ OBJS = ./join/h1.o ./join/h2.o ./join/join.o main.o \
 		./join/structs.o ./join/result.o
 SERIAL_OBJS = ./join/h1.o ./join/h2.o ./join/join.o \
 		./join/structs.o ./join/result.o \
-		./testMain/testSerial.o
+		./testMain/serialJoin.o
 ODD_EVEN_OBJS = ./join/h1.o ./join/h2.o ./join/join.o \
 		./join/structs.o ./join/result.o \
-		./testMain/testOddEven.o
+		./testMain/oddEvenJoin.o
 FLAGS = -g3 -Wall
 
 all:$(OBJS)
-	$(CC) -o joinTest $(OBJS) $(FLAGS)
+	$(CC) -o randomJoin $(OBJS) $(FLAGS)
 
 ./join/h1.o:./join/h1.cpp
 	$(CC) -c ./join/h1.cpp $(FLAGS) -o ./join/h1.o
@@ -30,18 +30,18 @@ main.o:main.cpp
 ./join/structs.o:./join/structs.cpp
 	$(CC) -c ./join/structs.cpp $(FLAGS) -o ./join/structs.o
 
-testSerial:$(SERIAL_OBJS)
-	$(CC) -o joinTestSerial $(SERIAL_OBJS) $(FLAGS)
+serialJoin:$(SERIAL_OBJS)
+	$(CC) -o serialJoin $(SERIAL_OBJS) $(FLAGS)
 
-./testMain/testSerial.o:./testMain/testSerial.cpp
-	$(CC) -c ./testMain/testSerial.cpp $(FLAGS) -o ./testMain/testSerial.o
+./testMain/serialJoin.o:./testMain/serialJoin.cpp
+	$(CC) -c ./testMain/serialJoin.cpp $(FLAGS) -o ./testMain/serialJoin.o
 
-testOddEven:$(ODD_EVEN_OBJS)
-	$(CC) -o joinTestOddEven $(ODD_EVEN_OBJS) $(FLAGS)
+oddEvenJoin:$(ODD_EVEN_OBJS)
+	$(CC) -o oddEvenJoin $(ODD_EVEN_OBJS) $(FLAGS)
 
-./testMain/testOddEven.o:./testMain/testOddEven.cpp
-	$(CC) -c ./testMain/testOddEven.cpp $(FLAGS) -o ./testMain/testOddEven.o
+./testMain/oddEvenJoin.o:./testMain/serialJoin.cpp
+	$(CC) -c ./testMain/oddEvenJoin.cpp $(FLAGS) -o ./testMain/oddEvenJoin.o
 
 clean:
-	rm -rf ./*/*.o *.o ./*/*/*.o a.out joinTest ./joinTestSerial \
-		./joinTestOddEven ./*/*.gch *.gch ./*/*/*.gch
+	rm -rf ./*/*.o *.o ./*/*/*.o a.out randomJoin serialJoin \
+		oddEvenJoin ./*/*.gch *.gch ./*/*/*.gch
