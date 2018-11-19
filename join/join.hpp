@@ -1,6 +1,6 @@
-#include "./hashFunctions/h1.hpp"
-#include "./hashFunctions/h2.hpp"
-#include "./dataStructures/result.hpp"
+#include "h1.hpp"
+#include "h2.hpp"
+#include "result.hpp"
 
 Result * join(Relation * A, Relation * B);
 

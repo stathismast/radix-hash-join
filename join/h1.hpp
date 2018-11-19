@@ -1,4 +1,4 @@
-#include "../dataStructures/structs.hpp"
+#include "structs.hpp"
 
 int32_t h1(int32_t value);
 uint32_t * calculateHistogram(Relation * rel);
