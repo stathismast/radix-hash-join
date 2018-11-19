@@ -1,4 +1,3 @@
-make
 make oddEvenJoin
 make serialJoin
 make randomJoin
