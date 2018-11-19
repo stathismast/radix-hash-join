@@ -7,10 +7,13 @@ SERIAL_OBJS = ./join/h1.o ./join/h2.o ./join/join.o \
 ODD_EVEN_OBJS = ./join/h1.o ./join/h2.o ./join/join.o \
 		./join/structs.o ./join/result.o \
 		./testMain/oddEvenJoin.o
+RANDOM_OBJS = ./join/h1.o ./join/h2.o ./join/join.o \
+		./join/structs.o ./join/result.o \
+		./testMain/randomJoin.o
 FLAGS = -g3 -Wall
 
 all:$(OBJS)
-	$(CC) -o randomJoin $(OBJS) $(FLAGS)
+	$(CC) -o main $(OBJS) $(FLAGS)
 
 ./join/h1.o:./join/h1.cpp
 	$(CC) -c ./join/h1.cpp $(FLAGS) -o ./join/h1.o
@@ -42,6 +45,12 @@ oddEvenJoin:$(ODD_EVEN_OBJS)
 ./testMain/oddEvenJoin.o:./testMain/serialJoin.cpp
 	$(CC) -c ./testMain/oddEvenJoin.cpp $(FLAGS) -o ./testMain/oddEvenJoin.o
 
+randomJoin:$(RANDOM_OBJS)
+	$(CC) -o randomJoin $(RANDOM_OBJS) $(FLAGS)
+
+./testMain/randomJoin.o:./testMain/randomJoin.cpp
+	$(CC) -c ./testMain/randomJoin.cpp $(FLAGS) -o ./testMain/randomJoin.o
+
 clean:
-	rm -rf ./*/*.o *.o ./*/*/*.o a.out randomJoin serialJoin \
+	rm -rf ./*/*.o *.o ./*/*/*.o a.out main randomJoin serialJoin \
 		oddEvenJoin ./*/*.gch *.gch ./*/*/*.gch
