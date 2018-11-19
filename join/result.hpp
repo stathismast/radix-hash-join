@@ -9,7 +9,7 @@ Description : Declaration of structs Node and Result which are used to
 //#define BUFFER_SIZE 16
 #define BUFFER_SIZE (1024*1024)
 
-#define ENTRY_SIZE (sizeof(uint32_t) + sizeof(uint32_t))
+#define ENTRY_SIZE (sizeof(uint64_t) + sizeof(uint64_t))
 
 #define ENTRIES_PER_NODE (BUFFER_SIZE / ENTRY_SIZE)
 
@@ -19,30 +19,30 @@ Description : Declaration of structs Node and Result which are used to
 #include <iostream>
 
 typedef struct Node{
-    uint32_t * buffer;
+    uint64_t * buffer;
     Node * next;
-    uint32_t count;
+    uint64_t count;
 } Node;
 
 typedef struct Result{
     Node * first;
     Node * last;
-    uint32_t nodesNum;
-    uint32_t totalEntries;
+    uint64_t nodesNum;
+    uint64_t totalEntries;
 } Result;
 
 Result * newResult();
 void deleteResult(Result * res);
 bool isEmptyResult(Result * res);
 void printResult(Result * res);
-void insertResult(Result * res,uint32_t rowidA,uint32_t rowidB);
-uint32_t * getResultEntry(Result * res,uint32_t index);
+void insertResult(Result * res,uint64_t rowidA,uint64_t rowidB);
+uint64_t * getResultEntry(Result * res,uint64_t index);
 void checkFullness(Result * res);
 
 Node * newNode();
 void deleteNode(Node * node);
-void insertToNode(Node * node,uint32_t rowidA,uint32_t rowidB);
+void insertToNode(Node * node,uint64_t rowidA,uint64_t rowidB);
 void printNodeResult(Node * node);
-uint32_t * getNodeEntry(Node * node,uint32_t index);
+uint64_t * getNodeEntry(Node * node,uint64_t index);
 
 #endif /* LIST_H */

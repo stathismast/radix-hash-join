@@ -1,13 +1,13 @@
 #include "structs.hpp"
 
-int32_t h2(int32_t value, uint32_t start);
-uint32_t nextPrime(uint32_t start);
-bool isPrime(uint32_t i);
+uint64_t h2(uint64_t value, uint64_t start);
+uint64_t nextPrime(uint64_t start);
+bool isPrime(uint64_t i);
 
-void tesNextPrime(uint32_t upTo);
+void tesNextPrime(uint64_t upTo);
 
 void bucketify2 (Tuple * rel,
-                    uint32_t bucket_size,
-                    uint32_t start,
-                    uint32_t ** bucket_array,
-                    uint32_t ** chain_array);
+                    uint64_t bucket_size,
+                    uint64_t start,
+                    uint64_t ** bucket_array,
+                    uint64_t ** chain_array);

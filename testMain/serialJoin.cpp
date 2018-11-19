@@ -20,7 +20,7 @@ int main(){
     Relation * B = serialRelation(5000);
 
     std::ofstream file("Logs/arrayA.txt");
-    for(uint32_t i=0; i<A->size; i++){
+    for(uint64_t i=0; i<A->size; i++){
         file << A->column[i].rowid << ". "
              << A->column[i].value <<
              " - " << h1(A->column[i].value)  << std::endl;
@@ -29,7 +29,7 @@ int main(){
     file.close();
 
     std::ofstream file2("Logs/arrayB.txt");
-    for(uint32_t i=0; i<B->size; i++){
+    for(uint64_t i=0; i<B->size; i++){
         file2 << B->column[i].rowid << ". "
              << B->column[i].value <<
              " - " << h1(B->column[i].value)  << std::endl;
@@ -57,7 +57,7 @@ int main(){
     std::cout << "Total equals = " << total << '\n';
     std::cout << "Result entries = " << result->totalEntries << '\n';
 
-    std::cout << "Total == Result entries: " << ((uint32_t)total == result->totalEntries)  << '\n';
+    std::cout << "Total == Result entries: " << ((uint64_t)total == result->totalEntries)  << '\n';
     deleteResult(result);
     deleteRelation(A);
     deleteRelation(B);

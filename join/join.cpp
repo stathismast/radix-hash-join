@@ -1,15 +1,15 @@
 #include "join.hpp"
 
-extern uint32_t numberOfBuckets;
+extern uint64_t numberOfBuckets;
 
 Result * join(Relation * A, Relation * B){
     // Order given touples bucket by bucket (basically produces A' and B')
-    uint32_t * histogramA;
-    uint32_t * startingPosA;
+    uint64_t * histogramA;
+    uint64_t * startingPosA;
     Tuple * orderedA = bucketify(A, &histogramA, &startingPosA);
 
-    uint32_t * histogramB;
-    uint32_t * startingPosB;
+    uint64_t * histogramB;
+    uint64_t * startingPosB;
     Tuple * orderedB = bucketify(B, &histogramB, &startingPosB);
 
     // std::cout << "Original A array:" << std::endl;
@@ -20,17 +20,17 @@ Result * join(Relation * A, Relation * B){
     // Print out the hashed values of A' and B'
     // to confirm that they are in order
     // std::cout << std::endl << "index\tA\' Bu\t|\tB\' Bu" << std::endl;
-    // for(uint32_t i=0; i<A->size; i++){
+    // for(uint64_t i=0; i<A->size; i++){
     //     std::cout << h1(orderedA[i].value) << "\t|\t";
     //     std::cout << h1(orderedB[i].value) << std::endl;
     //     std::cout << i << "\t" << h1(orderedA[i].value) << "  " << orderedA[i].value << "\t|\t";
     //     std::cout << "\t" << h1(orderedB[i].value) << "  " << orderedB[i].value <<std::endl;
     // }
 
-    uint32_t * bucketArray;
-    uint32_t * chainArray;
+    uint64_t * bucketArray;
+    uint64_t * chainArray;
     Result * result = newResult();
-    for (uint32_t i = 0; i < numberOfBuckets; i++) {
+    for (uint64_t i = 0; i < numberOfBuckets; i++) {
 
         if(histogramA[i] == 0 || histogramB[i] == 0){
             //the one bucket is empty so there is nothing to compare with
@@ -69,19 +69,19 @@ Result * join(Relation * A, Relation * B){
 
 void compare(Tuple * orderedBig,
             Tuple * orderedSmall,
-            uint32_t bucketSizeBig,
-            uint32_t startIndexBig,
-            uint32_t bucketSizeSmall,
-            uint32_t startIndexSmall,
-            uint32_t * bucketArray,
-            uint32_t * chainArray,
+            uint64_t bucketSizeBig,
+            uint64_t startIndexBig,
+            uint64_t bucketSizeSmall,
+            uint64_t startIndexSmall,
+            uint64_t * bucketArray,
+            uint64_t * chainArray,
             Result * result,
             bool flag) {
 
     int hash_value, prime = nextPrime(bucketSizeSmall);
     // Compare every value of the bigger Relation with the values of the smaller
     // one but are on the same bucket of h2
-    for (uint32_t i = startIndexBig;
+    for (uint64_t i = startIndexBig;
                   i < bucketSizeBig + startIndexBig;
                   i++) {
         hash_value = h2(orderedBig[i].value, prime);
@@ -93,9 +93,9 @@ void compare(Tuple * orderedBig,
 void checkEquals(Tuple * tupleA,
                 int hash_value,
                 Tuple * orderedSmall,
-                uint32_t startIndexSmall,
-                uint32_t * bucketArray,
-                uint32_t * chainArray,
+                uint64_t startIndexSmall,
+                uint64_t * bucketArray,
+                uint64_t * chainArray,
                 Result * result,
                 bool flag,
                 int rowIdBig) {
@@ -128,8 +128,8 @@ void checkEquals(Tuple * tupleA,
 // Returns the number of matches between the two given Relations
 int naiveJoin(Relation * A, Relation * B) {
     int counter = 0;
-    for(uint32_t i=0; i<A->size; i++){
-        for(uint32_t j=0; j<B->size; j++){
+    for(uint64_t i=0; i<A->size; i++){
+        for(uint64_t j=0; j<B->size; j++){
             if(A->column[i].value == B->column[j].value){
                 counter++;
             }

@@ -8,24 +8,24 @@
 #define STRUCTS_HPP
 
 struct Tuple{
-    int32_t rowid;
-    int32_t value;
+    uint64_t rowid;
+    uint64_t value;
 };
 
 struct Relation{
     Tuple * column;
-    uint32_t size;
+    uint64_t size;
 };
 
 #endif //STRUCTS_HPP
 
-Tuple * randomColumn(uint32_t size);
-Relation * randomRelation(uint32_t size);
-Tuple * serialColumn(uint32_t size);
-Relation * serialRelation(uint32_t size);
-Tuple * oddColumn(uint32_t size);
-Relation * oddRelation(uint32_t size);
-Tuple * evenColumn(uint32_t size);
-Relation * evenRelation(uint32_t size);
+Tuple * randomColumn(uint64_t size);
+Relation * randomRelation(uint64_t size);
+Tuple * serialColumn(uint64_t size);
+Relation * serialRelation(uint64_t size);
+Tuple * oddColumn(uint64_t size);
+Relation * oddRelation(uint64_t size);
+Tuple * evenColumn(uint64_t size);
+Relation * evenRelation(uint64_t size);
 void deleteRelation(Relation * rel);
 void printRelation(Relation * rel);

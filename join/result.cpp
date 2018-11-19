@@ -58,7 +58,7 @@ void printResult(Result * res){
     }
 }
 
-void insertResult(Result * res, uint32_t rowidA, uint32_t rowidB){
+void insertResult(Result * res, uint64_t rowidA, uint64_t rowidB){
     checkFullness(res);
     insertToNode(res->last,rowidA,rowidB);
     res->totalEntries ++;
@@ -76,7 +76,7 @@ void checkFullness(Result * res){
     }
 }
 
-uint32_t * getResultEntry(Result * res, uint32_t index){
+uint64_t * getResultEntry(Result * res, uint64_t index){
     return NULL; //to be implemented
 }
 
@@ -89,7 +89,7 @@ Node * newNode(){
 
     temp->count = 0;
     temp->next = NULL;
-    temp->buffer = new uint32_t[BUFFER_SIZE];
+    temp->buffer = new uint64_t[BUFFER_SIZE];
     CHECK_OR_EXIT(temp->buffer);
 
     memset(temp->buffer,0,BUFFER_SIZE);
@@ -101,26 +101,26 @@ void deleteNode(Node * node){
     delete node;
 }
 
-void insertToNode(Node * node, uint32_t rowidA, uint32_t rowidB){
-    uint32_t offset = node->count * ENTRY_SIZE;
-    memcpy(node->buffer + offset,&rowidA,sizeof(uint32_t));
-    offset += sizeof(uint32_t);
-    memcpy(node->buffer + offset,&rowidB,sizeof(uint32_t));
+void insertToNode(Node * node, uint64_t rowidA, uint64_t rowidB){
+    uint64_t offset = node->count * ENTRY_SIZE;
+    memcpy(node->buffer + offset,&rowidA,sizeof(uint64_t));
+    offset += sizeof(uint64_t);
+    memcpy(node->buffer + offset,&rowidB,sizeof(uint64_t));
     node->count ++;
 }
 
 void printNodeResult(Node * node){
-    uint32_t rowidA,rowidB,offset=0;
+    uint64_t rowidA,rowidB,offset=0;
     // std::cout << "count:" << node->count << '\n';
-    for (uint32_t i = 0; i < node->count; i++) {
-        memcpy(&rowidA,node->buffer + offset,sizeof(uint32_t));
-        offset += sizeof(uint32_t);
-        memcpy(&rowidB,node->buffer + offset,sizeof(uint32_t));
-        offset += sizeof(uint32_t);
+    for (uint64_t i = 0; i < node->count; i++) {
+        memcpy(&rowidA,node->buffer + offset,sizeof(uint64_t));
+        offset += sizeof(uint64_t);
+        memcpy(&rowidB,node->buffer + offset,sizeof(uint64_t));
+        offset += sizeof(uint64_t);
         std::cout << "rowidA:" << rowidA << " | rowidB:" << rowidB << '\n';
     }
 }
 
-uint32_t * getNodeEntry(Node * res, uint32_t index){
+uint64_t * getNodeEntry(Node * res, uint64_t index){
     return NULL; //to be implemented
 }
