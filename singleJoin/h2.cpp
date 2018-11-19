@@ -51,7 +51,7 @@ bool isPrime(uint64_t i){
     return flag;
 }
 
-void bucketify2(Tuple * rel,
+void bucketify2(Relation * rel,
                 uint64_t bucketSize,
                 uint64_t startingPos,
                 uint64_t ** bucketArray,
@@ -75,7 +75,7 @@ void bucketify2(Tuple * rel,
     for (uint64_t i = startingPos + bucketSize - 1; i >= startingPos; i--) {
 
         // Get the hashed value
-        uint64_t hashValue = h2(rel[i].value, prime);
+        uint64_t hashValue = h2(rel->value[i], prime);
 
         // If the corresponding bucket is currently empty
         if ((*bucketArray)[hashValue] == (uint64_t) -1) {
@@ -102,8 +102,8 @@ void bucketify2(Tuple * rel,
     // std::cout << "Ordered bucket:" << std::endl;
     // for (uint64_t i = startingPos; i < bucketSize + startingPos; i++) {
     //     std::cout << "\t"<<  i - startingPos  << ": "
-    //     << rel->column[i].value << ": "
-    //     << h2(rel->column[i].value, prime) << ": "
+    //     << rel->value[i] << ": "
+    //     << h2(rel->value[i], prime) << ": "
     //     << prime << std::endl;
     // }
     // std::cout << std::endl;

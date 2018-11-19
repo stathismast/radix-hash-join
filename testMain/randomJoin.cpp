@@ -18,18 +18,18 @@ int main(){
 
     std::ofstream file("Logs/arrayA.txt");
     for(uint64_t i=0; i<A->size; i++){
-        file << A->column[i].rowid << ". "
-             << A->column[i].value <<
-             " - " << h1(A->column[i].value)  << std::endl;
+        file << A->rowid[i] << ". "
+             << A->value[i] <<
+             " - " << h1(A->value[i])  << std::endl;
     }
 
     file.close();
 
     std::ofstream file2("Logs/arrayB.txt");
     for(uint64_t i=0; i<B->size; i++){
-        file2 << B->column[i].rowid << ". "
-             << B->column[i].value <<
-             " - " << h1(B->column[i].value)  << std::endl;
+        file2 << B->rowid[i] << ". "
+             << B->value[i] <<
+             " - " << h1(B->value[i])  << std::endl;
     }
 
     file2.close();
