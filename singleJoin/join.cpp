@@ -6,11 +6,11 @@ Result * join(Relation * A, Relation * B){
     // Order given touples bucket by bucket (basically produces A' and B')
     uint64_t * histogramA;
     uint64_t * startingPosA;
-    Tuple * orderedA = bucketify(A, &histogramA, &startingPosA);
+    Relation * orderedA = bucketify(A, &histogramA, &startingPosA);
 
     uint64_t * histogramB;
     uint64_t * startingPosB;
-    Tuple * orderedB = bucketify(B, &histogramB, &startingPosB);
+    Relation * orderedB = bucketify(B, &histogramB, &startingPosB);
 
     // std::cout << "Original A array:" << std::endl;
     // printRelation(A);
@@ -56,19 +56,19 @@ Result * join(Relation * A, Relation * B){
 
     //printResult(result);
 
-    delete[] orderedA;
+    deleteRelation(orderedA);
     delete[] histogramA;
     delete[] startingPosA;
 
-    delete[] orderedB;
+    deleteRelation(orderedB);
     delete[] histogramB;
     delete[] startingPosB;
 
     return result;
 }
 
-void compare(Tuple * orderedBig,
-            Tuple * orderedSmall,
+void compare(Relation * orderedBig,
+            Relation * orderedSmall,
             uint64_t bucketSizeBig,
             uint64_t startIndexBig,
             uint64_t bucketSizeSmall,
@@ -84,22 +84,26 @@ void compare(Tuple * orderedBig,
     for (uint64_t i = startIndexBig;
                   i < bucketSizeBig + startIndexBig;
                   i++) {
-        hash_value = h2(orderedBig[i].value, prime);
-        checkEquals(&orderedBig[i], hash_value, orderedSmall, startIndexSmall, \
-            bucketArray, chainArray, result, flag, i);
+        hash_value = h2(orderedBig->value[i], prime);
+        checkEquals(orderedBig->rowid[i], orderedBig->value[i], hash_value, \
+                    orderedSmall, startIndexSmall, bucketArray, chainArray, \
+                    result, flag, i);
     }
 }
 
-void checkEquals(Tuple * tupleA,
-                int hash_value,
-                Tuple * orderedSmall,
-                uint64_t startIndexSmall,
-                uint64_t * bucketArray,
-                uint64_t * chainArray,
-                Result * result,
-                bool flag,
-                int rowIdBig) {
-    Tuple * tupleB;
+void checkEquals(uint64_t rowidA,
+                 uint64_t valueA,
+                 int hash_value,
+                 Relation * orderedSmall,
+                 uint64_t startIndexSmall,
+                 uint64_t * bucketArray,
+                 uint64_t * chainArray,
+                 Result * result,
+                 bool flag,
+                 int rowIdBig) {
+    
+    uint64_t rowidB;
+    uint64_t valueB;
     // Get the rowId of the first value in the current bucket
     int rowIdSmall = bucketArray[hash_value], normRowId;
     while (rowIdSmall != -1) {
@@ -107,16 +111,17 @@ void checkEquals(Tuple * tupleA,
         // the size of the bucket but we are using the actual array
         normRowId = rowIdSmall + startIndexSmall;
         // Get the value from the bigger array
-        tupleB = &orderedSmall[normRowId];
+        rowidB = orderedSmall->rowid[normRowId];
+        valueB = orderedSmall->value[normRowId];
         // Compare the values and add them in the list if they are wqual
-        if (tupleA->value == tupleB->value) {
+        if (valueA == valueB) {
             // We need this flag so we will know which rowId goes first and
             // which second
             if (flag == 0) {
-                insertResult(result,tupleA->rowid, tupleB->rowid);
+                insertResult(result, rowidA, rowidB);
             }
             else{
-                insertResult(result,tupleB->rowid, tupleA->rowid);
+                insertResult(result, rowidB, rowidA);
             }
         }
         // Find the next element in the current bucket
@@ -130,7 +135,7 @@ int naiveJoin(Relation * A, Relation * B) {
     int counter = 0;
     for(uint64_t i=0; i<A->size; i++){
         for(uint64_t j=0; j<B->size; j++){
-            if(A->column[i].value == B->column[j].value){
+            if(A->value[i] == B->value[j]){
                 counter++;
             }
         }

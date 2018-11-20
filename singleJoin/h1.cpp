@@ -19,7 +19,7 @@ uint64_t * calculateHistogram(Relation * rel){
 
     // Add up the number of tuples in each bucket
     for(uint64_t i=0; i<rel->size; i++)
-        histogram[h1(rel->column[i].value)]++;
+        histogram[h1(rel->value[i])]++;
     return histogram;
 }
 
@@ -43,18 +43,18 @@ void printHistogram(uint64_t * histogram){
 }
 
 // Create an array of tuples ordered by buckets
-Tuple * order(Relation * rel, uint64_t * startingPositions){
-    Tuple * ordered = new Tuple[rel->size];
+Relation * order(Relation * rel, uint64_t * startingPositions){
+    Relation * ordered = newRelation(rel->size);
 
     uint64_t * offsets = new uint64_t[numberOfBuckets];
     memcpy(offsets, startingPositions, numberOfBuckets * sizeof(uint64_t));
 
     for(uint64_t i=0; i<rel->size; i++){
-        uint64_t val = rel->column[i].value;
+        uint64_t val = rel->value[i];
 
         // Store value & rowid of Tuple in the appropriate position
-        ordered[offsets[h1(val)]].value = val;
-        ordered[offsets[h1(val)]].rowid = rel->column[i].rowid;
+        ordered->value[offsets[h1(val)]] = val;
+        ordered->rowid[offsets[h1(val)]] = rel->rowid[i];
 
         // Increment starting position of the bucket since we just added to it
         offsets[h1(val)]++;
@@ -66,7 +66,7 @@ Tuple * order(Relation * rel, uint64_t * startingPositions){
 }
 
 // Takes A as input and returns A'
-Tuple * bucketify(Relation * rel,
+Relation * bucketify(Relation * rel,
                   uint64_t ** histogram,
                   uint64_t ** startingPositions){
 
@@ -77,7 +77,7 @@ Tuple * bucketify(Relation * rel,
     *startingPositions = calculateStartingPositions(*histogram);
 
     // Order the given touples bucket by bucket (basically produces A' from A)
-    Tuple * ordered = order(rel, *startingPositions);
+    Relation * ordered = order(rel, *startingPositions);
 
     return ordered;
 }
