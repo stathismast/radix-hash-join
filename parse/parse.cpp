@@ -23,7 +23,7 @@ QueryInfo * parseInput(FILE * in) {
     std::cout << "sumsStr = " << sumsStr << '\n';
     parseRelations(relationsStr, queryInfo);
     parsePredicates(predicatesStr, queryInfo);
-    parsesums(sumsStr, queryInfo);
+    parseSums(sumsStr, queryInfo);
 
     std::cout << "relationsCount = " << queryInfo->relationsCount << '\n';
     std::cout << "predicatesCount = " << queryInfo->predicatesCount << '\n';
@@ -51,6 +51,9 @@ void parseRelations(char * relationsStr, QueryInfo * queryInfo) {
     for (int i = 1; i < queryInfo ->relationsCount; i++) {
         queryInfo->relations[i] = atoi(strtok(NULL, " \t"));
     }
+    for (int i = 0; i < queryInfo ->relationsCount; i++) {
+        std::cout << "relation = " << queryInfo->relations[i] << '\n';
+    }
 }
 
 void parsePredicates(char * predicatesStr, QueryInfo * queryInfo) {
@@ -65,15 +68,19 @@ void parsePredicates(char * predicatesStr, QueryInfo * queryInfo) {
         }
     }
     delete[] temp;
-    // queryInfo->predicates = new Predicate[queryInfo->predicatesCount];
-    std::cout << "ps = " << strtok(predicatesStr, "&") << '\n';
-    for (int i = 1; i < queryInfo ->predicatesCount; i++) {
-        // queryInfo->predicates[i] = atoi(strtok(NULL, "&"));
-        std::cout << "ps = " << strtok(NULL, "&") << '\n';
+    queryInfo->predicates = new Predicate * [queryInfo->predicatesCount];
+    char * predicate = strtok(predicatesStr, "&");
+    findPredicate(predicate, queryInfo);
+    std::cout << "predicate = " << predicate << '\n';
+    for (int i = 1; i < queryInfo->predicatesCount; i++) {
+        predicate = strtok(NULL, "&");
+        std::cout << "predicate = " << predicate << '\n';
+        findPredicate(predicate, queryInfo);
     }
+
 }
 
-void parsesums(char * sumsStr, QueryInfo * queryInfo) {
+void parseSums(char * sumsStr, QueryInfo * queryInfo) {
     char * temp = new char[strlen(sumsStr) + 1];
     strncpy(temp, sumsStr, strlen(sumsStr) + 1);
     if (strtok(temp, " \t") == NULL) {
@@ -85,10 +92,20 @@ void parsesums(char * sumsStr, QueryInfo * queryInfo) {
         }
     }
     delete[] temp;
-    // queryInfo->sums = new Predicate[queryInfo->sumsCount];
+    queryInfo->sums = new sumStruct[queryInfo->sumsCount];
     std::cout << "sum = " << strtok(sumsStr, " \t") << '\n';
     for (int i = 1; i < queryInfo ->sumsCount; i++) {
         // queryInfo->sums[i] = atoi(strtok(NULL, "&"));
         std::cout << "sum = " << strtok(NULL, " \t") << '\n';
+    }
+}
+
+void findPredicate(char * predicate, QueryInfo * queryInfo, int index) {
+    if (strstr(predicate, "<") != NULL) {
+        queryInfo->predicates[index] = new Filter();
+    } else if (strstr(predicate, "<") != NULL) {
+        queryInfo->predicates[index] = new Filter();
+    } else {
+        // more ifs to find if it's join, slef join or filter
     }
 }

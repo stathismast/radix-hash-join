@@ -12,7 +12,7 @@ struct sumStruct {
 struct QueryInfo {
     int * relations;
     int relationsCount;
-    Predicate * predicates;
+    Predicate ** predicates;
     int predicatesCount;
     struct sumStruct * sums;
     int sumsCount;
@@ -22,6 +22,8 @@ QueryInfo * parseInput(FILE * in);
 
 void parseRelations(char * relationsStr, QueryInfo * queryInfo);
 void parsePredicates(char * predicatesStr, QueryInfo * queryInfo);
-void parsesums(char * sumsStr, QueryInfo * queryInfo);
+void parseSums(char * sumsStr, QueryInfo * queryInfo);
+
+void findPredicate(char * predicate, QueryInfo * queryInfo);
 
 #endif
