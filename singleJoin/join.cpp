@@ -2,20 +2,20 @@
 
 extern uint64_t numberOfBuckets;
 
-Result * join(Relation * A, Relation * B){
+Result * join(Column * A, Column * B){
     // Order given touples bucket by bucket (basically produces A' and B')
     uint64_t * histogramA;
     uint64_t * startingPosA;
-    Relation * orderedA = bucketify(A, &histogramA, &startingPosA);
+    Column * orderedA = bucketify(A, &histogramA, &startingPosA);
 
     uint64_t * histogramB;
     uint64_t * startingPosB;
-    Relation * orderedB = bucketify(B, &histogramB, &startingPosB);
+    Column * orderedB = bucketify(B, &histogramB, &startingPosB);
 
     // std::cout << "Original A array:" << std::endl;
-    // printRelation(A);
+    // printColumn(A);
     // std::cout << "Original B array:" << std::endl;
-    // printRelation(B);
+    // printColumn(B);
 
     // Print out the hashed values of A' and B'
     // to confirm that they are in order
@@ -56,19 +56,19 @@ Result * join(Relation * A, Relation * B){
 
     //printResult(result);
 
-    deleteRelation(orderedA);
+    deleteColumn(orderedA);
     delete[] histogramA;
     delete[] startingPosA;
 
-    deleteRelation(orderedB);
+    deleteColumn(orderedB);
     delete[] histogramB;
     delete[] startingPosB;
 
     return result;
 }
 
-void compare(Relation * orderedBig,
-            Relation * orderedSmall,
+void compare(Column * orderedBig,
+            Column * orderedSmall,
             uint64_t bucketSizeBig,
             uint64_t startIndexBig,
             uint64_t bucketSizeSmall,
@@ -79,7 +79,7 @@ void compare(Relation * orderedBig,
             bool flag) {
 
     int hash_value, prime = nextPrime(bucketSizeSmall);
-    // Compare every value of the bigger Relation with the values of the smaller
+    // Compare every value of the bigger Column with the values of the smaller
     // one but are on the same bucket of h2
     for (uint64_t i = startIndexBig;
                   i < bucketSizeBig + startIndexBig;
@@ -94,7 +94,7 @@ void compare(Relation * orderedBig,
 void checkEquals(uint64_t rowidA,
                  uint64_t valueA,
                  int hash_value,
-                 Relation * orderedSmall,
+                 Column * orderedSmall,
                  uint64_t startIndexSmall,
                  uint64_t * bucketArray,
                  uint64_t * chainArray,
@@ -130,8 +130,8 @@ void checkEquals(uint64_t rowidA,
 
 }
 
-// Returns the number of matches between the two given Relations
-int naiveJoin(Relation * A, Relation * B) {
+// Returns the number of matches between the two given Columns
+int naiveJoin(Column * A, Column * B) {
     int counter = 0;
     for(uint64_t i=0; i<A->size; i++){
         for(uint64_t j=0; j<B->size; j++){

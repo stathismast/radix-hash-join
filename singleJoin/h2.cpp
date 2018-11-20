@@ -51,7 +51,7 @@ bool isPrime(uint64_t i){
     return flag;
 }
 
-void bucketify2(Relation * rel,
+void bucketify2(Column * rel,
                 uint64_t bucketSize,
                 uint64_t startingPos,
                 uint64_t ** bucketArray,

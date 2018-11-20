@@ -13,8 +13,8 @@ int main(){
     srand(time(NULL));
 
     // Create two random columns that will be joined
-    Relation * A = randomRelation(10000);
-    Relation * B = randomRelation(5000);
+    Column * A = randomColumn(10000);
+    Column * B = randomColumn(5000);
 
     std::ofstream file("Logs/arrayA.txt");
     for(uint64_t i=0; i<A->size; i++){
@@ -56,8 +56,8 @@ int main(){
 
     std::cout << "Total == Result entries: " << ((uint64_t)total == result->totalEntries)  << '\n';
     deleteResult(result);
-    deleteRelation(A);
-    deleteRelation(B);
+    deleteColumn(A);
+    deleteColumn(B);
 
 
 

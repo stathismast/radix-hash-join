@@ -10,8 +10,8 @@ uint64_t h1(uint64_t value){
     return value & ((1 << BITS) - 1);
 }
 
-// Takes a Relation & returns an array with the num of tuples in each bucket
-uint64_t * calculateHistogram(Relation * rel){
+// Takes a Column & returns an array with the num of tuples in each bucket
+uint64_t * calculateHistogram(Column * rel){
     // Create and initialize histogram
     uint64_t * histogram = new uint64_t[numberOfBuckets];
     for(uint64_t i=0; i<numberOfBuckets; i++)
@@ -43,8 +43,8 @@ void printHistogram(uint64_t * histogram){
 }
 
 // Create an array of tuples ordered by buckets
-Relation * order(Relation * rel, uint64_t * startingPositions){
-    Relation * ordered = newRelation(rel->size);
+Column * order(Column * rel, uint64_t * startingPositions){
+    Column * ordered = newColumn(rel->size);
 
     uint64_t * offsets = new uint64_t[numberOfBuckets];
     memcpy(offsets, startingPositions, numberOfBuckets * sizeof(uint64_t));
@@ -66,7 +66,7 @@ Relation * order(Relation * rel, uint64_t * startingPositions){
 }
 
 // Takes A as input and returns A'
-Relation * bucketify(Relation * rel,
+Column * bucketify(Column * rel,
                   uint64_t ** histogram,
                   uint64_t ** startingPositions){
 
@@ -77,7 +77,7 @@ Relation * bucketify(Relation * rel,
     *startingPositions = calculateStartingPositions(*histogram);
 
     // Order the given touples bucket by bucket (basically produces A' from A)
-    Relation * ordered = order(rel, *startingPositions);
+    Column * ordered = order(rel, *startingPositions);
 
     return ordered;
 }

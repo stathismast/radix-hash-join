@@ -2,10 +2,10 @@
 #include "h2.hpp"
 #include "result.hpp"
 
-Result * join(Relation * A, Relation * B);
+Result * join(Column * A, Column * B);
 
-void compare(Relation * orderedBig,
-            Relation * orderedSmall,
+void compare(Column * orderedBig,
+            Column * orderedSmall,
             uint64_t bucketSizeBig,
             uint64_t startIndexBig,
             uint64_t bucketSizeSmall,
@@ -18,7 +18,7 @@ void compare(Relation * orderedBig,
 void checkEquals(uint64_t rowidA,
                  uint64_t valueA,
                  int hash_value,
-                 Relation * orderedSmall,
+                 Column * orderedSmall,
                  uint64_t startIndexSmall,
                  uint64_t * bucketArray,
                  uint64_t * chainArray,
@@ -26,4 +26,4 @@ void checkEquals(uint64_t rowidA,
                  bool flag,
                  int rowIdBig);
 
-int naiveJoin(Relation * A, Relation * B);
+int naiveJoin(Column * A, Column * B);

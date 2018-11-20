@@ -1,7 +1,7 @@
 #include "structs.hpp"
 
-Relation * newRelation(uint64_t size){
-    Relation * rel = new Relation;
+Column * newColumn(uint64_t size){
+    Column * rel = new Column;
     rel->rowid = new uint64_t[size];
     rel->value = new uint64_t[size];
 
@@ -16,9 +16,9 @@ Relation * newRelation(uint64_t size){
     return rel;
 }
 
-// Create and return a Relation with serial values
-Relation * randomRelation(uint64_t size){
-    Relation * rel = new Relation;
+// Create and return a Column with serial values
+Column * randomColumn(uint64_t size){
+    Column * rel = new Column;
     rel->rowid = new uint64_t[size];
     rel->value = new uint64_t[size];
 
@@ -30,9 +30,9 @@ Relation * randomRelation(uint64_t size){
     return rel;
 }
 
-// Create and return a Relation with serial values
-Relation * serialRelation(uint64_t size){
-    Relation * rel = new Relation;
+// Create and return a Column with serial values
+Column * serialColumn(uint64_t size){
+    Column * rel = new Column;
     rel->rowid = new uint64_t[size];
     rel->value = new uint64_t[size];
 
@@ -44,9 +44,9 @@ Relation * serialRelation(uint64_t size){
     return rel;
 }
 
-// Create and return a Relation with odd values
-Relation * oddRelation(uint64_t size){
-    Relation * rel = new Relation;
+// Create and return a Column with odd values
+Column * oddColumn(uint64_t size){
+    Column * rel = new Column;
     rel->rowid = new uint64_t[size];
     rel->value = new uint64_t[size];
 
@@ -60,9 +60,9 @@ Relation * oddRelation(uint64_t size){
     return rel;
 }
 
-// Create and return a Relation with even values
-Relation * evenRelation(uint64_t size){
-    Relation * rel = new Relation;
+// Create and return a Column with even values
+Column * evenColumn(uint64_t size){
+    Column * rel = new Column;
     rel->rowid = new uint64_t[size];
     rel->value = new uint64_t[size];
 
@@ -77,13 +77,13 @@ Relation * evenRelation(uint64_t size){
 }
 
 
-void deleteRelation(Relation * rel){
+void deleteColumn(Column * rel){
     delete[] rel->rowid;
     delete[] rel->value;
     delete rel;
 }
 
-void printRelation(Relation * rel){
+void printColumn(Column * rel){
     for(uint64_t i=0; i<rel->size; i++){
         std::cout << rel->rowid[i] << ". "
              << rel->value[i] << std::endl;

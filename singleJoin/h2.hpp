@@ -6,7 +6,7 @@ bool isPrime(uint64_t i);
 
 void tesNextPrime(uint64_t upTo);
 
-void bucketify2 (Relation * rel,
+void bucketify2 (Column * rel,
                     uint64_t bucket_size,
                     uint64_t start,
                     uint64_t ** bucket_array,
