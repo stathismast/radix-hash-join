@@ -1,0 +1,27 @@
+#include "../predicates/predicates.hpp"
+#include <cstdio>
+
+#ifndef PARSE_HPP
+#define PARSE_HPP
+
+struct sumStruct {
+    int relation;
+    int column;
+};
+
+struct QueryInfo {
+    int * relations;
+    int relationsCount;
+    Predicate * predicates;
+    int predicatesCount;
+    struct sumStruct * sums;
+    int sumsCount;
+};
+
+QueryInfo * parseInput(FILE * in);
+
+void parseRelations(char * relationsStr, QueryInfo * queryInfo);
+void parsePredicates(char * predicatesStr, QueryInfo * queryInfo);
+void parsesums(char * sumsStr, QueryInfo * queryInfo);
+
+#endif
