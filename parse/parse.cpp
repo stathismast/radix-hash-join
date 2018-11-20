@@ -3,7 +3,7 @@
 #include <ctype.h>
 #include <iostream>
 #include "parse.hpp"
-#include "../predicates/predicates.hpp"
+#include "predicates.hpp"
 
 QueryInfo * parseInput(FILE * in) {
     char * query = NULL;
@@ -32,9 +32,7 @@ QueryInfo * parseInput(FILE * in) {
         std::cout << "\tsum = " << queryInfo->sums[i].relation << \
         "." << queryInfo->sums[i].column << '\n';
     }
-
-
-
+    free(query);
     return queryInfo;
 }
 

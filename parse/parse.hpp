@@ -1,4 +1,4 @@
-#include "../predicates/predicates.hpp"
+#include "predicates.hpp"
 #include <cstdio>
 
 #ifndef PARSE_HPP
