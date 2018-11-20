@@ -24,7 +24,7 @@ struct RelationMap{
 
 RelationMap * newRelationMap(uint64_t size);
 void deleteRelationMap(RelationMap * relMap);
-void printRelMap(RelationMap * relMap,std::ofstream * dest);
+void printRelFromMap(RelationMap * relMap,uint64_t index,std::ofstream * dest);
 void insertRelation(RelationMap * relMap,uint64_t index,Relation * rel);
 
 Relation * newRelation(uint64_t colsNum,uint64_t rowsNum);

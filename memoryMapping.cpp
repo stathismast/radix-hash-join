@@ -1,5 +1,5 @@
 /***************************************************************************************
-Header file : memoryMapping.cpp
+Source file : memoryMapping.cpp
 Description : Implementation of methods of structs RelationMap and RelationInfo,
               which are used to store and retrieve all the relations.
 ****************************************************************************************/
@@ -48,17 +48,15 @@ void deleteRelationMap(RelationMap * relMap){
     delete relMap;
 }
 
-void printRelMap(RelationMap * relMap,std::ofstream * dest){
+void printRelFromMap(RelationMap * relMap,uint64_t index,std::ofstream * dest){
+    if( index < 0 || index > relMap->size ) return;
 
-    for( uint64_t i = 0; i < relMap->size; i ++ ){
-        std::cout << "Printing Relation " << i << ":\n";
-        printRelation(relMap->relations[i],dest);
-    }
-
+    std::cout << "Printing Relation " << index << ":\n";
+    printRelation(relMap->relations[index],dest);
 }
 
 void insertRelation(RelationMap * relMap,uint64_t index,Relation * rel){
-    if( index <= 0 || index > relMap->size ) return;
+    if( index < 0 || index > relMap->size ) return;
 
     if( relMap->relations[index] != NULL ) return;
 
@@ -92,6 +90,8 @@ void deleteRelation(Relation * rel){
     if( rel->data != NULL ){
         delete[] rel->data;
     }
+
+    delete rel;
 }
 
 void printRelation(Relation * rel,std::ofstream * dest){
@@ -105,7 +105,7 @@ void printRelation(Relation * rel,std::ofstream * dest){
 }
 
 void setColData(Relation * rel,uint64_t index,uint64_t * start){
-    if( index <= 0 || index > rel->colsNum ) return;
+    if( index < 0 || index > rel->colsNum ) return;
 
     if( rel->data[index] != NULL ) return;
 
