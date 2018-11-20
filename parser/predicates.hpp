@@ -7,6 +7,7 @@ class Predicate {
     public:
         Predicate () {};
         virtual void execute() = 0;
+        virtual void printInfo() = 0;
         virtual ~Predicate () {};
 };
 
@@ -20,6 +21,7 @@ class Filter: public Predicate {
     public:
         Filter (char* lv, char op, int rv);
         void execute();
+        void printInfo();
         virtual ~Filter ();
 };
 
@@ -33,6 +35,7 @@ class Join: public Predicate {
     public:
         Join (int relationA, int columnA, int relationB, int columnB);
         void execute();
+        void printInfo();
         virtual ~Join ();
 };
 
@@ -45,7 +48,11 @@ class SelfJoin: public Predicate {
     public:
         SelfJoin (int relation, int columnA, int columnB);
         void execute();
+        void printInfo();
         virtual ~SelfJoin ();
 };
+
+void splitAt(char * toSplit, char const * delim, char ** left, char ** right);
+int countArgs(char * in, char const * delim);
 
 #endif
