@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include <iostream>
 #include "parse.hpp"
+#include "../predicates/predicates.hpp"
 
 QueryInfo * parseInput(FILE * in) {
     char * query = NULL;
@@ -51,9 +52,6 @@ void parseRelations(char * relationsStr, QueryInfo * queryInfo) {
     for (int i = 1; i < queryInfo ->relationsCount; i++) {
         queryInfo->relations[i] = atoi(strtok(NULL, " \t"));
     }
-    for (int i = 0; i < queryInfo ->relationsCount; i++) {
-        std::cout << "relation = " << queryInfo->relations[i] << '\n';
-    }
 }
 
 void parsePredicates(char * predicatesStr, QueryInfo * queryInfo) {
@@ -70,12 +68,10 @@ void parsePredicates(char * predicatesStr, QueryInfo * queryInfo) {
     delete[] temp;
     queryInfo->predicates = new Predicate * [queryInfo->predicatesCount];
     char * predicate = strtok(predicatesStr, "&");
-    findPredicate(predicate, queryInfo);
-    std::cout << "predicate = " << predicate << '\n';
+    findPredicate(predicate, queryInfo, 0);
     for (int i = 1; i < queryInfo->predicatesCount; i++) {
         predicate = strtok(NULL, "&");
-        std::cout << "predicate = " << predicate << '\n';
-        findPredicate(predicate, queryInfo);
+        findPredicate(predicate, queryInfo, i);
     }
 
 }
@@ -92,20 +88,66 @@ void parseSums(char * sumsStr, QueryInfo * queryInfo) {
         }
     }
     delete[] temp;
+
     queryInfo->sums = new sumStruct[queryInfo->sumsCount];
-    std::cout << "sum = " << strtok(sumsStr, " \t") << '\n';
+    char * sum = strtok(sumsStr, " \t");
+    char* dotPos = strstr(sum, ".");
+    queryInfo->sums[0].column = atoi(dotPos + 1);
+    *dotPos = '\0';
+    queryInfo->sums[0].relation = atoi(sum);
+
     for (int i = 1; i < queryInfo ->sumsCount; i++) {
-        // queryInfo->sums[i] = atoi(strtok(NULL, "&"));
-        std::cout << "sum = " << strtok(NULL, " \t") << '\n';
+        char * sum = strtok(NULL, " \t");
+        char* dotPos = strstr(sum, ".");
+        queryInfo->sums[i].column = atoi(dotPos + 1);
+        *dotPos = '\0';
+        queryInfo->sums[i].relation = atoi(sum);
     }
 }
 
 void findPredicate(char * predicate, QueryInfo * queryInfo, int index) {
     if (strstr(predicate, "<") != NULL) {
-        queryInfo->predicates[index] = new Filter();
-    } else if (strstr(predicate, "<") != NULL) {
-        queryInfo->predicates[index] = new Filter();
-    } else {
-        // more ifs to find if it's join, slef join or filter
+        char * opStr = strstr(predicate, "<");
+        int rv = atoi(opStr + 1);
+        char op = *(opStr);
+        *opStr = '\0';
+        char * lv = predicate;
+        queryInfo->predicates[index] = new Filter(lv, op, rv);
+    } else if (strstr(predicate, ">") != NULL) {
+        char * opStr = strstr(predicate, ">");
+        int rv = atoi(opStr + 1);
+        char op = *(opStr);
+        *opStr = '\0';
+        char * lv = predicate;
+        queryInfo->predicates[index] = new Filter(lv, op, rv);
+    } else if (strstr(predicate, "=") != NULL) {
+        char * opStr = strstr(predicate, "=");
+        if (strstr(opStr + 1, ".") == NULL) {
+            int rv = atoi(opStr + 1);
+            char op = *(opStr);
+            *opStr = '\0';
+            char * lv = predicate;
+            queryInfo->predicates[index] = new Filter(lv, op, rv);
+        } else {
+            char * rv = opStr + 1;
+            *opStr = '\0';
+            char * lv = predicate;
+
+            char* dotPos = strstr(lv, ".");
+            int columnA = atoi(dotPos + 1);
+            *dotPos = '\0';
+            int relationA = atoi(lv);
+
+            dotPos = strstr(rv, ".");
+            int columnB = atoi(dotPos + 1);
+            *dotPos = '\0';
+            int relationB = atoi(rv);
+
+            if (relationA == relationB) {
+                queryInfo->predicates[index] = new SelfJoin(relationA, columnA, columnB);
+            } else {
+                queryInfo->predicates[index] = new Join(relationA, columnA, relationB, columnB);
+            }
+        }
     }
 }

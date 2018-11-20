@@ -5,9 +5,9 @@
 
 class Predicate {
     public:
-        Predicate ();
+        Predicate () {};
         virtual void execute() = 0;
-        virtual ~Predicate ();
+        virtual ~Predicate () {};
 };
 
 class Filter: public Predicate {
@@ -15,9 +15,10 @@ class Filter: public Predicate {
         uint64_t relation;
         uint64_t column;
         char op;
+        uint64_t value;
 
     public:
-        Filter ();
+        Filter (char* lv, char op, int rv);
         void execute();
         virtual ~Filter ();
 };
@@ -30,7 +31,7 @@ class Join: public Predicate {
         uint64_t columnB;
 
     public:
-        Join ();
+        Join (int relationA, int columnA, int relationB, int columnB);
         void execute();
         virtual ~Join ();
 };
@@ -42,7 +43,7 @@ class SelfJoin: public Predicate {
         uint64_t columnB;
 
     public:
-        SelfJoin ();
+        SelfJoin (int relation, int columnA, int columnB);
         void execute();
         virtual ~SelfJoin ();
 };

@@ -10,7 +10,7 @@ ODD_EVEN_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
 RANDOM_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
 		./singleJoin/structs.o ./singleJoin/result.o \
 		./testMain/randomJoin.o
-PARSE_OBJS = ./testMain/testParse.o ./parse/parse.o
+PARSE_OBJS = ./testMain/testParse.o ./parse/parse.o ./predicates/predicates.o
 FLAGS = -g3 -Wall
 
 all:$(OBJS)
@@ -57,6 +57,9 @@ randomJoin:$(RANDOM_OBJS)
 
 ./parse/parse.o:./parse/parse.cpp
 	$(CC) -c ./parse/parse.cpp $(FLAGS) -o ./parse/parse.o
+
+./predicates/predicates.o:./predicates/predicates.cpp
+	$(CC) -c ./predicates/predicates.cpp $(FLAGS) -o ./predicates/predicates.o
 
 testParse:$(PARSE_OBJS)
 	$(CC) -o testParse $(PARSE_OBJS) $(FLAGS)

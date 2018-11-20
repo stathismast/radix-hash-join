@@ -24,6 +24,6 @@ void parseRelations(char * relationsStr, QueryInfo * queryInfo);
 void parsePredicates(char * predicatesStr, QueryInfo * queryInfo);
 void parseSums(char * sumsStr, QueryInfo * queryInfo);
 
-void findPredicate(char * predicate, QueryInfo * queryInfo);
+void findPredicate(char * predicate, QueryInfo * queryInfo, int index);
 
 #endif
