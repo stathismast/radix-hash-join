@@ -22,7 +22,7 @@ uint64_t ** convertMap(uint64_t * data, uint64_t rows, uint64_t cols){
 
 // Given a file name, this function will create a return a Relation struct
 // containing the number of columns, rows and all the data in a 2D array
-Relation mapFile(char inputFile[]){
+Relation mapFile(const char inputFile[]){
     Relation rel;
 
     // Open input file
@@ -49,9 +49,10 @@ void unmapData(Relation rel){
 }
 
 void printData(Relation rel){
-    for(int i=0; i<rel.rows; i++){
-        std::cout << rel.data[0][i] << "|";
-        std::cout << rel.data[1][i] << "|";
-        std::cout << rel.data[2][i] << "|" << std::endl;
+    for(uint64_t i=0; i<rel.rows; i++){
+        for(uint64_t j=0; j<rel.cols; j++){
+            std::cout << rel.data[j][i] << "|";
+        }
+        std::cout << std::endl;
     }
 }

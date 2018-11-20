@@ -13,6 +13,6 @@ typedef struct Relation{
 uint64_t getFileSize(uint64_t rows, uint64_t cols);
 uint64_t * memmap(int fd, uint64_t size);
 uint64_t ** convertMap(uint64_t * data, uint64_t rows, uint64_t cols);
-Relation mapFile(char inputFile[]);
+Relation mapFile(const char inputFile[]);
 void unmapData(Relation rel);
 void printData(Relation rel);

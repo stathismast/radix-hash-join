@@ -1,6 +1,5 @@
 CC = g++
-OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o main.o \
-		./singleJoin/structs.o ./singleJoin/result.o
+OBJS = main.o ./memmap/memmap.o
 SERIAL_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
 		./singleJoin/structs.o ./singleJoin/result.o \
 		./testMain/serialJoin.o
@@ -14,6 +13,9 @@ FLAGS = -g3 -Wall
 
 all:$(OBJS)
 	$(CC) -o main $(OBJS) $(FLAGS)
+
+./memmap/memmap.o:./memmap/memmap.cpp
+	$(CC) -c ./memmap/memmap.cpp $(FLAGS) -o ./memmap/memmap.o
 
 ./singleJoin/h1.o:./singleJoin/h1.cpp
 	$(CC) -c ./singleJoin/h1.cpp $(FLAGS) -o ./singleJoin/h1.o

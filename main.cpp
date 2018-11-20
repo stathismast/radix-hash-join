@@ -1,68 +1,44 @@
-#include <iostream>
-#include "./singleJoin/join.hpp"
+#include "memmap/memmap.hpp"
 
-using namespace std;
+const char ** hardcodedInputFiles(int * fileCount){
+    *fileCount = 14;
 
+    const char ** inputFiles = new const char*[*fileCount];
 
-#include <iostream>
-#include <fstream>
-#include <ctime>
-#include <cstring>
+    inputFiles[0] = "workload/r0";
+    inputFiles[1] = "workload/r1";
+    inputFiles[2] = "workload/r2";
+    inputFiles[3] = "workload/r3";
+    inputFiles[4] = "workload/r4";
+    inputFiles[5] = "workload/r5";
+    inputFiles[6] = "workload/r6";
+    inputFiles[7] = "workload/r7";
+    inputFiles[8] = "workload/r8";
+    inputFiles[9] = "workload/r9";
+    inputFiles[10] = "workload/r10";
+    inputFiles[11] = "workload/r11";
+    inputFiles[12] = "workload/r12";
+    inputFiles[13] = "workload/r13";
 
-int main(){
-    srand(time(NULL));
+    return inputFiles;
+}
 
-    // Create two random columns that will be joined
-    Column * A = randomColumn(10000);
-    Column * B = randomColumn(5000);
+int main(void){
+    int fileCount;
+    const char ** inputFiles = hardcodedInputFiles(&fileCount);
 
-    std::ofstream file("Logs/arrayA.txt");
-    for(uint64_t i=0; i<A->size; i++){
-        file << A->rowid[i] << ". "
-             << A->value[i] <<
-             " - " << h1(A->value[i])  << std::endl;
+    Relation * r = new Relation[fileCount];
+
+    for(int i=0; i<fileCount; i++){
+        r[i] = mapFile(inputFiles[i]);
     }
+    
+    printData(r[4]);
 
-    file.close();
-
-    std::ofstream file2("Logs/arrayB.txt");
-    for(uint64_t i=0; i<B->size; i++){
-        file2 << B->rowid[i] << ". "
-             << B->value[i] <<
-             " - " << h1(B->value[i])  << std::endl;
+    for(int i=0; i<fileCount; i++){
+        unmapData(r[i]);
     }
-
-    file2.close();
-
-    clock_t cl;     //initializing a clock type
-    cl = clock();   //starting time of clock
-
-    Result * result = join(A,B);
-
-    cl = clock() - cl;  //end point of clock
-
-    cout << "time for (10000-5000): "<< cl/(double)CLOCKS_PER_SEC << endl;  //prints the determined ticks per second (seconds passed)
-
-    clock_t cl2;     //initializing a clock type
-    cl2 = clock();   //starting time of clock
-
-    int total = naiveJoin(A, B);
-
-    cl2 = clock() - cl2;  //end point of clock
-    cout << "Naive join time:"<< cl2/(double)CLOCKS_PER_SEC << endl;  //prints the determined ticks per second (seconds passed)
-
-    std::cout << "Total equals = " << total << '\n';
-    std::cout << "Result entries = " << result->totalEntries << '\n';
-
-    std::cout << "Total == Result entries: " << ((uint64_t)total == result->totalEntries)  << '\n';
-    deleteResult(result);
-    deleteColumn(A);
-    deleteColumn(B);
-
-
-
-    // test_nextPrime(200);
-
-    // cout << h2(50,100) << endl;
-    // cout << h2(24,13) << endl;
+    
+    delete[] inputFiles;
+    delete[] r;
 }
