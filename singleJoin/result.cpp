@@ -89,7 +89,7 @@ Node * newNode(){
 
     temp->count = 0;
     temp->next = NULL;
-    temp->buffer = new uint64_t[BUFFER_SIZE];
+    temp->buffer = (uint64_t *) new char[BUFFER_SIZE]; //1024*1024 bytes
     CHECK_OR_EXIT(temp->buffer);
 
     memset(temp->buffer,0,BUFFER_SIZE);
@@ -102,9 +102,9 @@ void deleteNode(Node * node){
 }
 
 void insertToNode(Node * node, uint64_t rowidA, uint64_t rowidB){
-    uint64_t offset = node->count * ENTRY_SIZE;
+    uint64_t offset = node->count * 2;
     memcpy(node->buffer + offset,&rowidA,sizeof(uint64_t));
-    offset += sizeof(uint64_t);
+    offset++;
     memcpy(node->buffer + offset,&rowidB,sizeof(uint64_t));
     node->count ++;
 }
@@ -114,9 +114,9 @@ void printNodeResult(Node * node){
     // std::cout << "count:" << node->count << '\n';
     for (uint64_t i = 0; i < node->count; i++) {
         memcpy(&rowidA,node->buffer + offset,sizeof(uint64_t));
-        offset += sizeof(uint64_t);
+        offset++;
         memcpy(&rowidB,node->buffer + offset,sizeof(uint64_t));
-        offset += sizeof(uint64_t);
+        offset++;
         std::cout << "rowidA:" << rowidA << " | rowidB:" << rowidB << '\n';
     }
 }
