@@ -27,18 +27,22 @@ int main(void){
     int fileCount;
     const char ** inputFiles = hardcodedInputFiles(&fileCount);
 
+    // Allocate an array of relations accoring to the number of input files
     Relation * r = new Relation[fileCount];
 
+    // Map every file to memory
     for(int i=0; i<fileCount; i++){
         r[i] = mapFile(inputFiles[i]);
     }
-    
+
+    // Print the data from a given file
     printData(r[4]);
 
+    // Unmap data and delete 2D index
     for(int i=0; i<fileCount; i++){
         unmapData(r[i]);
     }
-    
+
     delete[] inputFiles;
     delete[] r;
 }
