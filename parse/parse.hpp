@@ -11,7 +11,6 @@ struct sumStruct {
 
 struct QueryInfo {
     int * relations;
-    int relationsCount;
     Predicate ** predicates;
     int predicatesCount;
     struct sumStruct * sums;
