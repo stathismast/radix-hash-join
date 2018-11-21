@@ -18,7 +18,7 @@ void executeQueries() {
         QueryInfo * queryInfo = parseInput(line);
         for (int i = 0; i < queryInfo->predicatesCount; i++) {
             // printPredicate(&queryInfo->predicates[i]);
-            // execute(&queryInfo->predicates[i]);
+            execute(&queryInfo->predicates[i]);
         }
         deleteQueryInfo(queryInfo);
         free(line);
@@ -41,8 +41,6 @@ int main(void){
 
     deleteIntermediate(&intermediate);
 
-    deleteQueryInfo(queryInfo);
-    
     unMapAllData(r, relationsSize);
 
     return 0;
