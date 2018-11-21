@@ -24,7 +24,9 @@ void parsePredicates(char * predicatesStr, QueryInfo * queryInfo);
 void parseSums(char * sumsStr, QueryInfo * queryInfo);
 
 void findPredicate(char * predicate, QueryInfo * queryInfo, int index);
-int countArgs(char * in, char const * delim);
 void splitAt(char * toSplit, char const * delim, char ** left, char ** right);
+int countArgs(char * in, char const * delim);
+
+void deleteQueryInfo(QueryInfo * queryInfo);
 
 #endif

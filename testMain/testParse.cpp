@@ -7,8 +7,6 @@ int main(int argc, char const *argv[]) {
     for (int i = 0; i < queryInfo->predicatesCount; i++) {
         delete queryInfo->predicates[i];
     }
-    delete[] queryInfo->predicates;
-    delete[] queryInfo->sums;
-    delete queryInfo;
+    deleteQueryInfo(queryInfo);
     return 0;
 }

@@ -161,3 +161,9 @@ void splitAt(char * toSplit, char const * delim, char ** left, char ** right) {
     *splitPos = '\0';
     *left = toSplit;
 }
+
+void deleteQueryInfo(QueryInfo * queryInfo) {
+    delete[] queryInfo->predicates;
+    delete[] queryInfo->sums;
+    delete queryInfo;
+}
