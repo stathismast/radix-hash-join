@@ -16,3 +16,8 @@ Column * resultToColumn(Result * res, uint64_t col, uint64_t entryCount){
 
     return column;
 }
+
+void deleteIntermediate(Intermediate * im){
+    deleteResult(im->results);
+    delete[] im->relations;
+}

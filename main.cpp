@@ -1,6 +1,4 @@
-#include "join/memmap.hpp"
 #include "join/parse.hpp"
-#include "join/intermediate.hpp"
 
 //global
 Relation * r;
@@ -20,6 +18,10 @@ int main(void){
         printPredicate(&queryInfo->predicates[i]);
         execute(&queryInfo->predicates[i]);
     }
+
+    printResult(intermediate.results, intermediate.relCount);
+
+    deleteIntermediate(&intermediate);
 
     deleteQueryInfo(queryInfo);
     unMapAllData(r, relationsSize);

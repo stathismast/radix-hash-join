@@ -3,6 +3,8 @@
 extern Relation * r;
 extern uint64_t relationsSize;
 
+extern Intermediate intermediate;
+
 bool compare(uint64_t x, uint64_t y, char op) {
     if (op == '<')
         return x < y;
@@ -27,10 +29,14 @@ void executeFilter(Predicate * predicate) {
             insertSingleResult(res, i);
         }
     }
-    printSingleResult(res);
 
-    // Could also use
-    // printResult(res,1);
+    // Load results into Intermediate Results
+    intermediate.results = res;
+    intermediate.relCount = 1;
+
+    uint64_t * temp = new uint64_t[1];
+    temp[0] = predicate->relationA;
+    intermediate.relations = temp;
 }
 
 void executeJoin(Predicate * predicate) {
