@@ -1,27 +1,56 @@
 #include <cstring>
 #include <cstdlib>
 #include "predicates.hpp"
+#include "../join/memmap.hpp"
+#include "../singleJoin/result.hpp"
 #include <iostream>
 
+//global
+extern Relation * r;
+extern uint64_t relationsSize;
 
-Filter::Filter (char* lv, char op, int rv) {
-    this->op = op;
-    this->value = (uint64_t) rv;
-    char * relationStr = NULL, * columnStr = NULL;
-    splitAt(lv, ".", &relationStr, &columnStr);
-    relation = atoi(relationStr);
-    column = atoi(columnStr);
+bool compare(uint64_t x, uint64_t y, char op) {
+    if (op == '<')
+        return x < y;
+    else if (op == '>')
+        return x > y;
+    else
+        return x == y;
+
 }
 
-void Filter::execute() { }
+//-----------------------------FILTER---------------------------------------------
+Filter::Filter (int relation, int column, char op, int rv) {
+    this->op = op;
+    this->value = (uint64_t) rv;
+    this->relation = (uint64_t) relation;
+    this->column = (uint64_t) column;
+}
+
+void Filter::execute() {
+    // if(relationsSize) printData(r[relation]);
+    Relation rel = r[relation];
+    Result * res = newResult();
+    // make the list
+    for (uint64_t i = 0; i < rel.rows; i++) {
+        if (compare(rel.data[column][i], value, op) ) {
+            // std::cout << rel.data[column][i] << '\n';
+            insertSingleResult(res, i);
+        }
+    }
+    printSingleResult(res);
+}
 
 void Filter::printInfo() {
     std::cout << "Filter ";
-    std::cout << relation << "." << column;
-    std::cout << " " << op << " " << value << '\n';
+    std::cout << this->relation << "." << this->column;
+    std::cout << " " << this->op << " " << this->value << '\n';
 }
 
+Filter::~Filter() {}
 
+
+//-----------------------------JOIN---------------------------------------------
 Join::Join (int relationA, int columnA, int relationB, int columnB) {
     this->relationA = (uint64_t) relationA;
     this->columnA = (uint64_t) columnA;
@@ -33,16 +62,14 @@ void Join::execute() { }
 
 void Join::printInfo() {
     std::cout << "Join: ";
-    std::cout << relationA << "." << columnA;
-    std::cout << " = " << relationB << "." << columnB << '\n';
+    std::cout << this->relationA << "." << this->columnA;
+    std::cout << " = " << this->relationB << "." << this->columnB << '\n';
 }
 
 Join::~Join () { }
 
 
-Filter::~Filter() { }
-
-
+//-----------------------------SELF JOIN----------------------------------------
 SelfJoin::SelfJoin (int relation, int columnA, int columnB) {
     this->relation = (uint64_t) relation;
     this->columnA = (uint64_t) columnA;
@@ -53,15 +80,8 @@ void SelfJoin::execute() { }
 
 void SelfJoin::printInfo() {
     std::cout << "SelfJoin ";
-    std::cout << relation << "." << columnA;
-    std::cout << " = " << relation << "." << columnB << '\n';
+    std::cout << this->relation << "." << this->columnA;
+    std::cout << " = " << this->relation << "." << this->columnB << '\n';
 }
 
 SelfJoin::~SelfJoin () { }
-
-void splitAt(char * toSplit, char const * delim, char ** left, char ** right) {
-    char* splitPos = strstr(toSplit, delim);
-    *right = splitPos + 1;
-    *splitPos = '\0';
-    *left = toSplit;
-}

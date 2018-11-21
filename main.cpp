@@ -1,5 +1,7 @@
 #include "join/memmap.hpp"
 #include "join/stringList.hpp"
+#include "parse/parse.hpp"
+// #include "parse/predicates.hpp"
 
 // Keep the contents of given line, excluding '\n'
 char * getFilePath(char * line){
@@ -27,6 +29,10 @@ char ** getInputFiles(uint64_t * size){
 
     // Remaining file paths
     while(getline(&line, &s, stdin) > 0){
+        std::cout << "line = " << line << '\n';
+        if (strcmp(line, "Done\n") == 0) {
+            break;
+        }
         filePath = getFilePath(line);
         insertFile(filePathList,filePath);
     }
@@ -73,14 +79,18 @@ void unMapAllData(){
 }
 
 int main(void){
-
     mapAllData();
 
     // Print the data from a given file
-    if(relationsSize) printData(r[0]);
+    // if(relationsSize) printData(r[0]);
 
     //execute queries etc
+    QueryInfo * queryInfo = parseInput(stdin);
+    for (int i = 0; i < queryInfo->predicatesCount; i++) {
+        queryInfo->predicates[i]->execute();
+    }
 
+    // deleteQueryInfo(queryInfo);
     unMapAllData();
 
     return 0;
