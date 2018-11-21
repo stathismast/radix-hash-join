@@ -9,7 +9,7 @@ ODD_EVEN_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
 RANDOM_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
 		./singleJoin/structs.o ./singleJoin/result.o \
 		./testMain/randomJoin.o
-RESULT_OBJS = ./singleJoin/result.o ./testMain/resultTest.o
+RESULT_OBJS = ./singleJoin/result.o ./testMain/resultTest.o ./singleJoin/structs.o
 PARSE_OBJS = ./testMain/testParse.o ./parse/parse.o ./parse/predicates.o
 
 FLAGS = -g3 -Wall
@@ -65,10 +65,6 @@ resultTest:$(RESULT_OBJS)
 ./testMain/resultTest.o:./testMain/resultTest.cpp
 	$(CC) -c ./testMain/resultTest.cpp $(FLAGS) -o ./testMain/resultTest.o
 
-clean:
-	rm -rf ./*/*.o *.o ./*/*/*.o a.out main randomJoin serialJoin \
-		oddEvenJoin ./*/*.gch *.gch ./*/*/*.gch resultTest
-
 ./testMain/testParse.o:./testMain/testParse.cpp
 	$(CC) -c ./testMain/testParse.cpp $(FLAGS) -o ./testMain/testParse.o
 
@@ -83,4 +79,4 @@ testParse:$(PARSE_OBJS)
 
 clean:
 	rm -rf ./*/*.o *.o ./*/*/*.o a.out main randomJoin serialJoin testParse \
-		oddEvenJoin ./*/*.gch *.gch ./*/*/*.gch
+		oddEvenJoin resultTest ./*/*.gch *.gch ./*/*/*.gch
