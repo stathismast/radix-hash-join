@@ -205,3 +205,20 @@ void printNodeResult(Node * node, uint64_t entryCount){
         std::cout << std::endl;
     }
 }
+
+// Finds and returns the entry at the given index
+// VERY IMPORTANT: index starts at 0!!!
+uint64_t * getEntry(Result * res, uint64_t index, uint64_t entryCount){
+    uint64_t nodeIndex = index/(BUFFER_SIZE / (entryCount*sizeof(uint64_t)));
+
+    // If we're given an index that is too high
+    if(nodeIndex >= res->nodesNum) return NULL;
+
+    Node * node = res->first;
+    for(uint64_t i=0; i<nodeIndex; i++){
+        node = node->next;
+    }
+
+    uint64_t offset = index % (BUFFER_SIZE / (entryCount*sizeof(uint64_t)));
+    return node->buffer + offset * entryCount;
+}

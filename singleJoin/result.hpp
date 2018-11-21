@@ -59,3 +59,5 @@ void insertResult(Result * res, uint64_t * entries, uint64_t entryCount);
 void checkFullness(Result * res, uint64_t entryCount);
 void insertToNode(Node * node, uint64_t * entries, uint64_t entryCount);
 void printNodeResult(Node * node, uint64_t entryCount);
+
+uint64_t * getEntry(Result * res, uint64_t index, uint64_t entryCount);
