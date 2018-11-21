@@ -1,6 +1,7 @@
 CC = g++
 OBJS = main.o ./join/memmap.o ./join/stringList.o ./parse/parse.o \
-		./singleJoin/result.o ./singleJoin/structs.o ./join/inputManager.o
+		./singleJoin/result.o ./singleJoin/structs.o ./join/inputManager.o \
+		./join/intermediate.o
 SERIAL_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
 		./singleJoin/structs.o ./singleJoin/result.o \
 		./testMain/serialJoin.o

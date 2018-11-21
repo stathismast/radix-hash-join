@@ -1,9 +1,12 @@
 #include "join/memmap.hpp"
 #include "parse/parse.hpp"
+#include "join/intermediate.hpp"
 
 //global
 Relation * r;
 uint64_t relationsSize;
+
+Intermediate intermediate;
 
 int main(void){
     mapAllData(&r, &relationsSize);
