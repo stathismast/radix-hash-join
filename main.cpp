@@ -14,29 +14,29 @@ char * getFilePath(char * line){
 char ** getInputFiles(uint64_t * size){
     char * line = NULL;
     size_t s = 0;
-    char * tempFile;
-    StringList * tempStringList;
+    char * filePath;
+    StringList * filePathList;
     char ** inputFiles;
 
     // First file path
     if (getline(&line, &s, stdin) <= 0){
         return NULL;
     }
-    tempFile = getFilePath(line);
-    tempStringList = newStringList(tempFile);
+    filePath = getFilePath(line);
+    filePathList = newStringList(filePath);
 
     // Remaining file paths
     while(getline(&line, &s, stdin) > 0){
-        tempFile = getFilePath(line);
-        insertFile(tempStringList,tempFile);
+        filePath = getFilePath(line);
+        insertFile(filePathList,filePath);
     }
 
     free(line);
 
-    inputFiles = convertToArray(tempStringList);
+    inputFiles = convertToArray(filePathList);
 
-    *size = tempStringList->count;
-    deleteStringList(tempStringList);
+    *size = filePathList->count;
+    deleteStringList(filePathList);
 
     return inputFiles;
 }
@@ -77,7 +77,7 @@ int main(void){
     mapAllData();
 
     // Print the data from a given file
-    // printData(r[0]);
+    if(relationsSize) printData(r[0]);
 
     //execute queries etc
 
