@@ -8,3 +8,4 @@ struct Intermediate{
 };
 
 Column * resultToColumn(Result * res, uint64_t col, uint64_t entryCount);
+void deleteIntermediate(Intermediate * im);

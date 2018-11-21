@@ -1,5 +1,6 @@
 #include "../singleJoin/result.hpp"
 #include "memmap.hpp"
+#include "intermediate.hpp"
 #include <cstdio>
 
 #ifndef PREDICATES_HPP
