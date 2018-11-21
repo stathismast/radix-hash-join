@@ -1,6 +1,6 @@
 CC = g++
 OBJS = main.o ./join/memmap.o ./join/stringList.o ./parse/parse.o \
-		./parse/predicates.o ./singleJoin/result.o
+		./parse/predicates.o ./singleJoin/result.o ./singleJoin/structs.o
 SERIAL_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
 		./singleJoin/structs.o ./singleJoin/result.o \
 		./testMain/serialJoin.o
@@ -10,7 +10,8 @@ ODD_EVEN_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
 RANDOM_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
 		./singleJoin/structs.o ./singleJoin/result.o \
 		./testMain/randomJoin.o
-RESULT_OBJS = ./singleJoin/result.o ./testMain/resultTest.o ./singleJoin/structs.o
+RESULT_OBJS = ./singleJoin/result.o ./testMain/resultTest.o ./singleJoin/structs.o \
+		./singleJoin/result.o
 PARSE_OBJS = ./testMain/testParse.o ./parse/parse.o ./parse/predicates.o
 
 FLAGS = -g3 -Wall
