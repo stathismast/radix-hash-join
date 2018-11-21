@@ -7,11 +7,14 @@
 Filter::Filter (int relation, int column, char op, int rv) {
     this->op = op;
     this->value = (uint64_t) rv;
-    this->relation = relation;
-    this->column = column;
+    this->relation = (uint64_t) relation;
+    this->column = (uint64_t) column;
 }
 
-void Filter::execute() { }
+void Filter::execute() {
+    
+
+}
 
 void Filter::printInfo() {
     std::cout << "Filter ";

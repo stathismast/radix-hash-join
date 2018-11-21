@@ -163,6 +163,10 @@ void splitAt(char * toSplit, char const * delim, char ** left, char ** right) {
 }
 
 void deleteQueryInfo(QueryInfo * queryInfo) {
+    delete[] queryInfo->relations;
+    for (int i = 0; i < queryInfo->predicatesCount; i++) {
+        delete queryInfo->predicates[i];
+    }
     delete[] queryInfo->predicates;
     delete[] queryInfo->sums;
     delete queryInfo;
