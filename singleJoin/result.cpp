@@ -179,7 +179,7 @@ void insertResult(Result * res, uint64_t * entries, uint64_t entryCount){
 
 void checkFullness(Result * res, uint64_t entryCount){
     Node * temp;
-    if(res->last->count == BUFFER_SIZE / entryCount * sizeof(uint64_t)){
+    if(res->last->count == BUFFER_SIZE / (entryCount * sizeof(uint64_t))){
         // We need a new node
         temp = newNode();
         res->last->next = temp;
