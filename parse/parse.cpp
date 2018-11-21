@@ -100,12 +100,16 @@ void findPredicate(char * predicate, QueryInfo * queryInfo, int index) {
         // split the predicate in the number on the right and the relation and
         // column on the left
         splitAt(predicate, "<", &leftStr, &rightStr);
-        queryInfo->predicates[index] = new Filter(leftStr, '<', atoi(rightStr) );
+        char * relationStr, * columnStr;
+        splitAt(leftStr, ".", &columnStr, &relationStr);
+        queryInfo->predicates[index] = new Filter(atoi(relationStr), atoi(columnStr), '<', atoi(rightStr) );
     } else if (strstr(predicate, ">") != NULL) {
         // split the predicate in the number on the right and the relation and
         // column on the left
         splitAt(predicate, ">", &leftStr, &rightStr);
-        queryInfo->predicates[index] = new Filter(leftStr, '>', atoi(rightStr) );
+        char * relationStr, * columnStr;
+        splitAt(leftStr, ".", &columnStr, &relationStr);
+        queryInfo->predicates[index] = new Filter(atoi(relationStr), atoi(columnStr), '<', atoi(rightStr) );
     } else if (strstr(predicate, "=") != NULL) {
         // split the predicate in the number on the right and the relation and
         // column on the left
@@ -113,7 +117,9 @@ void findPredicate(char * predicate, QueryInfo * queryInfo, int index) {
         // if there is no dot in the right part it means it's just a number so
          // it's an equality filter
         if (strstr(rightStr + 1, ".") == NULL) {
-            queryInfo->predicates[index] = new Filter(leftStr, '=', atoi(rightStr) );
+            char * relationStr, * columnStr;
+            splitAt(leftStr, ".", &columnStr, &relationStr);
+            queryInfo->predicates[index] = new Filter(atoi(relationStr), atoi(columnStr), '<', atoi(rightStr) );
         } else {
             char * relationStr, * columnStr;
             // split the left part of the predicate in the relation
@@ -147,4 +153,11 @@ int countArgs(char * in, char const * delim) {
         }
     }
     return count;
+}
+
+void splitAt(char * toSplit, char const * delim, char ** left, char ** right) {
+    char* splitPos = strstr(toSplit, delim);
+    *right = splitPos + 1;
+    *splitPos = '\0';
+    *left = toSplit;
 }

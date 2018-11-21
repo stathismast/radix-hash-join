@@ -19,7 +19,7 @@ class Filter: public Predicate {
         uint64_t value;
 
     public:
-        Filter (char* lv, char op, int rv);
+        Filter (int relation, int column, char op, int rv);
         void execute();
         void printInfo();
         virtual ~Filter ();
@@ -51,8 +51,5 @@ class SelfJoin: public Predicate {
         void printInfo();
         virtual ~SelfJoin ();
 };
-
-void splitAt(char * toSplit, char const * delim, char ** left, char ** right);
-int countArgs(char * in, char const * delim);
 
 #endif

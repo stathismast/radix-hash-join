@@ -4,21 +4,19 @@
 #include <iostream>
 
 
-Filter::Filter (char* lv, char op, int rv) {
+Filter::Filter (int relation, int column, char op, int rv) {
     this->op = op;
     this->value = (uint64_t) rv;
-    char * relationStr = NULL, * columnStr = NULL;
-    splitAt(lv, ".", &relationStr, &columnStr);
-    relation = atoi(relationStr);
-    column = atoi(columnStr);
+    this->relation = relation;
+    this->column = column;
 }
 
 void Filter::execute() { }
 
 void Filter::printInfo() {
     std::cout << "Filter ";
-    std::cout << relation << "." << column;
-    std::cout << " " << op << " " << value << '\n';
+    std::cout << this->relation << "." << this->column;
+    std::cout << " " << this->op << " " << this->value << '\n';
 }
 
 
@@ -33,8 +31,8 @@ void Join::execute() { }
 
 void Join::printInfo() {
     std::cout << "Join: ";
-    std::cout << relationA << "." << columnA;
-    std::cout << " = " << relationB << "." << columnB << '\n';
+    std::cout << this->relationA << "." << this->columnA;
+    std::cout << " = " << this->relationB << "." << this->columnB << '\n';
 }
 
 Join::~Join () { }
@@ -53,15 +51,8 @@ void SelfJoin::execute() { }
 
 void SelfJoin::printInfo() {
     std::cout << "SelfJoin ";
-    std::cout << relation << "." << columnA;
-    std::cout << " = " << relation << "." << columnB << '\n';
+    std::cout << this->relation << "." << this->columnA;
+    std::cout << " = " << this->relation << "." << this->columnB << '\n';
 }
 
 SelfJoin::~SelfJoin () { }
-
-void splitAt(char * toSplit, char const * delim, char ** left, char ** right) {
-    char* splitPos = strstr(toSplit, delim);
-    *right = splitPos + 1;
-    *splitPos = '\0';
-    *left = toSplit;
-}
