@@ -59,7 +59,7 @@ void parseRelations(char * relationsStr, QueryInfo * queryInfo) {
 void parsePredicates(char * predicatesStr, QueryInfo * queryInfo) {
     char * temp = new char[strlen(predicatesStr) + 1];
     strncpy(temp, predicatesStr, strlen(predicatesStr) + 1);
-    queryInfo->predicatesCount = countArgs(temp, " \t");
+    queryInfo->predicatesCount = countArgs(temp, "&");
     delete[] temp;
 
     queryInfo->predicates = new Predicate * [queryInfo->predicatesCount];
