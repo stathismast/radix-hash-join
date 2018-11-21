@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../singleJoin/result.hpp"
+#include "../join/intermediate.hpp"
 
 int main(void){
 

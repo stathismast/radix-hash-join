@@ -10,8 +10,8 @@ ODD_EVEN_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
 RANDOM_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
 		./singleJoin/structs.o ./singleJoin/result.o \
 		./testMain/randomJoin.o
-RESULT_OBJS = ./singleJoin/result.o ./testMain/resultTest.o ./singleJoin/structs.o \
-		./singleJoin/result.o
+RESULT_OBJS = ./singleJoin/result.o ./testMain/resultTest.o \
+			 ./singleJoin/structs.o ./join/intermediate.o
 PARSE_OBJS = ./testMain/testParse.o ./parse/parse.o
 
 FLAGS = -g3 -Wall
@@ -27,6 +27,9 @@ all:$(OBJS)
 
 ./join/inputManager.o:./join/inputManager.cpp
 	$(CC) -c ./join/inputManager.cpp $(FLAGS) -o ./join/inputManager.o
+
+./join/intermediate.o:./join/intermediate.cpp
+	$(CC) -c ./join/intermediate.cpp $(FLAGS) -o ./join/intermediate.o
 
 ./singleJoin/h1.o:./singleJoin/h1.cpp
 	$(CC) -c ./singleJoin/h1.cpp $(FLAGS) -o ./singleJoin/h1.o

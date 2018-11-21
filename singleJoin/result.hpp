@@ -17,7 +17,6 @@ Description : Declaration of structs Node and Result which are used to
 #include <cstring>
 #include <cstdlib>
 #include <iostream>
-#include "structs.hpp"
 
 typedef struct Node{
     uint64_t * buffer;
@@ -60,6 +59,5 @@ void insertToNode(Node * node, uint64_t * entries, uint64_t entryCount);
 void printNodeResult(Node * node, uint64_t entryCount);
 
 uint64_t * getEntry(Result * res, uint64_t index, uint64_t entryCount);
-Column * resultToColumn(Result * res, uint64_t col, uint64_t entryCount);
 
 #endif /* LIST_H */
