@@ -13,6 +13,10 @@ QueryInfo * parseInput(FILE * in) {
     queryInfo->sumsCount = 0;
     // read the query
     getline(&query, &s, in);
+    if (query == NULL) {
+        std::cout << "Empty Line" << '\n';
+        return NULL;
+    }
     std::cout << "query: " << query << '\n';
     char* relationsStr = strtok(query, "|");
     char* predicatesStr = strtok(NULL, "|");
@@ -109,7 +113,7 @@ void findPredicate(char * predicate, QueryInfo * queryInfo, int index) {
         splitAt(predicate, ">", &leftStr, &rightStr);
         char * relationStr, * columnStr;
         splitAt(leftStr, ".", &columnStr, &relationStr);
-        queryInfo->predicates[index] = new Filter(atoi(relationStr), atoi(columnStr), '<', atoi(rightStr) );
+        queryInfo->predicates[index] = new Filter(atoi(relationStr), atoi(columnStr), '>', atoi(rightStr) );
     } else if (strstr(predicate, "=") != NULL) {
         // split the predicate in the number on the right and the relation and
         // column on the left
@@ -119,7 +123,7 @@ void findPredicate(char * predicate, QueryInfo * queryInfo, int index) {
         if (strstr(rightStr + 1, ".") == NULL) {
             char * relationStr, * columnStr;
             splitAt(leftStr, ".", &columnStr, &relationStr);
-            queryInfo->predicates[index] = new Filter(atoi(relationStr), atoi(columnStr), '<', atoi(rightStr) );
+            queryInfo->predicates[index] = new Filter(atoi(relationStr), atoi(columnStr), '=', atoi(rightStr) );
         } else {
             char * relationStr, * columnStr;
             // split the left part of the predicate in the relation
