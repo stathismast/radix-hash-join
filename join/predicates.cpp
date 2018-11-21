@@ -38,7 +38,22 @@ void executeJoin(Predicate * predicate) {
 }
 
 void executeSelfjoin(Predicate * predicate) {
-    std::cout << "SelfJoin" << '\n';
+    std::cout << "Executing SelfJoin" << '\n';
+    Relation rel = r[predicate->relationA];
+    Result * res = newResult();
+    int columnA = predicate->columnA;
+    int columnB = predicate->columnB;
+    // make the list
+    for (uint64_t i = 0; i < rel.rows; i++) {
+        if (compare(rel.data[columnA][i], rel.data[columnB][i], '=') ) {
+            // std::cout << rel.data[column][i] << '\n';
+            insertSingleResult(res, i);
+        }
+    }
+    printSingleResult(res);
+
+    // Could also use
+    // printResult(res,1);
 }
 
 void makeFilter(QueryInfo * q, int relation, int column, char op, int rv, int index) {

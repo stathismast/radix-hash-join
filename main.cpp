@@ -20,7 +20,7 @@ void executeQueries() {
         QueryInfo * queryInfo = parseInput(line);
         for (int i = 0; i < queryInfo->predicatesCount; i++) {
             // printPredicate(&queryInfo->predicates[i]);
-            // execute(&queryInfo->predicates[i]);
+            execute(&queryInfo->predicates[i]);
         }
         deleteQueryInfo(queryInfo);
         free(line);
@@ -34,6 +34,7 @@ int main(void){
 
     // Print the data from a given file
     // if(relationsSize) printData(r[0]);
+
     std::cout << '\n';
 
     //execute queries etc

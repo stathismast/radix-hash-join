@@ -5,17 +5,9 @@
 #include "parse.hpp"
 
 QueryInfo * parseInput(char * query) {
-    // char * query = NULL;
-    // size_t s = 0;
     QueryInfo * queryInfo = new QueryInfo;
     queryInfo->predicatesCount = 0;
     queryInfo->sumsCount = 0;
-    // read the query
-    // getline(&query, &s, in);
-    // if (query == NULL) {
-    //     std::cout << "Empty Line" << '\n';
-    //     return NULL;
-    // }
     std::cout << "query: " << query << '\n';
     char* relationsStr = strtok(query, "|");
     char* predicatesStr = strtok(NULL, "|");
@@ -28,7 +20,6 @@ QueryInfo * parseInput(char * query) {
     for (int i = 0; i < queryInfo->predicatesCount; i++) {
         std::cout << "\t";
         printPredicate(&queryInfo->predicates[i]);
-        // queryInfo->predicates[i]->printInfo();
     }
     std::cout << "SUMS" << '\n';
     parseSums(sumsStr, queryInfo);
@@ -36,7 +27,6 @@ QueryInfo * parseInput(char * query) {
         std::cout << "\tsum = " << queryInfo->sums[i].relation << \
         "." << queryInfo->sums[i].column << '\n';
     }
-    // free(query);
     return queryInfo;
 }
 
@@ -107,7 +97,6 @@ void findPredicate(char * predicate, QueryInfo * queryInfo, int index) {
         char * relationStr, * columnStr;
         splitAt(leftStr, ".", &columnStr, &relationStr);
         makeFilter(queryInfo, atoi(relationStr), atoi(columnStr), '<', atoi(rightStr), index);
-        // queryInfo->predicates[index] = new Filter(atoi(relationStr), atoi(columnStr), '<', atoi(rightStr) );
     } else if (strstr(predicate, ">") != NULL) {
         // split the predicate in the number on the right and the relation and
         // column on the left
@@ -115,7 +104,6 @@ void findPredicate(char * predicate, QueryInfo * queryInfo, int index) {
         char * relationStr, * columnStr;
         splitAt(leftStr, ".", &columnStr, &relationStr);
         makeFilter(queryInfo, atoi(relationStr), atoi(columnStr), '>', atoi(rightStr), index);
-        // queryInfo->predicates[index] = new Filter(atoi(relationStr), atoi(columnStr), '>', atoi(rightStr) );
     } else if (strstr(predicate, "=") != NULL) {
         // split the predicate in the number on the right and the relation and
         // column on the left
@@ -126,7 +114,6 @@ void findPredicate(char * predicate, QueryInfo * queryInfo, int index) {
             char * relationStr, * columnStr;
             splitAt(leftStr, ".", &columnStr, &relationStr);
             makeFilter(queryInfo, atoi(relationStr), atoi(columnStr), '=', atoi(rightStr), index);
-            // queryInfo->predicates[index] = new Filter(atoi(relationStr), atoi(columnStr), '=', atoi(rightStr) );
         } else {
             char * relationStr, * columnStr;
             // split the left part of the predicate in the relation
@@ -142,11 +129,8 @@ void findPredicate(char * predicate, QueryInfo * queryInfo, int index) {
             // and it will be treated differenlty than normal join
             if (relationA == relationB) {
                 makeSelfJoin(queryInfo, relationA, columnA, columnB, index);
-                // queryInfo->predicates[index] = new SelfJoin(relationA, columnA, columnB);
             } else {
                 makeJoin(queryInfo, relationA, columnA, relationB, columnB, index);
-
-                // queryInfo->predicates[index] = new Join(relationA, columnA, relationB, columnB);
             }
         }
     }
