@@ -1,5 +1,5 @@
 CC = g++
-OBJS = main.o ./join/memmap.o
+OBJS = main.o ./join/memmap.o ./join/stringList.o
 SERIAL_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
 		./singleJoin/structs.o ./singleJoin/result.o \
 		./testMain/serialJoin.o
@@ -13,6 +13,9 @@ FLAGS = -g3 -Wall
 
 all:$(OBJS)
 	$(CC) -o main $(OBJS) $(FLAGS)
+
+./join/stringList.o:./join/stringList.cpp
+	$(CC) -c ./join/stringList.cpp $(FLAGS) -o ./join/stringList.o
 
 ./join/memmap.o:./join/memmap.cpp
 	$(CC) -c ./join/memmap.cpp $(FLAGS) -o ./join/memmap.o
