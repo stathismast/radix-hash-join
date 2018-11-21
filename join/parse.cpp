@@ -4,18 +4,18 @@
 #include <iostream>
 #include "parse.hpp"
 
-QueryInfo * parseInput(FILE * in) {
-    char * query = NULL;
-    size_t s = 0;
+QueryInfo * parseInput(char * query) {
+    // char * query = NULL;
+    // size_t s = 0;
     QueryInfo * queryInfo = new QueryInfo;
     queryInfo->predicatesCount = 0;
     queryInfo->sumsCount = 0;
     // read the query
-    getline(&query, &s, in);
-    if (query == NULL) {
-        std::cout << "Empty Line" << '\n';
-        return NULL;
-    }
+    // getline(&query, &s, in);
+    // if (query == NULL) {
+    //     std::cout << "Empty Line" << '\n';
+    //     return NULL;
+    // }
     std::cout << "query: " << query << '\n';
     char* relationsStr = strtok(query, "|");
     char* predicatesStr = strtok(NULL, "|");
@@ -36,7 +36,7 @@ QueryInfo * parseInput(FILE * in) {
         std::cout << "\tsum = " << queryInfo->sums[i].relation << \
         "." << queryInfo->sums[i].column << '\n';
     }
-    free(query);
+    // free(query);
     return queryInfo;
 }
 

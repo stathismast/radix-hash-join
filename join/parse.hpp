@@ -8,7 +8,7 @@
 #ifndef PARSE_HPP
 #define PARSE_HPP
 
-QueryInfo * parseInput(FILE * in);
+QueryInfo * parseInput(char * query);
 
 void parseRelations(char * relationsStr, QueryInfo * queryInfo);
 void parsePredicates(char * predicatesStr, QueryInfo * queryInfo);
