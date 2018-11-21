@@ -1,5 +1,5 @@
 CC = g++
-OBJS = main.o ./join/memmap.o ./join/stringList.o ./parse/parse.o \
+OBJS = main.o ./join/memmap.o ./join/stringList.o ./join/parse.o \
 		./singleJoin/result.o ./singleJoin/structs.o ./join/inputManager.o \
 		./join/intermediate.o
 SERIAL_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
@@ -13,7 +13,7 @@ RANDOM_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
 		./testMain/randomJoin.o
 RESULT_OBJS = ./singleJoin/result.o ./testMain/resultTest.o \
 			 ./singleJoin/structs.o ./join/intermediate.o
-PARSE_OBJS = ./testMain/testParse.o ./parse/parse.o
+PARSE_OBJS = ./testMain/testParse.o ./join/parse.o
 
 FLAGS = -g3 -Wall
 
@@ -77,8 +77,8 @@ resultTest:$(RESULT_OBJS)
 ./testMain/testParse.o:./testMain/testParse.cpp
 	$(CC) -c ./testMain/testParse.cpp $(FLAGS) -o ./testMain/testParse.o
 
-./parse/parse.o:./parse/parse.cpp
-	$(CC) -c ./parse/parse.cpp $(FLAGS) -o ./parse/parse.o
+./join/parse.o:./join/parse.cpp
+	$(CC) -c ./join/parse.cpp $(FLAGS) -o ./join/parse.o
 
 testParse:$(PARSE_OBJS)
 	$(CC) -o testParse $(PARSE_OBJS) $(FLAGS)

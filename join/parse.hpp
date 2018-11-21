@@ -1,5 +1,5 @@
 #include "../singleJoin/result.hpp"
-#include "../join/memmap.hpp"
+#include "memmap.hpp"
 #include <cstdio>
 
 #ifndef PARSE_HPP
