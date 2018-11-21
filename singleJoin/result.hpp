@@ -31,6 +31,8 @@ typedef struct Result{
     uint64_t totalEntries;
 } Result;
 
+#endif /* LIST_H */
+
 Result * newResult();
 void deleteResult(Result * res);
 bool isEmptyResult(Result * res);
@@ -45,4 +47,8 @@ void insertToNode(Node * node,uint64_t rowidA,uint64_t rowidB);
 void printNodeResult(Node * node);
 uint64_t * getNodeEntry(Node * node,uint64_t index);
 
-#endif /* LIST_H */
+void printSingleResult(Result * res);
+void insertSingleResult(Result * res, uint64_t rowid);
+void checkSingleFullness(Result * res);
+void insertSingleToNode(Node * node, uint64_t rowid);
+void printNodeSingleResult(Node * node);

@@ -22,7 +22,8 @@ Result * newResult(){
 
     res->first = newNode();
     res->last = res->first;
-    res->nodesNum = res->totalEntries = 0;
+    res->totalEntries = 0;
+    res->nodesNum = 1;
 
     return res;
 }
@@ -48,12 +49,16 @@ bool isEmptyResult(Result * res){
 
 void printResult(Result * res){
     Node * current = res->first;
-
-    // std::cout << "totalEntries:" << res->totalEntries << '\n';
-    // std::cout << "nodesNum:" << res->nodesNum << '\n';
-
     while(current != NULL){
         printNodeResult(current);
+        current = current->next;
+    }
+}
+
+void printSingleResult(Result * res){
+    Node * current = res->first;
+    while(current != NULL){
+        printNodeSingleResult(current);
         current = current->next;
     }
 }
@@ -64,10 +69,27 @@ void insertResult(Result * res, uint64_t rowidA, uint64_t rowidB){
     res->totalEntries ++;
 }
 
+void insertSingleResult(Result * res, uint64_t rowid){
+    checkSingleFullness(res);
+    insertSingleToNode(res->last,rowid);
+    res->totalEntries ++;
+}
+
 /* If there is no space to insert new entry make a new node */
 void checkFullness(Result * res){
     Node * temp;
     if(res->last->count == ENTRIES_PER_NODE){
+        // We need a new node
+        temp = newNode();
+        res->last->next = temp;
+        res->last = temp;
+        res->nodesNum ++;
+    }
+}
+
+void checkSingleFullness(Result * res){
+    Node * temp;
+    if(res->last->count == BUFFER_SIZE / sizeof(uint64_t)){
         // We need a new node
         temp = newNode();
         res->last->next = temp;
@@ -109,6 +131,12 @@ void insertToNode(Node * node, uint64_t rowidA, uint64_t rowidB){
     node->count ++;
 }
 
+void insertSingleToNode(Node * node, uint64_t rowid){
+    uint64_t offset = node->count;
+    memcpy(node->buffer + offset,&rowid,sizeof(uint64_t));
+    node->count ++;
+}
+
 void printNodeResult(Node * node){
     uint64_t rowidA,rowidB,offset=0;
     // std::cout << "count:" << node->count << '\n';
@@ -118,6 +146,16 @@ void printNodeResult(Node * node){
         memcpy(&rowidB,node->buffer + offset,sizeof(uint64_t));
         offset++;
         std::cout << "rowidA:" << rowidA << " | rowidB:" << rowidB << '\n';
+    }
+}
+
+void printNodeSingleResult(Node * node){
+    uint64_t rowid,offset=0;
+    // std::cout << "count:" << node->count << '\n';
+    for (uint64_t i = 0; i < node->count; i++) {
+        memcpy(&rowid,node->buffer + offset,sizeof(uint64_t));
+        offset++;
+        std::cout << "rowid:" << rowid << '\n';
     }
 }
 
