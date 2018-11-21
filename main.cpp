@@ -87,10 +87,12 @@ int main(void){
     //execute queries etc
     QueryInfo * queryInfo = parseInput(stdin);
     for (int i = 0; i < queryInfo->predicatesCount; i++) {
-        queryInfo->predicates[i]->execute();
+        // queryInfo->predicates[i]->execute();
+        execute(&queryInfo->predicates[i]);
+        // exe
     }
 
-    // deleteQueryInfo(queryInfo);
+    deleteQueryInfo(queryInfo);
     unMapAllData();
 
     return 0;

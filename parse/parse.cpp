@@ -28,7 +28,7 @@ QueryInfo * parseInput(FILE * in) {
     parsePredicates(predicatesStr, queryInfo);
     for (int i = 0; i < queryInfo->predicatesCount; i++) {
         std::cout << "\t";
-        queryInfo->predicates[i]->printInfo();
+        // queryInfo->predicates[i]->printInfo();
     }
     std::cout << "SUMS" << '\n';
     parseSums(sumsStr, queryInfo);
@@ -66,7 +66,7 @@ void parsePredicates(char * predicatesStr, QueryInfo * queryInfo) {
     queryInfo->predicatesCount = countArgs(temp, "&");
     delete[] temp;
 
-    queryInfo->predicates = new Predicate * [queryInfo->predicatesCount];
+    queryInfo->predicates = new Predicate[queryInfo->predicatesCount];
 
     char * predicate = strtok(predicatesStr, "&");
     findPredicate(predicate, queryInfo, 0);
@@ -106,14 +106,16 @@ void findPredicate(char * predicate, QueryInfo * queryInfo, int index) {
         splitAt(predicate, "<", &leftStr, &rightStr);
         char * relationStr, * columnStr;
         splitAt(leftStr, ".", &columnStr, &relationStr);
-        queryInfo->predicates[index] = new Filter(atoi(relationStr), atoi(columnStr), '<', atoi(rightStr) );
+        makeFilter(queryInfo, atoi(relationStr), atoi(columnStr), '<', atoi(rightStr), index);
+        // queryInfo->predicates[index] = new Filter(atoi(relationStr), atoi(columnStr), '<', atoi(rightStr) );
     } else if (strstr(predicate, ">") != NULL) {
         // split the predicate in the number on the right and the relation and
         // column on the left
         splitAt(predicate, ">", &leftStr, &rightStr);
         char * relationStr, * columnStr;
         splitAt(leftStr, ".", &columnStr, &relationStr);
-        queryInfo->predicates[index] = new Filter(atoi(relationStr), atoi(columnStr), '>', atoi(rightStr) );
+        makeFilter(queryInfo, atoi(relationStr), atoi(columnStr), '>', atoi(rightStr), index);
+        // queryInfo->predicates[index] = new Filter(atoi(relationStr), atoi(columnStr), '>', atoi(rightStr) );
     } else if (strstr(predicate, "=") != NULL) {
         // split the predicate in the number on the right and the relation and
         // column on the left
@@ -123,7 +125,8 @@ void findPredicate(char * predicate, QueryInfo * queryInfo, int index) {
         if (strstr(rightStr + 1, ".") == NULL) {
             char * relationStr, * columnStr;
             splitAt(leftStr, ".", &columnStr, &relationStr);
-            queryInfo->predicates[index] = new Filter(atoi(relationStr), atoi(columnStr), '=', atoi(rightStr) );
+            makeFilter(queryInfo, atoi(relationStr), atoi(columnStr), '=', atoi(rightStr), index);
+            // queryInfo->predicates[index] = new Filter(atoi(relationStr), atoi(columnStr), '=', atoi(rightStr) );
         } else {
             char * relationStr, * columnStr;
             // split the left part of the predicate in the relation
@@ -138,9 +141,12 @@ void findPredicate(char * predicate, QueryInfo * queryInfo, int index) {
             // if the join is between the same relation we have a self join
             // and it will be treated differenlty than normal join
             if (relationA == relationB) {
-                queryInfo->predicates[index] = new SelfJoin(relationA, columnA, columnB);
+                makeSelfJoin(queryInfo, relationA, columnA, columnB, index);
+                // queryInfo->predicates[index] = new SelfJoin(relationA, columnA, columnB);
             } else {
-                queryInfo->predicates[index] = new Join(relationA, columnA, relationB, columnB);
+                makeJoin(queryInfo, relationA, columnA, relationB, columnB, index);
+
+                // queryInfo->predicates[index] = new Join(relationA, columnA, relationB, columnB);
             }
         }
     }
@@ -168,9 +174,6 @@ void splitAt(char * toSplit, char const * delim, char ** left, char ** right) {
 
 void deleteQueryInfo(QueryInfo * queryInfo) {
     delete[] queryInfo->relations;
-    for (int i = 0; i < queryInfo->predicatesCount; i++) {
-        delete queryInfo->predicates[i];
-    }
     delete[] queryInfo->predicates;
     delete[] queryInfo->sums;
     delete queryInfo;
