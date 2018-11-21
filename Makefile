@@ -1,6 +1,6 @@
 CC = g++
 OBJS = main.o ./join/memmap.o ./join/stringList.o ./parse/parse.o \
-		./singleJoin/result.o ./singleJoin/structs.o
+		./singleJoin/result.o ./singleJoin/structs.o ./join/inputManager.o
 SERIAL_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
 		./singleJoin/structs.o ./singleJoin/result.o \
 		./testMain/serialJoin.o
@@ -24,6 +24,9 @@ all:$(OBJS)
 
 ./join/memmap.o:./join/memmap.cpp
 	$(CC) -c ./join/memmap.cpp $(FLAGS) -o ./join/memmap.o
+
+./join/inputManager.o:./join/inputManager.cpp
+	$(CC) -c ./join/inputManager.cpp $(FLAGS) -o ./join/inputManager.o
 
 ./singleJoin/h1.o:./singleJoin/h1.cpp
 	$(CC) -c ./singleJoin/h1.cpp $(FLAGS) -o ./singleJoin/h1.o

@@ -200,6 +200,9 @@ void executeFilter(Predicate * predicate) {
         }
     }
     printSingleResult(res);
+
+    // Could also use
+    // printResult(res,1);
 }
 
 void executeJoin(Predicate * predicate) {

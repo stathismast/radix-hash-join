@@ -56,3 +56,30 @@ void printData(Relation rel){
         std::cout << std::endl;
     }
 }
+
+void mapAllData(Relation ** r, uint64_t * relationsSize){
+    char ** inputFiles = getInputFiles(relationsSize);
+
+    // Allocate an array of relations according to the number of input files
+    *r = new Relation[*relationsSize];
+
+    // Map every file to memory
+    for( uint64_t i = 0; i < *relationsSize; i++ ){
+        (*r)[i] = mapFile(inputFiles[i]);
+    }
+
+    // Deallocate memory used for file paths
+    for(uint64_t i=0; i<*relationsSize; i++){
+        std::cout << inputFiles[i] << std::endl;
+        delete[] inputFiles[i];
+    }
+    delete[] inputFiles;
+}
+
+void unMapAllData(Relation * r, uint64_t relationsSize){
+    // Unmap data and delete 2D index
+    for(uint64_t i=0; i<relationsSize; i++){
+        unmapData(r[i]);
+    }
+    delete[] r;
+}
