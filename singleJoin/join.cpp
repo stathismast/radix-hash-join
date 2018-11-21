@@ -54,7 +54,7 @@ Result * join(Column * A, Column * B){
         delete[] chainArray;
     }
 
-    //printResult(result);
+    //printDoubleResult(result);
 
     deleteColumn(orderedA);
     delete[] histogramA;
@@ -118,10 +118,10 @@ void checkEquals(uint64_t rowidA,
             // We need this flag so we will know which rowId goes first and
             // which second
             if (flag == 0) {
-                insertResult(result, rowidA, rowidB);
+                insertDoubleResult(result, rowidA, rowidB);
             }
             else{
-                insertResult(result, rowidB, rowidA);
+                insertDoubleResult(result, rowidB, rowidA);
             }
         }
         // Find the next element in the current bucket

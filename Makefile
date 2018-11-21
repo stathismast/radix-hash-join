@@ -9,7 +9,7 @@ ODD_EVEN_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
 RANDOM_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
 		./singleJoin/structs.o ./singleJoin/result.o \
 		./testMain/randomJoin.o
-SINGLE_RESULT_OBJS = ./singleJoin/result.o ./testMain/singleResultTest.o
+RESULT_OBJS = ./singleJoin/result.o ./testMain/resultTest.o
 FLAGS = -g3 -Wall
 
 all:$(OBJS)
@@ -57,12 +57,12 @@ randomJoin:$(RANDOM_OBJS)
 ./testMain/randomJoin.o:./testMain/randomJoin.cpp
 	$(CC) -c ./testMain/randomJoin.cpp $(FLAGS) -o ./testMain/randomJoin.o
 
-singleResultTest:$(SINGLE_RESULT_OBJS)
-	$(CC) -o singleResultTest $(SINGLE_RESULT_OBJS) $(FLAGS)
+resultTest:$(RESULT_OBJS)
+	$(CC) -o resultTest $(RESULT_OBJS) $(FLAGS)
 
-./testMain/singleResultTest.o:./testMain/singleResultTest.cpp
-	$(CC) -c ./testMain/singleResultTest.cpp $(FLAGS) -o ./testMain/singleResultTest.o
+./testMain/resultTest.o:./testMain/resultTest.cpp
+	$(CC) -c ./testMain/resultTest.cpp $(FLAGS) -o ./testMain/resultTest.o
 
 clean:
 	rm -rf ./*/*.o *.o ./*/*/*.o a.out main randomJoin serialJoin \
-		oddEvenJoin ./*/*.gch *.gch ./*/*/*.gch singleResultTest
+		oddEvenJoin ./*/*.gch *.gch ./*/*/*.gch resultTest

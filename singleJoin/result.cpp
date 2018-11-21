@@ -47,10 +47,10 @@ bool isEmptyResult(Result * res){
     return (res->first == NULL);
 }
 
-void printResult(Result * res){
+void printDoubleResult(Result * res){
     Node * current = res->first;
     while(current != NULL){
-        printNodeResult(current);
+        printNodeDoubleResult(current);
         current = current->next;
     }
 }
@@ -63,9 +63,9 @@ void printSingleResult(Result * res){
     }
 }
 
-void insertResult(Result * res, uint64_t rowidA, uint64_t rowidB){
-    checkFullness(res);
-    insertToNode(res->last,rowidA,rowidB);
+void insertDoubleResult(Result * res, uint64_t rowidA, uint64_t rowidB){
+    checkDoubleFullness(res);
+    insertDoubleToNode(res->last,rowidA,rowidB);
     res->totalEntries ++;
 }
 
@@ -76,7 +76,7 @@ void insertSingleResult(Result * res, uint64_t rowid){
 }
 
 /* If there is no space to insert new entry make a new node */
-void checkFullness(Result * res){
+void checkDoubleFullness(Result * res){
     Node * temp;
     if(res->last->count == ENTRIES_PER_NODE){
         // We need a new node
@@ -123,7 +123,7 @@ void deleteNode(Node * node){
     delete node;
 }
 
-void insertToNode(Node * node, uint64_t rowidA, uint64_t rowidB){
+void insertDoubleToNode(Node * node, uint64_t rowidA, uint64_t rowidB){
     uint64_t offset = node->count * 2;
     memcpy(node->buffer + offset,&rowidA,sizeof(uint64_t));
     offset++;
@@ -137,7 +137,7 @@ void insertSingleToNode(Node * node, uint64_t rowid){
     node->count ++;
 }
 
-void printNodeResult(Node * node){
+void printNodeDoubleResult(Node * node){
     uint64_t rowidA,rowidB,offset=0;
     // std::cout << "count:" << node->count << '\n';
     for (uint64_t i = 0; i < node->count; i++) {
@@ -161,4 +161,47 @@ void printNodeSingleResult(Node * node){
 
 uint64_t * getNodeEntry(Node * res, uint64_t index){
     return NULL; //to be implemented
+}
+
+void printResult(Result * res, uint64_t entryCount){
+    Node * current = res->first;
+    while(current != NULL){
+        printNodeResult(current, entryCount);
+        current = current->next;
+    }
+}
+
+void insertResult(Result * res, uint64_t * entries, uint64_t entryCount){
+    checkFullness(res, entryCount);
+    insertToNode(res->last, entries, entryCount);
+    res->totalEntries ++;
+}
+
+void checkFullness(Result * res, uint64_t entryCount){
+    Node * temp;
+    if(res->last->count == BUFFER_SIZE / entryCount * sizeof(uint64_t)){
+        // We need a new node
+        temp = newNode();
+        res->last->next = temp;
+        res->last = temp;
+        res->nodesNum ++;
+    }
+}
+
+void insertToNode(Node * node, uint64_t * entries, uint64_t entryCount){
+    uint64_t offset = node->count * entryCount;
+    memcpy(node->buffer + offset, entries, entryCount * sizeof(uint64_t));
+    node->count ++;
+}
+
+void printNodeResult(Node * node, uint64_t entryCount){
+    uint64_t entry;
+    // std::cout << "count:" << node->count << '\n';
+    for (uint64_t i=0; i<node->count; i++) {
+        for(uint64_t j=0; j<entryCount; j++){
+            memcpy(&entry,node->buffer + entryCount*i + j, sizeof(uint64_t));
+            std::cout << entry << '|';
+        }
+        std::cout << std::endl;
+    }
 }

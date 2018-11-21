@@ -6,9 +6,11 @@ int main(void){
     Result * result = newResult();
 
     for(uint64_t i=0; i<100; i++){
-        insertSingleResult(result, i);
+        uint64_t entries[5] = {i,i,i,i,i};
+        std::cout << entries[1] << std::endl;
+        insertResult(result, entries, 5);
     }
 
-    printSingleResult(result);
+    printResult(result,5);
     deleteResult(result);
 }

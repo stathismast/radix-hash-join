@@ -36,15 +36,10 @@ typedef struct Result{
 Result * newResult();
 void deleteResult(Result * res);
 bool isEmptyResult(Result * res);
-void printResult(Result * res);
-void insertResult(Result * res,uint64_t rowidA,uint64_t rowidB);
 uint64_t * getResultEntry(Result * res,uint64_t index);
-void checkFullness(Result * res);
 
 Node * newNode();
 void deleteNode(Node * node);
-void insertToNode(Node * node,uint64_t rowidA,uint64_t rowidB);
-void printNodeResult(Node * node);
 uint64_t * getNodeEntry(Node * node,uint64_t index);
 
 void printSingleResult(Result * res);
@@ -52,3 +47,15 @@ void insertSingleResult(Result * res, uint64_t rowid);
 void checkSingleFullness(Result * res);
 void insertSingleToNode(Node * node, uint64_t rowid);
 void printNodeSingleResult(Node * node);
+
+void printDoubleResult(Result * res);
+void insertDoubleResult(Result * res,uint64_t rowidA,uint64_t rowidB);
+void checkDoubleFullness(Result * res);
+void insertDoubleToNode(Node * node,uint64_t rowidA,uint64_t rowidB);
+void printNodeDoubleResult(Node * node);
+
+void printResult(Result * res, uint64_t entryCount);
+void insertResult(Result * res, uint64_t * entries, uint64_t entryCount);
+void checkFullness(Result * res, uint64_t entryCount);
+void insertToNode(Node * node, uint64_t * entries, uint64_t entryCount);
+void printNodeResult(Node * node, uint64_t entryCount);
