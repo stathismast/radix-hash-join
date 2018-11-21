@@ -4,6 +4,9 @@
 #include <unistd.h>     // for open/close
 #include <stdint.h>     // for uint64_t
 
+#ifndef MEMMAP_HPP
+#define MEMMAP_HPP
+
 typedef struct Relation{
     uint64_t rows;
     uint64_t cols;
@@ -16,3 +19,5 @@ uint64_t ** convertMap(uint64_t * data, uint64_t rows, uint64_t cols);
 Relation mapFile(const char inputFile[]);
 void unmapData(Relation rel);
 void printData(Relation rel);
+
+#endif

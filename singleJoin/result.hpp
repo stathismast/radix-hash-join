@@ -32,8 +32,6 @@ typedef struct Result{
     uint64_t totalEntries;
 } Result;
 
-#endif /* LIST_H */
-
 Result * newResult();
 void deleteResult(Result * res);
 bool isEmptyResult(Result * res);
@@ -63,3 +61,5 @@ void printNodeResult(Node * node, uint64_t entryCount);
 
 uint64_t * getEntry(Result * res, uint64_t index, uint64_t entryCount);
 Column * resultToColumn(Result * res, uint64_t col, uint64_t entryCount);
+
+#endif /* LIST_H */

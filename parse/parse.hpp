@@ -1,4 +1,5 @@
-#include "predicates.hpp"
+#include "../singleJoin/result.hpp"
+#include "../join/memmap.hpp"
 #include <cstdio>
 
 #ifndef PARSE_HPP

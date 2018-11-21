@@ -1,10 +1,11 @@
-
-
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <stdint.h>
+
+#ifndef STRING_LIST_HPP
+#define STRING_LIST_HPP
 
 #define CHECK_OR_EXIT(value)                                        \
 {                                                                   \
@@ -31,3 +32,5 @@ void deleteStringList(StringList * list);
 void insertFile(StringList * list, char* filePath);
 void printFiles(StringList * list);
 char ** convertToArray(StringList * list);
+
+#endif

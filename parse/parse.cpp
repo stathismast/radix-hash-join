@@ -3,9 +3,6 @@
 #include <ctype.h>
 #include <iostream>
 #include "parse.hpp"
-#include "predicates.hpp"
-#include "../join/memmap.hpp"
-#include "../singleJoin/result.hpp"
 
 extern Relation * r;
 extern uint64_t relationsSize;

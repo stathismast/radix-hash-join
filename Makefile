@@ -1,6 +1,6 @@
 CC = g++
 OBJS = main.o ./join/memmap.o ./join/stringList.o ./parse/parse.o \
-		./parse/predicates.o ./singleJoin/result.o ./singleJoin/structs.o
+		./singleJoin/result.o ./singleJoin/structs.o
 SERIAL_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
 		./singleJoin/structs.o ./singleJoin/result.o \
 		./testMain/serialJoin.o
@@ -12,7 +12,7 @@ RANDOM_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
 		./testMain/randomJoin.o
 RESULT_OBJS = ./singleJoin/result.o ./testMain/resultTest.o ./singleJoin/structs.o \
 		./singleJoin/result.o
-PARSE_OBJS = ./testMain/testParse.o ./parse/parse.o ./parse/predicates.o
+PARSE_OBJS = ./testMain/testParse.o ./parse/parse.o
 
 FLAGS = -g3 -Wall
 
@@ -72,9 +72,6 @@ resultTest:$(RESULT_OBJS)
 
 ./parse/parse.o:./parse/parse.cpp
 	$(CC) -c ./parse/parse.cpp $(FLAGS) -o ./parse/parse.o
-
-./parse/predicates.o:./parse/predicates.cpp
-	$(CC) -c ./parse/predicates.cpp $(FLAGS) -o ./parse/predicates.o
 
 testParse:$(PARSE_OBJS)
 	$(CC) -o testParse $(PARSE_OBJS) $(FLAGS)

@@ -1,7 +1,5 @@
-#include "join/memmap.hpp"
 #include "join/stringList.hpp"
 #include "parse/parse.hpp"
-// #include "parse/predicates.hpp"
 
 // Keep the contents of given line, excluding '\n'
 char * getFilePath(char * line){
@@ -87,7 +85,7 @@ int main(void){
     //execute queries etc
     QueryInfo * queryInfo = parseInput(stdin);
     for (int i = 0; i < queryInfo->predicatesCount; i++) {
-        // printPredicate(&queryInfo->predicates[i]);
+        printPredicate(&queryInfo->predicates[i]);
         // execute(&queryInfo->predicates[i]);
     }
 
