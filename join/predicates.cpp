@@ -102,6 +102,8 @@ void executeSelfjoin(Predicate * predicate, uint64_t * queryRelations) {
     deleteColumn(colA);
     deleteColumn(colB);
     deleteIntermediate(&intermediate);
+    deleteResult(res);
+    
     // Load results into Intermediate Results
     intermediate.results = newRes;
     intermediate.relCount = oldRelCount; //or oldRelCount + 1 if !isRelationIn
