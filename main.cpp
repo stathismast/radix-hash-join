@@ -25,7 +25,7 @@ void executeQueries() {
         std::cout << "RE-ORDERED PREDICATES" << std::endl;
         for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
             printPredicate(&queryInfo->predicates[i]);
-            // execute(&queryInfo->predicates[i]);
+            // execute(&queryInfo->predicates[i], queryInfo->relations);
         }
         std::cout << std::endl << std::endl;
 
