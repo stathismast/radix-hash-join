@@ -67,22 +67,53 @@ void executeSelfjoin(Predicate * predicate, uint64_t * queryRelations) {
     Column * colA = construct(intermediate, rel, columnA, queryRelations);
     Column * colB = construct(intermediate, rel, columnB, queryRelations);
     for (uint64_t i = 0; i < colA->size; i++) {
+        // std::cout << "A:" << colA->value[i] << " B:" << colB->value[i] << '\n';
         if (compare(colA->value[i], colB->value[i], '=')) {
+            std::cout << "A:" << colA->value[i] << " B:" << colB->value[i] << '\n';
             insertSingleResult(res, i);
         }
     }
+
+    printSingleResult(res);
+
+    //keep necessary rowids rows from old Intermediate
+    //TO DO Need isRelationIn function because we need intermediate.relCount
+    //+1 if !isRelationIn. Not maybe at this type of predicate but in general
+    uint64_t * tempRow;
+    uint64_t currentRowId;
+    Result * newRes = newResult();
+    //save old intermediate info
+    uint64_t oldRelCount = intermediate.relCount;
+    //iterate over new RowIds
+    for( uint64_t i = 0; i < res->totalEntries; i ++ ){
+        //get i_th new Rowid
+        currentRowId = getEntry(res,i,1)[0];
+        //get corresponding currentRowId row from old intermediate
+        tempRow = getEntry(intermediate.results,currentRowId,oldRelCount);
+
+        //add new row in new intermediate
+        //TO DO In other predicates, if !isRelationIn we need to append the new
+        //real RowId at the end of the row before the insertion
+        //so it will be oldRelCount + 1
+        insertResult(newRes,tempRow,oldRelCount);
+    }
+
 
     deleteColumn(colA);
     deleteColumn(colB);
     deleteIntermediate(&intermediate);
     // Load results into Intermediate Results
-    intermediate.results = res;
-    intermediate.relCount = 1;
+    intermediate.results = newRes;
+    intermediate.relCount = oldRelCount; //or oldRelCount + 1 if !isRelationIn
 
+    //TO DO we need to save old relations before deleteIntermediate
     uint64_t * temp = new uint64_t[1];
     temp[0] = predicate->relationA;
     // temp[0] = queryRelations[predicate->relationA];
     intermediate.relations = temp;
+
+    std::cout << "Final Intermediate:" << '\n';
+    printResult(intermediate.results,intermediate.relCount);
 }
 
 void makeFilter(QueryInfo * q, int relation, int column, char op, int rv, int index) {
