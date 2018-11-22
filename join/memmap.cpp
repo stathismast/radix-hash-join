@@ -16,7 +16,7 @@ uint64_t ** convertMap(uint64_t * data, uint64_t rows, uint64_t cols){
 
     for(uint64_t i=0; i<cols; i++)
         index[i] = data + i * rows;
-    
+
     return index;
 }
 
@@ -59,6 +59,11 @@ void printData(Relation rel){
 
 void mapAllData(Relation ** r, uint64_t * relationsSize){
     char ** inputFiles = getInputFiles(relationsSize);
+
+    if( inputFiles == NULL ){ //no file found
+        r = NULL;
+        return;
+    }
 
     // Allocate an array of relations according to the number of input files
     *r = new Relation[*relationsSize];
