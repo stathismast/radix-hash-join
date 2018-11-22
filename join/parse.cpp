@@ -186,14 +186,16 @@ void findPredicate(char * predicate, QueryInfo * queryInfo, int index) {
         splitAt(predicate, "<", &leftStr, &rightStr);
         char * relationStr, * columnStr;
         splitAt(leftStr, ".", &relationStr, &columnStr);
-        makeFilter(queryInfo, atoi(relationStr), atoi(columnStr), '<', atoi(rightStr), index);
+        makeFilter(queryInfo, atoi(relationStr), atoi(columnStr), '<', \
+                    atoi(rightStr), index);
     } else if (strstr(predicate, ">") != NULL) {
         // split the predicate in the number on the right and the relation and
         // column on the left
         splitAt(predicate, ">", &leftStr, &rightStr);
         char * relationStr, * columnStr;
         splitAt(leftStr, ".", &relationStr, &columnStr);
-        makeFilter(queryInfo, atoi(relationStr), atoi(columnStr), '>', atoi(rightStr), index);
+        makeFilter(queryInfo, atoi(relationStr), atoi(columnStr), '>', \
+                    atoi(rightStr), index);
     } else if (strstr(predicate, "=") != NULL) {
         // split the predicate in the number on the right and the relation and
         // column on the left
@@ -203,7 +205,8 @@ void findPredicate(char * predicate, QueryInfo * queryInfo, int index) {
         if (strstr(rightStr + 1, ".") == NULL) {
             char * relationStr, * columnStr;
             splitAt(leftStr, ".", &relationStr, &columnStr);
-            makeFilter(queryInfo, atoi(relationStr), atoi(columnStr), '=', atoi(rightStr), index);
+            makeFilter(queryInfo, atoi(relationStr), atoi(columnStr), '=', \
+                        atoi(rightStr), index);
         } else {
             char * relationStr, * columnStr;
             // split the left part of the predicate in the relation
@@ -220,7 +223,8 @@ void findPredicate(char * predicate, QueryInfo * queryInfo, int index) {
             if (relationA == relationB) {
                 makeSelfJoin(queryInfo, relationA, columnA, columnB, index);
             } else {
-                makeJoin(queryInfo, relationA, columnA, relationB, columnB, index);
+                makeJoin(queryInfo, relationA, columnA, relationB, columnB, \
+                            index);
             }
         }
     }
