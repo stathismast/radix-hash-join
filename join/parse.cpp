@@ -4,6 +4,8 @@
 #include <iostream>
 #include "parse.hpp"
 
+uint64_t * queryRelations;
+
 QueryInfo * parseInput(char * query) {
     // char * query = NULL;
     // size_t s = 0;
@@ -37,6 +39,8 @@ QueryInfo * parseInput(char * query) {
         "." << queryInfo->sums[i].column << '\n';
     }
     // free(query);
+
+    queryRelations = queryInfo->relations;  // Assign value to global array
     return queryInfo;
 }
 

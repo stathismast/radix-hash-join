@@ -14,6 +14,9 @@ RANDOM_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
 RESULT_OBJS = ./singleJoin/result.o ./testMain/resultTest.o \
 			 ./singleJoin/structs.o ./join/intermediate.o
 PARSE_OBJS = ./testMain/testParse.o ./join/parse.o
+FILTER_OBJS = testMain/filterTest.o ./join/memmap.o ./join/stringList.o ./join/parse.o \
+		./singleJoin/result.o ./singleJoin/structs.o ./join/inputManager.o \
+		./join/intermediate.o ./join/predicates.o
 
 FLAGS = -g3 -Wall
 
@@ -77,6 +80,12 @@ resultTest:$(RESULT_OBJS)
 ./testMain/resultTest.o:./testMain/resultTest.cpp
 	$(CC) -c ./testMain/resultTest.cpp $(FLAGS) -o ./testMain/resultTest.o
 
+filterTest:$(FILTER_OBJS)
+	$(CC) -o filterTest $(FILTER_OBJS) $(FLAGS)
+
+./testMain/filterTest.o:./testMain/filterTest.cpp
+	$(CC) -c ./testMain/filterTest.cpp $(FLAGS) -o ./testMain/filterTest.o
+
 ./testMain/testParse.o:./testMain/testParse.cpp
 	$(CC) -c ./testMain/testParse.cpp $(FLAGS) -o ./testMain/testParse.o
 
@@ -88,4 +97,4 @@ testParse:$(PARSE_OBJS)
 
 clean:
 	rm -rf ./*/*.o *.o ./*/*/*.o a.out main randomJoin serialJoin testParse \
-		oddEvenJoin resultTest ./*/*.gch *.gch ./*/*/*.gch
+		oddEvenJoin resultTest ./*/*.gch *.gch ./*/*/*.gch filterTest
