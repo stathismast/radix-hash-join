@@ -20,35 +20,34 @@ Column * resultToColumn(Result * res, uint64_t col, uint64_t entryCount){
 }
 
 // IR: the intermediate results that we want to use to construct a column
-// colIR: the column in the intermediate results that we want to use
-// colRel: the colmun of the relation that we want to use in the join
+// relation: the relative relation index
+// relColumn: the colmun of the relation that we want to use in the join
 // queryRelations: an array to convert relative indexes to absolute indexes
 // Example:
-// Let's asssume that the intermediate results contain relations 4 and 3.
-// Then let's assume that we want to execute the following join: 3.5 = 7.1
-// 3.5 should be constructed from the intermediate results since 3 is included
-// in the second position in the intermediate results.
-// In that case, colIR will be 1, since relation 3 is at position 1 in the
-// intermediate results and colRel will be 5 since we want the 6th column of
-// relation 3.
+// If we want to construct the relative 3.5 column then 'relation' will be 3
+// and 'relColumn' will be 5 
 Column * construct(Intermediate IR,
-                        uint64_t colIR,
-                        uint64_t colRel,
-                        uint64_t * queryRelations){
+                   uint64_t relation,
+                   uint64_t relColumn,
+                   uint64_t * queryRelations){
     Result * res = IR.results;
-    
-    // Column should be in the range [0, entryCount-1]
-    if(colIR >= IR.relCount) return NULL;
+
+    // Find the index of given relation in the intermediate results
+    uint64_t intermediateIndex;
+    for(uint64_t i=0; i<IR.relCount; i++){
+        if(IR.relations[i] == relation){
+            intermediateIndex = i;
+            break;
+        }
+    }
 
     Column * constructed = newColumn(res->totalEntries);
 
     for(uint64_t i=0; i<res->totalEntries; i++){
         constructed->rowid[i] = i;
 
-        uint64_t relIndex = queryRelations[IR.relations[colIR]];
-        uint64_t relColumn = colRel;
-        uint64_t relRowID = (getEntry(res,i,IR.relCount))[colIR];
-
+        uint64_t relIndex = queryRelations[IR.relations[intermediateIndex]];
+        uint64_t relRowID = (getEntry(res,i,IR.relCount))[intermediateIndex];
         constructed->value[i] = r[relIndex].data[relColumn][relRowID];
     }
 
