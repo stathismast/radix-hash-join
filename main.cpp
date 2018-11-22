@@ -22,10 +22,12 @@ void executeQueries() {
         }
 
         QueryInfo * queryInfo = parseInput(line);
+        std::cout << "RE-ORDERED PREDICATES" << std::endl;
         for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
             printPredicate(&queryInfo->predicates[i]);
             // execute(&queryInfo->predicates[i]);
         }
+        std::cout << std::endl << std::endl;
 
         deleteQueryInfo(queryInfo);
         // free(line);

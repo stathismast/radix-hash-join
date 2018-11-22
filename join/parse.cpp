@@ -195,7 +195,7 @@ void findPredicate(char * predicate, QueryInfo * queryInfo, int index) {
         // column on the left
         splitAt(predicate, "<", &leftStr, &rightStr);
         char * relationStr, * columnStr;
-        splitAt(leftStr, ".", &columnStr, &relationStr);
+        splitAt(leftStr, ".", &relationStr, &columnStr);
         makeFilter(queryInfo, atoi(relationStr), atoi(columnStr), '<', atoi(rightStr), index);
         // queryInfo->predicates[index] = new Filter(atoi(relationStr), atoi(columnStr), '<', atoi(rightStr) );
     } else if (strstr(predicate, ">") != NULL) {
@@ -203,7 +203,7 @@ void findPredicate(char * predicate, QueryInfo * queryInfo, int index) {
         // column on the left
         splitAt(predicate, ">", &leftStr, &rightStr);
         char * relationStr, * columnStr;
-        splitAt(leftStr, ".", &columnStr, &relationStr);
+        splitAt(leftStr, ".", &relationStr, &columnStr);
         makeFilter(queryInfo, atoi(relationStr), atoi(columnStr), '>', atoi(rightStr), index);
         // queryInfo->predicates[index] = new Filter(atoi(relationStr), atoi(columnStr), '>', atoi(rightStr) );
     } else if (strstr(predicate, "=") != NULL) {
@@ -214,7 +214,7 @@ void findPredicate(char * predicate, QueryInfo * queryInfo, int index) {
          // it's an equality filter
         if (strstr(rightStr + 1, ".") == NULL) {
             char * relationStr, * columnStr;
-            splitAt(leftStr, ".", &columnStr, &relationStr);
+            splitAt(leftStr, ".", &relationStr, &columnStr);
             makeFilter(queryInfo, atoi(relationStr), atoi(columnStr), '=', atoi(rightStr), index);
             // queryInfo->predicates[index] = new Filter(atoi(relationStr), atoi(columnStr), '=', atoi(rightStr) );
         } else {
