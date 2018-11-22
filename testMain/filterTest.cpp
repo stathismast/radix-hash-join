@@ -27,6 +27,10 @@ void executeQueries() {
             execute(&queryInfo->predicates[i], queryInfo->relations);
         }
 
+        Column * temp = construct(intermediate, 0, 0, queryInfo->relations);
+        printColumn(temp);
+        deleteColumn(temp);
+
         deleteQueryInfo(queryInfo);
         // free(line);
         // line = NULL;

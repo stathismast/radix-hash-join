@@ -18,20 +18,20 @@ bool compare(uint64_t x, uint64_t y, char op) {
 
 }
 
-void execute(Predicate * predicate, uint64_t * relations) {
+void execute(Predicate * predicate, uint64_t * queryRelations) {
     if (predicate->predicateType == 1) {
-        executeFilter(predicate, relations);
+        executeFilter(predicate, queryRelations);
     } else if (predicate->predicateType == 2) {
-        executeJoin(predicate, relations);
+        executeJoin(predicate, queryRelations);
     } else {
-        executeSelfjoin(predicate, relations);
+        executeSelfjoin(predicate, queryRelations);
     }
 }
 
-void executeFilter(Predicate * predicate, uint64_t * relations) {
+void executeFilter(Predicate * predicate, uint64_t * queryRelations) {
     // if(relationsSize) printData(r[relation]);
     // Relation rel = r[queryRelations[predicate->relationA]];
-    Relation rel = r[relations[predicate->relationA]];
+    Relation rel = r[queryRelations[predicate->relationA]];
     Result * res = newResult();
     int column = predicate->columnA;
     uint64_t value = predicate->value;
@@ -49,18 +49,18 @@ void executeFilter(Predicate * predicate, uint64_t * relations) {
     intermediate.relCount = 1;
 
     uint64_t * temp = new uint64_t[1];
-    temp[0] = relations[predicate->relationA];
+    temp[0] = predicate->relationA;
     // temp[0] = queryRelations[predicate->relationA];
     intermediate.relations = temp;
 }
 
-void executeJoin(Predicate * predicate, uint64_t * relations) {
+void executeJoin(Predicate * predicate, uint64_t * queryRelations) {
     std::cout << "Join" << '\n';
 }
 
-void executeSelfjoin(Predicate * predicate, uint64_t * relations) {
+void executeSelfjoin(Predicate * predicate, uint64_t * queryRelations) {
     // Relation rel = r[predicate->relationA];
-    Relation rel = r[relations[predicate->relationA]];
+    Relation rel = r[queryRelations[predicate->relationA]];
     Result * res = newResult();
     int columnA = predicate->columnA;
     int columnB = predicate->columnB;
@@ -80,7 +80,7 @@ void executeSelfjoin(Predicate * predicate, uint64_t * relations) {
     // intermediate.relCount = 1;
     //
     // uint64_t * temp = new uint64_t[1];
-    // temp[0] = relations[predicate->relationA];
+    // temp[0] = queryRelations[predicate->relationA];
     // // temp[0] = predicate->relationA;
     // intermediate.relations = temp;
 
