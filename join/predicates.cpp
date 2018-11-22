@@ -5,6 +5,8 @@ extern uint64_t relationsSize;
 
 extern Intermediate intermediate;
 
+extern uint64_t * queryRelations;
+
 bool compare(uint64_t x, uint64_t y, char op) {
     // std::cout << "x = " << x << ", y = " << y << '\n';
     if (op == '<')
@@ -28,7 +30,7 @@ void execute(Predicate * predicate) {
 
 void executeFilter(Predicate * predicate) {
     // if(relationsSize) printData(r[relation]);
-    Relation rel = r[predicate->relationA];
+    Relation rel = r[queryRelations[predicate->relationA]];
     Result * res = newResult();
     int column = predicate->columnA;
     uint64_t value = predicate->value;
@@ -46,7 +48,7 @@ void executeFilter(Predicate * predicate) {
     intermediate.relCount = 1;
 
     uint64_t * temp = new uint64_t[1];
-    temp[0] = predicate->relationA;
+    temp[0] = queryRelations[predicate->relationA];
     intermediate.relations = temp;
 }
 

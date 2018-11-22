@@ -27,10 +27,11 @@ typedef struct StringList{
 } StringList;
 
 SLNode * newSLNode(char* filePath);
-StringList * newStringList(char* filePath);
+StringList * newStringList();
 void deleteStringList(StringList * list);
 void insertFile(StringList * list, char* filePath);
 void printFiles(StringList * list);
 char ** convertToArray(StringList * list);
+bool isEmpty(StringList * list);
 
 #endif

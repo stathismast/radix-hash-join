@@ -12,17 +12,20 @@ SLNode * newSLNode(char* filePath){
     return temp;
 }
 
-StringList * newStringList(char* filePath){
+StringList * newStringList(){
     StringList * list;
 
     list = new StringList;
     CHECK_OR_EXIT(list);
 
-    list->first = newSLNode(filePath);
-    list->last = list->first;
-    list->count = 1;
-
+    list->count = 0;
+    list->first = list->last = NULL;
+    
     return list;
+}
+
+bool isEmpty(StringList * list){
+    return (list->first == NULL);
 }
 
 void deleteStringList(StringList * list){
@@ -43,8 +46,16 @@ void deleteStringList(StringList * list){
 void insertFile(StringList * list, char* filePath){
     SLNode * temp;
     temp = newSLNode(filePath);
-    list->last->next = temp;
-    list->last = temp;
+
+    if( isEmpty(list) ){
+        temp->next = NULL;
+        list->first = list->last = temp;
+    }
+    else{
+        list->last->next = temp;
+        list->last = temp;
+    }
+
     list->count ++;
 }
 

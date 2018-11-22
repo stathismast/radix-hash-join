@@ -17,16 +17,17 @@ typedef struct Predicate {
 } Predicate;
 
 typedef struct SumStruct {
-    int relation;
-    int column;
+    uint64_t relation;
+    uint64_t column;
 } SumStruct;
 
 typedef struct QueryInfo {
-    int * relations;
+    uint64_t * relations;
+    uint64_t relationsCount;
     Predicate * predicates;
-    int predicatesCount;
+    uint64_t predicatesCount;
     struct SumStruct * sums;
-    int sumsCount;
+    uint64_t sumsCount;
 } QueryInfo;
 
 bool compare(uint64_t x, uint64_t y, char op);
