@@ -6,6 +6,88 @@
 
 uint64_t * queryRelations;
 
+void swapPredicates(Predicate * A, Predicate * B){
+    Predicate temp = *A;
+    *A = *B;
+    *B = temp;
+}
+
+// determine whether or not a given value is in the given uint64_t array
+bool inArray(uint64_t value, uint64_t * array, uint64_t arrayLength){
+    for(uint64_t i=0; i<arrayLength; i++)
+        if(value == array[i])
+            return 1;
+    return 0;
+
+}
+
+void reOrderPredicates(QueryInfo * queryInfo){
+    Predicate * predicates  = queryInfo->predicates;
+    uint64_t count = queryInfo->predicatesCount;
+
+    if(count == 0) return;
+
+    uint64_t * vIntermediate = new uint64_t[queryInfo->relationsCount];
+    uint64_t viStart = 0;
+    uint64_t viEnd = 0;
+
+    uint64_t orderedCount = 0;
+
+    // Find the filter and bring it at the first position
+    for(uint64_t i=0; i<count; i++){
+        if(predicates[i].predicateType == 1){
+            swapPredicates(&predicates[i], &predicates[orderedCount]);
+            vIntermediate[viEnd] = predicates[orderedCount].relationA;
+            viEnd++;
+            orderedCount++;
+        }
+    }
+
+    while(viStart != viEnd){
+        for(uint64_t i=orderedCount; i<count; i++){
+
+            // If the next relation in intermediate is included in a join
+            if(vIntermediate[viStart] == predicates[i].relationA){
+
+                // Bring that predicate up to the next spot
+                swapPredicates(&predicates[i], &predicates[orderedCount]);
+
+                // Add new relation into vIntermediate if it isn't already there
+                if(predicates[i].predicateType == 2 &&
+                   !inArray(predicates[orderedCount].relationB, vIntermediate, viEnd)){
+                        vIntermediate[viEnd] = predicates[orderedCount].relationB;
+                        viEnd++;
+                }
+
+                // Increase the number of ordered relations
+                orderedCount++;
+            }
+
+            // If this is certainly not a self join
+            // And if the next relation in intermediate is included in a join
+            if(predicates[i].predicateType == 2 &&
+               vIntermediate[viStart] == predicates[i].relationB){
+
+                // Bring that predicate up to the next spot
+                swapPredicates(&predicates[i], &predicates[orderedCount]);
+
+                // Add new relation into vIntermediate if it isn't already there
+                if(!inArray(predicates[orderedCount].relationA, vIntermediate, viEnd)){
+                        vIntermediate[viEnd] = predicates[orderedCount].relationA;
+                        viEnd++;
+                }
+
+                // Increase the number of ordered relations
+                orderedCount++;
+                
+            }
+        }
+        viStart++;
+    }
+
+    delete[] vIntermediate;
+}
+
 QueryInfo * parseInput(char * query) {
     // char * query = NULL;
     // size_t s = 0;
@@ -41,25 +123,29 @@ QueryInfo * parseInput(char * query) {
     // free(query);
 
     queryRelations = queryInfo->relations;  // Assign value to global array
+
+    reOrderPredicates(queryInfo);
+
     return queryInfo;
 }
 
 void parseRelations(char * relationsStr, QueryInfo * queryInfo) {
     char * temp = new char[strlen(relationsStr) + 1];
     strncpy(temp, relationsStr, strlen(relationsStr) + 1);
-    int relationsCount = 0;
+    uint64_t relationsCount = 0;
     relationsCount = countArgs(temp, " \t");
+    queryInfo->relationsCount = relationsCount;
     delete[] temp;
 
     queryInfo->relations = new uint64_t[relationsCount];
 
     queryInfo->relations[0] = atoi(strtok(relationsStr, " \t"));
-    for (int i = 1; i < relationsCount; i++) {
+    for (uint64_t i = 1; i < relationsCount; i++) {
         queryInfo->relations[i] = atoi(strtok(NULL, " \t"));
     }
 
     // print the relations of the query
-    for (int i = 0; i < relationsCount; i++) {
+    for (uint64_t i = 0; i < relationsCount; i++) {
         std::cout << "\trelation = " << queryInfo->relations[i] << '\n';
     }
 }

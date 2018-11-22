@@ -23,6 +23,7 @@ typedef struct SumStruct {
 
 typedef struct QueryInfo {
     uint64_t * relations;
+    uint64_t relationsCount;
     Predicate * predicates;
     uint64_t predicatesCount;
     struct SumStruct * sums;
