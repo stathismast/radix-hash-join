@@ -30,6 +30,11 @@ void executeQueries() {
 int main(void){
     mapAllData(&r, &relationsSize);
 
+    if( r == NULL ){ //no file found
+        std::cout << "No file found. Please try again. Bye!" << '\n';
+        return -1;
+    }
+
     // Print the data from a given file
     // if(relationsSize) printData(r[0]);
     std::cout << '\n';
