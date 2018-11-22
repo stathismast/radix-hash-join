@@ -33,7 +33,7 @@ bool compare(uint64_t x, uint64_t y, char op);
 
 void execute(Predicate * p);
 
-void executeFilter(QueryInfo * q, int index);
+void executeFilter(Predicate * predicate);
 void executeJoin(Predicate * predicate);
 void executeSelfjoin(Predicate * predicate);
 

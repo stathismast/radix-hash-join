@@ -18,7 +18,11 @@ void executeQueries() {
         QueryInfo * queryInfo = parseInput(line);
         for (int i = 0; i < queryInfo->predicatesCount; i++) {
             // printPredicate(&queryInfo->predicates[i]);
-            execute(&queryInfo->predicates[i]);
+            execute(&(queryInfo->predicates[i]));
+
+            // printResult(intermediate.results, intermediate.relCount);
+            //
+            // deleteIntermediate(&intermediate);
         }
         deleteQueryInfo(queryInfo);
         free(line);
@@ -37,10 +41,6 @@ int main(void){
 
     //execute queries etc
     executeQueries();
-
-    printResult(intermediate.results, intermediate.relCount);
-
-    deleteIntermediate(&intermediate);
 
     unMapAllData(r, relationsSize);
 

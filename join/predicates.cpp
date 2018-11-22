@@ -6,6 +6,7 @@ extern uint64_t relationsSize;
 extern Intermediate intermediate;
 
 bool compare(uint64_t x, uint64_t y, char op) {
+    // std::cout << "x = " << x << ", y = " << y << '\n';
     if (op == '<')
         return x < y;
     else if (op == '>')
@@ -13,6 +14,16 @@ bool compare(uint64_t x, uint64_t y, char op) {
     else
         return x == y;
 
+}
+
+void execute(Predicate * predicate) {
+    if (predicate->predicateType == 1) {
+        executeFilter(predicate);
+    } else if (predicate->predicateType == 2) {
+        executeJoin(predicate);
+    } else {
+        executeSelfjoin(predicate);
+    }
 }
 
 void executeFilter(Predicate * predicate) {
@@ -44,19 +55,28 @@ void executeJoin(Predicate * predicate) {
 }
 
 void executeSelfjoin(Predicate * predicate) {
-    std::cout << "Executing SelfJoin" << '\n';
     Relation rel = r[predicate->relationA];
     Result * res = newResult();
     int columnA = predicate->columnA;
     int columnB = predicate->columnB;
+    std::cout << "Executing SelfJoin of relation " << predicate->relationA <<
+    " and between columns " << columnA << " and " << columnB << '\n';
     // make the list
     for (uint64_t i = 0; i < rel.rows; i++) {
+        // std::cout << i << '\n';
         if (compare(rel.data[columnA][i], rel.data[columnB][i], '=') ) {
-            // std::cout << rel.data[column][i] << '\n';
+            std::cout << rel.data[columnA][i] << '\n';
             insertSingleResult(res, i);
         }
     }
-    printSingleResult(res);
+
+    // Load results into Intermediate Results
+    intermediate.results = res;
+    intermediate.relCount = 1;
+
+    uint64_t * temp = new uint64_t[1];
+    temp[0] = predicate->relationA;
+    intermediate.relations = temp;
 
     // Could also use
     // printResult(res,1);
@@ -79,20 +99,13 @@ void makeJoin(QueryInfo * q, int relationA, int columnA, int relationB, int colu
 }
 
 void makeSelfJoin(QueryInfo * q, int relation, int columnA, int columnB, int index) {
+    std::cout << "relation = " << relation << '\n';
     q->predicates[index].relationA = (uint64_t) relation;
     q->predicates[index].columnA = (uint64_t) columnA;
     q->predicates[index].columnB = (uint64_t) columnB;
     q->predicates[index].predicateType = 3;
-}
-
-void execute(Predicate * predicate) {
-    if (predicate->predicateType == 1) {
-        executeFilter(predicate);
-    } else if (predicate->predicateType == 2) {
-        executeJoin(predicate);
-    } else {
-        executeSelfjoin(predicate);
-    }
+    std::cout << "Making SelfJoin of relation " << q->predicates[index].relationA <<
+    " and between columns " << q->predicates[index].columnA << " and " << q->predicates[index].columnB << '\n';
 }
 
 void printPredicate(Predicate * predicate) {
