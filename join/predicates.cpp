@@ -72,6 +72,8 @@ void executeSelfjoin(Predicate * predicate, uint64_t * queryRelations) {
         }
     }
 
+    deleteColumn(colA);
+    deleteColumn(colB);
     deleteIntermediate(&intermediate);
     // Load results into Intermediate Results
     intermediate.results = res;
