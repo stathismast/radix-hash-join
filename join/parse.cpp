@@ -79,7 +79,7 @@ void reOrderPredicates(QueryInfo * queryInfo){
 
                 // Increase the number of ordered relations
                 orderedCount++;
-                
+
             }
         }
         viStart++;
@@ -111,15 +111,11 @@ QueryInfo * parseInput(char * query) {
         std::cout << "\tsum = " << queryInfo->sums[i].relation << \
         "." << queryInfo->sums[i].column << '\n';
     }
-<<<<<<< HEAD
-=======
     // free(query);
 
     queryRelations = queryInfo->relations;  // Assign value to global array
 
     reOrderPredicates(queryInfo);
-
->>>>>>> d7eeb6ad880afd78a5cfe495c1688eae70ca092a
     return queryInfo;
 }
 
