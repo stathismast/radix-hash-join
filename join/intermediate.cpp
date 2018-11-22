@@ -28,8 +28,9 @@ Column * resultToColumn(Result * res, uint64_t col, uint64_t entryCount){
 // Then let's assume that we want to execute the following join: 3.5 = 7.1
 // 3.5 should be constructed from the intermediate results since 3 is included
 // in the second position in the intermediate results.
-// In that case, colIR will be 1, since relation 3 is at position 1 in the intermediate results
-// intermediate results and colRel will be 2 since we want the 
+// In that case, colIR will be 1, since relation 3 is at position 1 in the
+// intermediate results and colRel will be 5 since we want the 6th column of
+// relation 3.
 Column * construct(Intermediate IR,
                         uint64_t colIR,
                         uint64_t colRel,
