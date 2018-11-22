@@ -17,6 +17,9 @@ PARSE_OBJS = ./testMain/testParse.o ./join/parse.o
 FILTER_OBJS = testMain/filterTest.o ./join/memmap.o ./join/stringList.o ./join/parse.o \
 		./singleJoin/result.o ./singleJoin/structs.o ./join/inputManager.o \
 		./join/intermediate.o ./join/predicates.o
+PARSER_OBJS = testMain/parserTest.o  ./join/memmap.o ./join/stringList.o ./join/parse.o \
+		./singleJoin/result.o ./singleJoin/structs.o ./join/inputManager.o \
+		./join/intermediate.o ./join/predicates.o
 
 FLAGS = -g3 -Wall
 
@@ -89,12 +92,18 @@ filterTest:$(FILTER_OBJS)
 ./testMain/testParse.o:./testMain/testParse.cpp
 	$(CC) -c ./testMain/testParse.cpp $(FLAGS) -o ./testMain/testParse.o
 
-./join/parse.o:./join/parse.cpp
-	$(CC) -c ./join/parse.cpp $(FLAGS) -o ./join/parse.o
-
 testParse:$(PARSE_OBJS)
 	$(CC) -o testParse $(PARSE_OBJS) $(FLAGS)
 
+./testMain/parserTest.o:./testMain/parserTest.cpp
+	$(CC) -c ./testMain/parserTest.cpp $(FLAGS) -o ./testMain/parserTest.o
+
+parserTest:$(PARSER_OBJS)
+	$(CC) -o parserTest $(PARSER_OBJS) $(FLAGS)
+
+./join/parse.o:./join/parse.cpp
+	$(CC) -c ./join/parse.cpp $(FLAGS) -o ./join/parse.o
+
 clean:
 	rm -rf ./*/*.o *.o ./*/*/*.o a.out main randomJoin serialJoin testParse \
-		oddEvenJoin resultTest ./*/*.gch *.gch ./*/*/*.gch filterTest
+		oddEvenJoin resultTest ./*/*.gch *.gch ./*/*/*.gch filterTest parserTest
