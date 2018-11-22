@@ -25,14 +25,14 @@ QueryInfo * parseInput(char * query) {
     parseRelations(relationsStr, queryInfo);
     std::cout << "PREDICATES" << '\n';
     parsePredicates(predicatesStr, queryInfo);
-    for (int i = 0; i < queryInfo->predicatesCount; i++) {
+    for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
         std::cout << "\t";
         printPredicate(&queryInfo->predicates[i]);
         // queryInfo->predicates[i]->printInfo();
     }
     std::cout << "SUMS" << '\n';
     parseSums(sumsStr, queryInfo);
-    for (int i = 0; i < queryInfo->sumsCount; i++) {
+    for (uint64_t i = 0; i < queryInfo->sumsCount; i++) {
         std::cout << "\tsum = " << queryInfo->sums[i].relation << \
         "." << queryInfo->sums[i].column << '\n';
     }
@@ -47,7 +47,7 @@ void parseRelations(char * relationsStr, QueryInfo * queryInfo) {
     relationsCount = countArgs(temp, " \t");
     delete[] temp;
 
-    queryInfo->relations = new int[relationsCount];
+    queryInfo->relations = new uint64_t[relationsCount];
 
     queryInfo->relations[0] = atoi(strtok(relationsStr, " \t"));
     for (int i = 1; i < relationsCount; i++) {
@@ -70,7 +70,7 @@ void parsePredicates(char * predicatesStr, QueryInfo * queryInfo) {
 
     char * predicate = strtok(predicatesStr, "&");
     findPredicate(predicate, queryInfo, 0);
-    for (int i = 1; i < queryInfo->predicatesCount; i++) {
+    for (uint64_t i = 1; i < queryInfo->predicatesCount; i++) {
         predicate = strtok(NULL, "&");
         findPredicate(predicate, queryInfo, i);
     }
@@ -89,7 +89,7 @@ void parseSums(char * sumsStr, QueryInfo * queryInfo) {
     splitAt(sum, ".", &relationStr, &columnStr);
     queryInfo->sums[0].relation = atoi(relationStr);
     queryInfo->sums[0].column = atoi(columnStr);
-    for (int i = 1; i < queryInfo ->sumsCount; i++) {
+    for (uint64_t i = 1; i < queryInfo ->sumsCount; i++) {
         char * sum = strtok(NULL, " \t");
         splitAt(sum, ".", &relationStr, &columnStr);
         queryInfo->sums[i].relation = atoi(relationStr);

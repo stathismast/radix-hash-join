@@ -16,7 +16,7 @@ void executeQueries() {
             continue;
         }
         QueryInfo * queryInfo = parseInput(line);
-        for (int i = 0; i < queryInfo->predicatesCount; i++) {
+        for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
             // printPredicate(&queryInfo->predicates[i]);
             execute(&queryInfo->predicates[i]);
         }
