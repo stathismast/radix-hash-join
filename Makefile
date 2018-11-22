@@ -115,4 +115,5 @@ parserTest:$(PARSER_OBJS)
 
 clean:
 	rm -rf ./*/*.o *.o ./*/*/*.o a.out main randomJoin serialJoin testParse \
-		oddEvenJoin resultTest ./*/*.gch *.gch ./*/*/*.gch filterTest parserTest
+		oddEvenJoin resultTest ./*/*.gch *.gch ./*/*/*.gch filterTest parserTest \
+		selfJoinTest
