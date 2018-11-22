@@ -17,6 +17,9 @@ PARSE_OBJS = ./testMain/testParse.o ./join/parse.o
 FILTER_OBJS = testMain/filterTest.o ./join/memmap.o ./join/stringList.o ./join/parse.o \
 		./singleJoin/result.o ./singleJoin/structs.o ./join/inputManager.o \
 		./join/intermediate.o ./join/predicates.o
+SELF_JOIN_OBJS = testMain/filterTest.o ./join/memmap.o ./join/stringList.o ./join/parse.o \
+		./singleJoin/result.o ./singleJoin/structs.o ./join/inputManager.o \
+		./join/intermediate.o ./join/predicates.o
 PARSER_OBJS = testMain/parserTest.o  ./join/memmap.o ./join/stringList.o ./join/parse.o \
 		./singleJoin/result.o ./singleJoin/structs.o ./join/inputManager.o \
 		./join/intermediate.o ./join/predicates.o
@@ -88,6 +91,12 @@ filterTest:$(FILTER_OBJS)
 
 ./testMain/filterTest.o:./testMain/filterTest.cpp
 	$(CC) -c ./testMain/filterTest.cpp $(FLAGS) -o ./testMain/filterTest.o
+
+selfJoinTest:$(SELF_JOIN_OBJS)
+	$(CC) -o selfJoinTest $(SELF_JOIN_OBJS) $(FLAGS)
+
+./testMain/selfJoinTest.o:./testMain/selfJoinTest.cpp
+	$(CC) -c ./testMain/selfJoinTest.cpp $(FLAGS) -o ./testMain/selfJoinTest.o
 
 ./testMain/testParse.o:./testMain/testParse.cpp
 	$(CC) -c ./testMain/testParse.cpp $(FLAGS) -o ./testMain/testParse.o
