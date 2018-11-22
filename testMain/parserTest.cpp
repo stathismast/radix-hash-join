@@ -22,14 +22,12 @@ void executeQueries() {
         }
 
         QueryInfo * queryInfo = parseInput(line);
+        std::cout << "RE-ORDERED PREDICATES" << std::endl;
         for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
-            // printPredicate(&queryInfo->predicates[i]);
-            execute(&queryInfo->predicates[i], queryInfo->relations);
+            printPredicate(&queryInfo->predicates[i]);
+            // execute(&queryInfo->predicates[i], queryInfo->relations);
         }
-
-        Column * temp = construct(intermediate, 0, 0, queryInfo->relations);
-        printColumn(temp);
-        deleteColumn(temp);
+        std::cout << std::endl << std::endl;
 
         deleteQueryInfo(queryInfo);
         // free(line);
@@ -48,14 +46,15 @@ int main(void){
 
     // Print the data from a given file
     // if(relationsSize) printData(r[0]);
+
     std::cout << '\n';
 
     //execute queries etc
     executeQueries();
 
-    printResult(intermediate.results, intermediate.relCount);
+    // printResult(intermediate.results, intermediate.relCount);
 
-    deleteIntermediate(&intermediate);
+    // deleteIntermediate(&intermediate);
 
     unMapAllData(r, relationsSize);
 
