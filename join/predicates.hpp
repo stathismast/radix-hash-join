@@ -32,11 +32,11 @@ typedef struct QueryInfo {
 
 bool compare(uint64_t x, uint64_t y, char op);
 
-void execute(Predicate * p);
+void execute(Predicate * p, uint64_t * relations);
 
-void executeFilter(Predicate * predicate);
-void executeJoin(Predicate * predicate);
-void executeSelfjoin(Predicate * predicate);
+void executeFilter(Predicate * predicate, uint64_t * relations);
+void executeJoin(Predicate * predicate, uint64_t * relations);
+void executeSelfjoin(Predicate * predicate, uint64_t * relations);
 
 void makeFilter(QueryInfo * q, int relation, int column, char op, int rv,
                 int index);

@@ -24,7 +24,7 @@ void executeQueries() {
         QueryInfo * queryInfo = parseInput(line);
         for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
             // printPredicate(&queryInfo->predicates[i]);
-            execute(&queryInfo->predicates[i]);
+            execute(&queryInfo->predicates[i], queryInfo->relations);
         }
 
         deleteQueryInfo(queryInfo);

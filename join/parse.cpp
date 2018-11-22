@@ -4,7 +4,7 @@
 #include <iostream>
 #include "parse.hpp"
 
-uint64_t * queryRelations;
+// uint64_t * queryRelations;
 
 void swapPredicates(Predicate * A, Predicate * B){
     Predicate temp = *A;
@@ -113,7 +113,7 @@ QueryInfo * parseInput(char * query) {
     }
     // free(query);
 
-    queryRelations = queryInfo->relations;  // Assign value to global array
+    // queryRelations = queryInfo->relations;  // Assign value to global array
 
     reOrderPredicates(queryInfo);
     return queryInfo;
