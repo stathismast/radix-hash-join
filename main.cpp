@@ -1,5 +1,5 @@
 #include "join/parse.hpp"
-
+#include "join/inputManager.hpp" //for ignoreLine
 //global
 Relation * r;
 uint64_t relationsSize;
@@ -10,19 +10,27 @@ void executeQueries() {
     char * line = NULL;
     size_t s = 0;
     while (getline(&line, &s, stdin) > 0) {
+
+         if(ignoreLine(line)){
+             continue;
+         }
+
         if (strcmp(line, "F\n") == 0) {
             std::cout << "**End of Batch**" << '\n';
             // free(line);
             continue;
         }
+
         QueryInfo * queryInfo = parseInput(line);
+
         for (int i = 0; i < queryInfo->predicatesCount; i++) {
             // printPredicate(&queryInfo->predicates[i]);
             execute(&queryInfo->predicates[i]);
         }
+
         deleteQueryInfo(queryInfo);
-        free(line);
-        line = NULL;
+        // free(line);
+        // line = NULL;
     }
     free(line);
 }
