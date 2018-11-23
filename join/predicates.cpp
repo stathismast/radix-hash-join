@@ -66,17 +66,17 @@ void executeSelfjoin(Predicate * predicate, uint64_t * queryRelations) {
     uint64_t columnA = predicate->columnA;
     uint64_t columnB = predicate->columnB;
 
-    Column * colA = construct(intermediate, rel, columnA, queryRelations);
-    Column * colB = construct(intermediate, rel, columnB, queryRelations);
-    for (uint64_t i = 0; i < colA->size; i++) {
-        // std::cout << "A:" << colA->value[i] << " B:" << colB->value[i] << '\n';
-        if (compare(colA->value[i], colB->value[i], '=')) {
-            std::cout << "A:" << colA->value[i] << " B:" << colB->value[i] << '\n';
+    SelfJoinColumn * col = selfJoinConstruct(intermediate, rel,
+                                             columnA, columnB,
+                                             queryRelations);
+    for (uint64_t i = 0; i < col->size; i++) {
+        if (compare(col->valueA[i], col->valueB[i], '=')) {
+            std::cout << "A:" << col->valueA[i] 
+                      << " B:" << col->valueB[i] << '\n';
             insertSingleResult(res, i);
         }
     }
-    deleteColumn(colA);
-    deleteColumn(colB);
+    deleteSJC(col);
 
     std::cout << "Result of self join is:" << std::endl;
     printSingleResult(res);

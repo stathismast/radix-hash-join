@@ -54,7 +54,54 @@ Column * construct(Intermediate IR,
     return constructed;
 }
 
+// Similar to 'construct' function.
+// This one is designed for self join executions. It uses the 'SelfJoinColumn'
+// data structure. This way we can reduce the memory required for a self join
+// by 25%, since we don't need to store rowIDs twice in a self join.
+SelfJoinColumn * selfJoinConstruct(Intermediate IR,
+                                   uint64_t relation,
+                                   uint64_t relColumnA,
+                                   uint64_t relColumnB,
+                                   uint64_t * queryRelations){
+    Result * res = IR.results;
+
+    // Find the index of given relation in the intermediate results
+    uint64_t intermediateIndex;
+    for(uint64_t i=0; i<IR.relCount; i++){
+        if(IR.relations[i] == relation){
+            intermediateIndex = i;
+            break;
+        }
+    }
+
+    // Create new SelfJoinColumn
+    SelfJoinColumn * constructed = new SelfJoinColumn();
+    constructed->rowid = new uint64_t[res->totalEntries];
+    constructed->valueA = new uint64_t[res->totalEntries];
+    constructed->valueB = new uint64_t[res->totalEntries];
+    constructed->size = res->totalEntries;
+
+    for(uint64_t i=0; i<res->totalEntries; i++){
+        constructed->rowid[i] = i;
+
+        uint64_t relIndex = queryRelations[IR.relations[intermediateIndex]];
+        uint64_t relRowID = (getEntry(res,i,IR.relCount))[intermediateIndex];
+
+        constructed->valueA[i] = r[relIndex].data[relColumnA][relRowID];
+        constructed->valueB[i] = r[relIndex].data[relColumnB][relRowID];
+    }
+
+    return constructed;
+}
+
 void deleteIntermediate(Intermediate * im){
     deleteResult(im->results);
     delete[] im->relations;
+}
+
+void deleteSJC(SelfJoinColumn * sjc){
+    delete[] sjc->rowid;
+    delete[] sjc->valueA;
+    delete[] sjc->valueB;
+    delete sjc;
 }
