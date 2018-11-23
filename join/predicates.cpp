@@ -4,7 +4,7 @@
 extern Relation * r;
 extern uint64_t relationsSize;
 
-extern Intermediate intermediate;
+extern Intermediate IR;
 
 // extern uint64_t * queryRelations;
 
@@ -47,13 +47,13 @@ void executeFilter(Predicate * predicate, uint64_t * queryRelations) {
     }
 
     // Load results into Intermediate Results
-    intermediate.results = res;
-    intermediate.relCount = 1;
+    IR.results = res;
+    IR.relCount = 1;
 
     uint64_t * temp = new uint64_t[1];
     temp[0] = predicate->relationA;
     // temp[0] = queryRelations[predicate->relationA];
-    intermediate.relations = temp;
+    IR.relations = temp;
 }
 
 void executeJoin(Predicate * predicate, uint64_t * queryRelations) {
@@ -62,11 +62,10 @@ void executeJoin(Predicate * predicate, uint64_t * queryRelations) {
     uint64_t relB = predicate->relationB;
     uint64_t colB = predicate->columnB;
 
+    uint64_t relNotInIR;
+
     std::cout << "Executing join:" << relA << "." << colA << " = "
                                    << relB << "." << colB << '\n';
-
-    // Shorter name for intermediate
-    Intermediate IR = intermediate;
 
     if(isInIntermediate(IR, relA) && isInIntermediate(IR, relB)){
         Result * res = newResult();
@@ -105,10 +104,12 @@ void executeJoin(Predicate * predicate, uint64_t * queryRelations) {
     if(isInIntermediate(IR,relA) && !isInIntermediate(IR,relB)){
         fromIntermediate = construct(IR,relA,colA,queryRelations);
         fromMappedData = constructMappedData(relB,colB,queryRelations);
+        relNotInIR = relB;
     }
     else if(!isInIntermediate(IR,relA) && isInIntermediate(IR,relB)){
         fromMappedData = constructMappedData(relA,colA,queryRelations);
         fromIntermediate = construct(IR,relB,colB,queryRelations);
+        relNotInIR = relA;
     }
     else{
         std::cout << "Error in executeJoin(). No relation is present in the "
@@ -125,7 +126,51 @@ void executeJoin(Predicate * predicate, uint64_t * queryRelations) {
     std::cout << "Join done. Results are:" << std::endl;
     printDoubleResult(res);
 
+    joinUpdateIR(res, relNotInIR);
+
     deleteResult(res);
+}
+
+// In the results, the 'left' column will always be from the IR
+void joinUpdateIR(Result * res, uint64_t newRel){
+    uint64_t * resEntry;
+    uint64_t * IREntry;
+    uint64_t * newIREntry = new uint64_t[IR.relCount+1];
+    Result * newResults = newResult();
+
+    // Iterate over the join results
+    for(uint64_t i=0; i<res->totalEntries; i++){
+        
+        // Get next result
+        resEntry = getEntry(res,i,2);
+
+        // Get the row from 'intermediate' that we want to add to the new IR
+        IREntry = getEntry(IR.results,resEntry[0],IR.relCount);
+
+        // Create the new IR entry by using the previous IR entry and adding
+        // the value from the most recent join at the end
+        memcpy(newIREntry, IREntry, IR.relCount * sizeof(uint64_t));
+        newIREntry[IR.relCount] = resEntry[1];
+
+        // Add the old IR row to the the new IR
+        insertResult(newResults,newIREntry,IR.relCount+1);
+    }
+    delete[] newIREntry;
+    deleteResult(IR.results);
+
+    // Update intermediate.relations array
+    uint64_t * newRelations = new uint64_t[IR.relCount+1];
+    memcpy(newRelations, IR.relations, IR.relCount * sizeof(uint64_t));
+    newRelations[IR.relCount] = newRel;
+    delete[] IR.relations;
+
+    IR.relations = newRelations;
+
+    // Update intermediate.relCount
+    IR.relCount++;
+
+    // Update intermidiate.results
+    IR.results = newResults;
 }
 
 void executeSelfjoin(Predicate * predicate, uint64_t * queryRelations) {
@@ -135,7 +180,7 @@ void executeSelfjoin(Predicate * predicate, uint64_t * queryRelations) {
     uint64_t columnA = predicate->columnA;
     uint64_t columnB = predicate->columnB;
 
-    SelfJoinColumn * col = selfJoinConstruct(intermediate, rel,
+    SelfJoinColumn * col = selfJoinConstruct(IR, rel,
                                              columnA, columnB,
                                              queryRelations);
     for(uint64_t i = 0; i < col->size; i++){
@@ -152,6 +197,8 @@ void executeSelfjoin(Predicate * predicate, uint64_t * queryRelations) {
 
     // Update intermediate results
     selfJoinUpdateIR(res);
+
+    deleteResult(res);
 }
 
 // Update interemediate results after a self join execution
@@ -167,19 +214,18 @@ void selfJoinUpdateIR(Result * selfJoinResults){
         rowID = getEntry(selfJoinResults,i,1);
 
         // Get the row from 'intermediate' that we want to add to the new IR
-        entry = getEntry(intermediate.results,*rowID,intermediate.relCount);
+        entry = getEntry(IR.results,*rowID,IR.relCount);
 
         // Add the old IR row to the the new IR
-        insertResult(newResults,entry,intermediate.relCount);
+        insertResult(newResults,entry,IR.relCount);
     }
 
-    deleteResult(intermediate.results);
-    deleteResult(selfJoinResults);
+    deleteResult(IR.results);
     
-    intermediate.results = newResults;
+    IR.results = newResults;
 
-    std::cout << "Final Intermediate:" << '\n';
-    printResult(intermediate.results,intermediate.relCount);
+    std::cout << "Intermediate after self join:" << '\n';
+    printResult(IR.results,IR.relCount);
 }
 
 void makeFilter(QueryInfo * q, int relation, int column, char op, int rv, int index) {

@@ -4,7 +4,7 @@
 Relation * r;
 uint64_t relationsSize;
 
-Intermediate intermediate;
+Intermediate IR;
 
 void executeQueries() {
     char * line = NULL;
@@ -52,9 +52,9 @@ int main(void){
     //execute queries etc
     executeQueries();
 
-    // printResult(intermediate.results, intermediate.relCount);
+    // printResult(IR.results, IR.relCount);
 
-    // deleteIntermediate(&intermediate);
+    // deleteIntermediate(&IR);
 
     unMapAllData(r, relationsSize);
 

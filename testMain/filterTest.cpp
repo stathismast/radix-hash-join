@@ -4,7 +4,7 @@
 Relation * r;
 uint64_t relationsSize;
 
-Intermediate intermediate;
+Intermediate IR;
 
 void executeQueries() {
     char * line = NULL;
@@ -27,7 +27,7 @@ void executeQueries() {
             execute(&queryInfo->predicates[i], queryInfo->relations);
         }
 
-        Column * temp = construct(intermediate, 0, 0, queryInfo->relations);
+        Column * temp = construct(IR, 0, 0, queryInfo->relations);
         printColumn(temp);
         deleteColumn(temp);
 
@@ -53,9 +53,9 @@ int main(void){
     //execute queries etc
     executeQueries();
 
-    printResult(intermediate.results, intermediate.relCount);
+    printResult(IR.results, IR.relCount);
 
-    deleteIntermediate(&intermediate);
+    deleteIntermediate(&IR);
 
     unMapAllData(r, relationsSize);
 

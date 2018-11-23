@@ -33,6 +33,10 @@ Column * construct(Intermediate IR,
     Result * res = IR.results;
 
     // Find the index of given relation in the intermediate results
+    if(!isInIntermediate(IR, relation)){
+        std::cout << "WKAHDFSKJJDFHLAKSJK" << std::endl;
+    }
+
     uint64_t intermediateIndex;
     for(uint64_t i=0; i<IR.relCount; i++){
         if(IR.relations[i] == relation){

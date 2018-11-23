@@ -38,6 +38,7 @@ void executeFilter(Predicate * predicate, uint64_t * relations);
 void executeJoin(Predicate * predicate, uint64_t * relations);
 void executeSelfjoin(Predicate * predicate, uint64_t * relations);
 
+void joinUpdateIR(Result * res, uint64_t newRel);
 void selfJoinUpdateIR(Result * selfJoinResults);
 
 void makeFilter(QueryInfo * q, int relation, int column, char op, int rv,

@@ -4,7 +4,7 @@
 Relation * r;
 uint64_t relationsSize;
 
-Intermediate intermediate;
+Intermediate IR;
 
 void executeQueries() {
     char * line = NULL;
@@ -28,7 +28,7 @@ void executeQueries() {
         }
 
         std::cout << "0.0 constructed from IR after query execution:" << '\n';
-        Column * temp = construct(intermediate, 0, 0, queryInfo->relations);
+        Column * temp = construct(IR, 0, 0, queryInfo->relations);
         printColumn(temp);
         deleteColumn(temp);
 
@@ -55,9 +55,9 @@ int main(void){
     executeQueries();
 
     std::cout << "Intermediate Results after all queries were executed:" << '\n';
-    printResult(intermediate.results, intermediate.relCount);
+    printResult(IR.results, IR.relCount);
 
-    deleteIntermediate(&intermediate);
+    deleteIntermediate(&IR);
 
     unMapAllData(r, relationsSize);
 
