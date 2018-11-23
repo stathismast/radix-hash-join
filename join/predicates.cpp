@@ -87,17 +87,17 @@ void executeSelfjoin(Predicate * predicate, uint64_t * queryRelations) {
 // Update interemediate results after a self join execution
 void selfJoinUpdateIR(Result * selfJoinResults){
     uint64_t * entry;
-    uint64_t rowID;
+    uint64_t * rowID;
     Result * newResults = newResult();
 
     // Iterate over the selfJoin results
     for(uint64_t i=0; i<selfJoinResults->totalEntries; i++){
         
         // Get next result (an index of a row in IR that we want to keep)
-        rowID = getEntry(selfJoinResults,i,1)[0];
+        rowID = getEntry(selfJoinResults,i,1);
 
         // Get the row from 'intermediate' that we want to add to the new IR
-        entry = getEntry(intermediate.results,rowID,intermediate.relCount);
+        entry = getEntry(intermediate.results,*rowID,intermediate.relCount);
 
         // Add the old IR row to the the new IR
         insertResult(newResults,entry,intermediate.relCount);
