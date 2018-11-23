@@ -27,6 +27,8 @@ void execute(Predicate * predicate, uint64_t * queryRelations) {
     }
 }
 
+// This function assumes that there is only one filter and it is applied at
+// the start of the query execution only
 void executeFilter(Predicate * predicate, uint64_t * queryRelations) {
     // if(relationsSize) printData(r[relation]);
     // Relation rel = r[queryRelations[predicate->relationA]];
@@ -73,46 +75,35 @@ void executeSelfjoin(Predicate * predicate, uint64_t * queryRelations) {
             insertSingleResult(res, i);
         }
     }
-
-    printSingleResult(res);
-
-    //keep necessary rowids rows from old Intermediate
-    //TO DO Need isRelationIn function because we need intermediate.relCount
-    //+1 if !isRelationIn. Not maybe at this type of predicate but in general
-    uint64_t * tempRow;
-    uint64_t currentRowId;
-    Result * newRes = newResult();
-    //save old intermediate info
-    uint64_t oldRelCount = intermediate.relCount;
-    //iterate over new RowIds
-    for( uint64_t i = 0; i < res->totalEntries; i ++ ){
-        //get i_th new Rowid
-        currentRowId = getEntry(res,i,1)[0];
-        //get corresponding currentRowId row from old intermediate
-        tempRow = getEntry(intermediate.results,currentRowId,oldRelCount);
-
-        //add new row in new intermediate
-        //TO DO In other predicates, if !isRelationIn we need to append the new
-        //real RowId at the end of the row before the insertion
-        //so it will be oldRelCount + 1
-        insertResult(newRes,tempRow,oldRelCount);
-    }
-
-
     deleteColumn(colA);
     deleteColumn(colB);
-    deleteIntermediate(&intermediate);
+
+    std::cout << "Result of self join is:" << std::endl;
+    printSingleResult(res);
+
+
+    uint64_t * entry;
+    uint64_t rowID;
+    Result * newResults = newResult();
+
+    // Iterate over the selfJoin results
+    for(uint64_t i=0; i<res->totalEntries; i++){
+        
+        // Get next result
+        rowID = getEntry(res,i,1)[0];
+
+        // Get the row from 'intermediate' that we want to add to the new IR
+        entry = getEntry(intermediate.results,rowID,intermediate.relCount);
+
+        // Add the old IR row to the the new IR
+        insertResult(newResults,entry,intermediate.relCount);
+    }
+
+    deleteResult(intermediate.results);
     deleteResult(res);
     
     // Load results into Intermediate Results
-    intermediate.results = newRes;
-    intermediate.relCount = oldRelCount; //or oldRelCount + 1 if !isRelationIn
-
-    //TO DO we need to save old relations before deleteIntermediate
-    uint64_t * temp = new uint64_t[1];
-    temp[0] = predicate->relationA;
-    // temp[0] = queryRelations[predicate->relationA];
-    intermediate.relations = temp;
+    intermediate.results = newResults;
 
     std::cout << "Final Intermediate:" << '\n';
     printResult(intermediate.results,intermediate.relCount);
