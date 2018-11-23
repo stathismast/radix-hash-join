@@ -69,8 +69,8 @@ void executeSelfjoin(Predicate * predicate, uint64_t * queryRelations) {
     SelfJoinColumn * col = selfJoinConstruct(intermediate, rel,
                                              columnA, columnB,
                                              queryRelations);
-    for (uint64_t i = 0; i < col->size; i++) {
-        if (compare(col->valueA[i], col->valueB[i], '=')) {
+    for(uint64_t i = 0; i < col->size; i++){
+        if(col->valueA[i] == col->valueB[i]){
             std::cout << "A:" << col->valueA[i] 
                       << " B:" << col->valueB[i] << '\n';
             insertSingleResult(res, i);
