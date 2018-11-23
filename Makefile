@@ -17,9 +17,11 @@ PARSE_OBJS = ./testMain/testParse.o ./join/parse.o
 FILTER_OBJS = testMain/filterTest.o ./join/memmap.o ./join/stringList.o ./join/parse.o \
 		./singleJoin/result.o ./singleJoin/structs.o ./join/inputManager.o \
 		./join/intermediate.o ./join/predicates.o
-SELF_JOIN_OBJS = testMain/selfJoinTest.o ./join/memmap.o ./join/stringList.o ./join/parse.o \
-		./singleJoin/result.o ./singleJoin/structs.o ./join/inputManager.o \
-		./join/intermediate.o ./join/predicates.o
+SELF_JOIN_OBJS = testMain/selfJoinTest.o ./join/memmap.o ./join/stringList.o \
+		./join/parse.o ./join/inputManager.o \
+		./join/intermediate.o ./join/predicates.o \
+		./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
+		./singleJoin/structs.o ./singleJoin/result.o
 PARSER_OBJS = testMain/parserTest.o  ./join/memmap.o ./join/stringList.o ./join/parse.o \
 		./singleJoin/result.o ./singleJoin/structs.o ./join/inputManager.o \
 		./join/intermediate.o ./join/predicates.o

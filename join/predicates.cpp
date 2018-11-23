@@ -1,4 +1,5 @@
 #include "predicates.hpp"
+#include "../singleJoin/join.hpp"
 
 extern Relation * r;
 extern uint64_t relationsSize;
@@ -56,7 +57,75 @@ void executeFilter(Predicate * predicate, uint64_t * queryRelations) {
 }
 
 void executeJoin(Predicate * predicate, uint64_t * queryRelations) {
-    std::cout << "Join" << '\n';
+    uint64_t relA = predicate->relationA;
+    uint64_t colA = predicate->columnA;
+    uint64_t relB = predicate->relationB;
+    uint64_t colB = predicate->columnB;
+
+    std::cout << "Executing join:" << relA << "." << colA << " = "
+                                   << relB << "." << colB << '\n';
+
+    // Shorter name for intermediate
+    Intermediate IR = intermediate;
+
+    if(isInIntermediate(IR, relA) && isInIntermediate(IR, relB)){
+        Result * res = newResult();
+        Column * constructedA;
+        Column * constructedB;
+
+        // Construct both columns from the intermediate results
+        constructedA = construct(IR, relA, colA, queryRelations);
+        constructedB = construct(IR, relB, colB, queryRelations);
+
+        // Basically a self join, since both relations are in the IR
+        for(uint64_t i = 0; i < constructedA->size; i++){
+            if(constructedA->value[i] == constructedB->value[i]){
+                // std::cout << "A:" << constructedA->value[i] 
+                //         << " B:" << constructedB->value[i] << '\n';
+                insertSingleResult(res, i);
+            }
+        }
+
+        deleteColumn(constructedA);
+        deleteColumn(constructedB);
+
+        std::cout << "Result of join (both relations in IR) is:" << std::endl;
+        printSingleResult(res);
+
+        // Update intermediate results
+        selfJoinUpdateIR(res);
+        deleteResult(res);
+        return;
+    }
+
+    // // If one of the two relations is not in the intermediate results
+    Column * fromIntermediate;
+    Column * fromMappedData;
+
+    if(isInIntermediate(IR,relA) && !isInIntermediate(IR,relB)){
+        fromIntermediate = construct(IR,relA,colA,queryRelations);
+        fromMappedData = constructMappedData(relB,colB,queryRelations);
+    }
+    else if(!isInIntermediate(IR,relA) && isInIntermediate(IR,relB)){
+        fromMappedData = constructMappedData(relA,colA,queryRelations);
+        fromIntermediate = construct(IR,relB,colB,queryRelations);
+    }
+    else{
+        std::cout << "Error in executeJoin(). No relation is present in the "
+                  << "intermediate results. This type of operation is not "
+                  << "yet supported. This program will exit..." << std::endl;
+        exit(0);
+    }
+
+    Result * res = join(fromIntermediate, fromMappedData);
+
+    deleteColumn(fromIntermediate);
+    deleteColumn(fromMappedData);
+
+    std::cout << "Join done. Results are:" << std::endl;
+    printDoubleResult(res);
+
+    deleteResult(res);
 }
 
 void executeSelfjoin(Predicate * predicate, uint64_t * queryRelations) {
@@ -81,6 +150,7 @@ void executeSelfjoin(Predicate * predicate, uint64_t * queryRelations) {
     std::cout << "Result of self join is:" << std::endl;
     printSingleResult(res);
 
+    // Update intermediate results
     selfJoinUpdateIR(res);
 }
 

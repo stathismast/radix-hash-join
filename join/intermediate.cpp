@@ -94,6 +94,25 @@ SelfJoinColumn * selfJoinConstruct(Intermediate IR,
     return constructed;
 }
 
+// This function is used when a relation is not in the intermediate results
+// but we need to use it for a join
+Column * constructMappedData(uint64_t relIndex,
+                             uint64_t column,
+                             uint64_t * queryRelations){
+
+    // Convert relative index to actual index in mapped data
+    relIndex = queryRelations[relIndex];
+
+    Column * constructed = newColumn(r[relIndex].rows);
+
+    for(uint64_t i=0; i<r[relIndex].rows; i++){
+        constructed->rowid[i] = i;
+        constructed->value[i] = r[relIndex].data[column][i];
+    }
+
+    return constructed;
+}
+
 void deleteIntermediate(Intermediate * im){
     deleteResult(im->results);
     delete[] im->relations;
@@ -104,4 +123,11 @@ void deleteSJC(SelfJoinColumn * sjc){
     delete[] sjc->valueA;
     delete[] sjc->valueB;
     delete sjc;
+}
+
+bool isInIntermediate(Intermediate intermediate, uint64_t relation){
+    for(uint64_t i=0; i<intermediate.relCount; i++)
+        if(intermediate.relations[i] == relation)
+            return 1;
+    return 0;
 }

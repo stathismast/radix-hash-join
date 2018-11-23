@@ -25,5 +25,10 @@ SelfJoinColumn * selfJoinConstruct(Intermediate IR,
                                    uint64_t relColumnA,
                                    uint64_t relColumnB,
                                    uint64_t * queryRelations);
+Column * constructMappedData(uint64_t relIndex,
+                             uint64_t column,
+                             uint64_t * queryRelations);
 void deleteIntermediate(Intermediate * im);
 void deleteSJC(SelfJoinColumn * sjc);
+
+bool isInIntermediate(Intermediate intermediate, uint64_t relIndex);

@@ -27,6 +27,7 @@ void executeQueries() {
             execute(&queryInfo->predicates[i], queryInfo->relations);
         }
 
+        std::cout << "0.0 constructed from IR after query execution:" << '\n';
         Column * temp = construct(intermediate, 0, 0, queryInfo->relations);
         printColumn(temp);
         deleteColumn(temp);
@@ -53,6 +54,7 @@ int main(void){
     //execute queries etc
     executeQueries();
 
+    std::cout << "Intermediate Results after all queries were executed:" << '\n';
     printResult(intermediate.results, intermediate.relCount);
 
     deleteIntermediate(&intermediate);
