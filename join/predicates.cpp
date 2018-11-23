@@ -81,16 +81,20 @@ void executeSelfjoin(Predicate * predicate, uint64_t * queryRelations) {
     std::cout << "Result of self join is:" << std::endl;
     printSingleResult(res);
 
+    selfJoinUpdateIR(res);
+}
 
+// Update interemediate results after a self join execution
+void selfJoinUpdateIR(Result * selfJoinResults){
     uint64_t * entry;
     uint64_t rowID;
     Result * newResults = newResult();
 
     // Iterate over the selfJoin results
-    for(uint64_t i=0; i<res->totalEntries; i++){
+    for(uint64_t i=0; i<selfJoinResults->totalEntries; i++){
         
-        // Get next result
-        rowID = getEntry(res,i,1)[0];
+        // Get next result (an index of a row in IR that we want to keep)
+        rowID = getEntry(selfJoinResults,i,1)[0];
 
         // Get the row from 'intermediate' that we want to add to the new IR
         entry = getEntry(intermediate.results,rowID,intermediate.relCount);
@@ -100,9 +104,8 @@ void executeSelfjoin(Predicate * predicate, uint64_t * queryRelations) {
     }
 
     deleteResult(intermediate.results);
-    deleteResult(res);
+    deleteResult(selfJoinResults);
     
-    // Load results into Intermediate Results
     intermediate.results = newResults;
 
     std::cout << "Final Intermediate:" << '\n';
