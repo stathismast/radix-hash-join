@@ -97,23 +97,23 @@ QueryInfo * parseInput(char * query) {
     char* predicatesStr = strtok(NULL, "|");
     char* sumsStr = strtok(NULL, "|");
 
-    std::cout << "RELATIONS" << '\n';
+    // std::cout << "RELATIONS" << '\n';
     parseRelations(relationsStr, queryInfo);
-    std::cout << "PREDICATES" << '\n';
-    parsePredicates(predicatesStr, queryInfo);
-    for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
-        std::cout << "\t";
-        printPredicate(&queryInfo->predicates[i]);
-    }
-    std::cout << "SUMS" << '\n';
-    parseSums(sumsStr, queryInfo);
-    for (uint64_t i = 0; i < queryInfo->sumsCount; i++) {
-        std::cout << "\tsum = " << queryInfo->sums[i].relation << \
-        "." << queryInfo->sums[i].column << '\n';
-    }
-    // free(query);
 
-    // queryRelations = queryInfo->relations;  // Assign value to global array
+    // std::cout << "PREDICATES" << '\n';
+    parsePredicates(predicatesStr, queryInfo);
+    // for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
+    //     std::cout << "\t";
+    //     printPredicate(&queryInfo->predicates[i]);
+    // }
+
+    // std::cout << "SUMS" << '\n';
+    parseSums(sumsStr, queryInfo);
+    // for (uint64_t i = 0; i < queryInfo->sumsCount; i++) {
+    //     std::cout << "\tsum = " << queryInfo->sums[i].relation << \
+    //     "." << queryInfo->sums[i].column << '\n';
+    // }
+
 
     reOrderPredicates(queryInfo);
     return queryInfo;
@@ -135,9 +135,9 @@ void parseRelations(char * relationsStr, QueryInfo * queryInfo) {
     }
 
     // print the relations of the query
-    for (uint64_t i = 0; i < relationsCount; i++) {
-        std::cout << "\trelation = " << queryInfo->relations[i] << '\n';
-    }
+    // for (uint64_t i = 0; i < relationsCount; i++) {
+    //     std::cout << "\trelation = " << queryInfo->relations[i] << '\n';
+    // }
 }
 
 void parsePredicates(char * predicatesStr, QueryInfo * queryInfo) {
@@ -200,10 +200,12 @@ void findPredicate(char * predicate, QueryInfo * queryInfo, int index) {
         // split the predicate in the number on the right and the relation and
         // column on the left
         splitAt(predicate, "=", &leftStr, &rightStr);
+
         // if there is no dot in the right part it means it's just a number so
          // it's an equality filter
         if (strstr(rightStr + 1, ".") == NULL) {
             char * relationStr, * columnStr;
+
             splitAt(leftStr, ".", &relationStr, &columnStr);
             makeFilter(queryInfo, atoi(relationStr), atoi(columnStr), '=', \
                         atoi(rightStr), index);
@@ -211,13 +213,16 @@ void findPredicate(char * predicate, QueryInfo * queryInfo, int index) {
             char * relationStr, * columnStr;
             // split the left part of the predicate in the relation
              // and the column
+
             splitAt(leftStr, ".", &relationStr, &columnStr);
             int relationA = atoi(relationStr);
             int columnA = atoi(columnStr);
+
             // same as above for the left part
             splitAt(rightStr, ".", &relationStr, &columnStr);
             int relationB = atoi(relationStr);
             int columnB = atoi(columnStr);
+
             // if the join is between the same relation we have a self join
             // and it will be treated differenlty than normal join
             if (relationA == relationB) {

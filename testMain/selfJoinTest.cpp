@@ -16,7 +16,7 @@ void executeQueries() {
          }
 
         if (strcmp(line, "F\n") == 0) {
-            std::cout << "**End of Batch**" << '\n';
+            // std::cout << "**End of Batch**" << '\n';
             // free(line);
             continue;
         }
