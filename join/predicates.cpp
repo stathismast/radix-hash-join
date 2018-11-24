@@ -121,7 +121,8 @@ void executeJoin(Predicate * predicate, uint64_t * queryRelations) {
     Result * res = join(fromIntermediate, fromMappedData);
 
     deleteColumn(fromIntermediate);
-    deleteColumn(fromMappedData);
+    delete[] fromMappedData->rowid;
+    delete fromMappedData;
 
     std::cout << "Join done. Results are:" << std::endl;
     printDoubleResult(res);
