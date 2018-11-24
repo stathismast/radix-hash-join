@@ -103,11 +103,14 @@ Column * constructMappedData(uint64_t relIndex,
     // Convert relative index to actual index in mapped data
     relIndex = queryRelations[relIndex];
 
-    Column * constructed = newColumn(r[relIndex].rows);
+    // Create new column and give it a pointer to the appropriate mapped data
+    Column * constructed = new Column;
+    constructed->value = r[relIndex].data[column];
+    constructed->size = r[relIndex].rows;
 
+    constructed->rowid = new uint64_t[r[relIndex].rows];
     for(uint64_t i=0; i<r[relIndex].rows; i++){
         constructed->rowid[i] = i;
-        constructed->value[i] = r[relIndex].data[column][i];
     }
 
     return constructed;
