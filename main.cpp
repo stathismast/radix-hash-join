@@ -4,13 +4,13 @@
 Relation * r;
 uint64_t relationsSize;
 
-Intermediate IR;
+// Intermediate IR;
 
 void executeQueries() {
     char * line = NULL;
     size_t s = 0;
+    Intermediate * IR = new Intermediate;
     while (getline(&line, &s, stdin) > 0) {
-
          if(ignoreLine(line)){
              continue;
          }
@@ -30,15 +30,15 @@ void executeQueries() {
         }
 
         for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
-            execute(&queryInfo->predicates[i], queryInfo->relations);
+            execute(&queryInfo->predicates[i], queryInfo->relations, IR);
         }
 
-        calculateSums(queryInfo);
+        calculateSums(queryInfo, IR);
 
         std::cout << "Intermediate Results after query execution:" << '\n';
-        printResult(IR.results, IR.relCount);
+        printResult(IR->results, IR->relCount);
 
-        deleteIntermediate(&IR);
+        deleteIntermediate(IR);
 
 
         deleteQueryInfo(queryInfo);

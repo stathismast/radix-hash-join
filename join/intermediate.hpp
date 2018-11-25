@@ -16,11 +16,11 @@ struct SelfJoinColumn{
 };
 
 Column * resultToColumn(Result * res, uint64_t col, uint64_t entryCount);
-Column * construct(Intermediate IR,
+Column * construct(Intermediate * IR,
                         uint64_t colIR,
                         uint64_t colRel,
                         uint64_t * queryRelations);
-SelfJoinColumn * selfJoinConstruct(Intermediate IR,
+SelfJoinColumn * selfJoinConstruct(Intermediate * IR,
                                    uint64_t relation,
                                    uint64_t relColumnA,
                                    uint64_t relColumnB,
@@ -31,4 +31,4 @@ Column * constructMappedData(uint64_t relIndex,
 void deleteIntermediate(Intermediate * im);
 void deleteSJC(SelfJoinColumn * sjc);
 
-bool isInIntermediate(Intermediate intermediate, uint64_t relIndex);
+bool isInIntermediate(Intermediate * intermediate, uint64_t relIndex);

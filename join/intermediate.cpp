@@ -26,16 +26,16 @@ Column * resultToColumn(Result * res, uint64_t col, uint64_t entryCount){
 // Example:
 // If we want to construct the relative 3.5 column then 'relation' will be 3
 // and 'relColumn' will be 5
-Column * construct(Intermediate IR,
+Column * construct(Intermediate * IR,
                    uint64_t relation,
                    uint64_t relColumn,
                    uint64_t * queryRelations){
-    Result * res = IR.results;
+    Result * res = IR->results;
 
     // Find the index of given relation in the intermediate results
     uint64_t intermediateIndex;
-    for(uint64_t i=0; i<IR.relCount; i++){
-        if(IR.relations[i] == relation){
+    for(uint64_t i=0; i<IR->relCount; i++){
+        if(IR->relations[i] == relation){
             intermediateIndex = i;
             break;
         }
@@ -46,8 +46,8 @@ Column * construct(Intermediate IR,
     for(uint64_t i=0; i<res->totalEntries; i++){
         constructed->rowid[i] = i;
 
-        uint64_t relIndex = queryRelations[IR.relations[intermediateIndex]];
-        uint64_t relRowID = (getEntry(res,i,IR.relCount))[intermediateIndex];
+        uint64_t relIndex = queryRelations[IR->relations[intermediateIndex]];
+        uint64_t relRowID = (getEntry(res,i,IR->relCount))[intermediateIndex];
         constructed->value[i] = r[relIndex].data[relColumn][relRowID];
     }
 
@@ -58,17 +58,17 @@ Column * construct(Intermediate IR,
 // This one is designed for self join executions. It uses the 'SelfJoinColumn'
 // data structure. This way we can reduce the memory required for a self join
 // by 25%, since we don't need to store rowIDs twice in a self join.
-SelfJoinColumn * selfJoinConstruct(Intermediate IR,
+SelfJoinColumn * selfJoinConstruct(Intermediate * IR,
                                    uint64_t relation,
                                    uint64_t relColumnA,
                                    uint64_t relColumnB,
                                    uint64_t * queryRelations){
-    Result * res = IR.results;
+    Result * res = IR->results;
 
     // Find the index of given relation in the intermediate results
     uint64_t intermediateIndex;
-    for(uint64_t i=0; i<IR.relCount; i++){
-        if(IR.relations[i] == relation){
+    for(uint64_t i=0; i<IR->relCount; i++){
+        if(IR->relations[i] == relation){
             intermediateIndex = i;
             break;
         }
@@ -84,8 +84,8 @@ SelfJoinColumn * selfJoinConstruct(Intermediate IR,
     for(uint64_t i=0; i<res->totalEntries; i++){
         constructed->rowid[i] = i;
 
-        uint64_t relIndex = queryRelations[IR.relations[intermediateIndex]];
-        uint64_t relRowID = (getEntry(res,i,IR.relCount))[intermediateIndex];
+        uint64_t relIndex = queryRelations[IR->relations[intermediateIndex]];
+        uint64_t relRowID = (getEntry(res,i,IR->relCount))[intermediateIndex];
 
         constructed->valueA[i] = r[relIndex].data[relColumnA][relRowID];
         constructed->valueB[i] = r[relIndex].data[relColumnB][relRowID];
@@ -128,9 +128,9 @@ void deleteSJC(SelfJoinColumn * sjc){
     delete sjc;
 }
 
-bool isInIntermediate(Intermediate intermediate, uint64_t relation){
-    for(uint64_t i=0; i<intermediate.relCount; i++)
-        if(intermediate.relations[i] == relation)
+bool isInIntermediate(Intermediate * intermediate, uint64_t relation){
+    for(uint64_t i=0; i<intermediate->relCount; i++)
+        if(intermediate->relations[i] == relation)
             return 1;
     return 0;
 }

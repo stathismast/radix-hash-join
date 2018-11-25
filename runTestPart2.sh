@@ -1,7 +1,6 @@
-make selfJoinTest
+make
 
-echo "Results of selfJoinTest"
-./selfJoinTest < ./testMain/selfJoinInput.txt
+./main < input.txt
 
 echo
 make clean

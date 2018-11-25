@@ -32,14 +32,14 @@ typedef struct QueryInfo {
 
 bool compare(uint64_t x, uint64_t y, char op);
 
-void execute(Predicate * p, uint64_t * relations);
+void execute(Predicate * p, uint64_t * relations, Intermediate * IR);
 
-void executeFilter(Predicate * predicate, uint64_t * relations);
-void executeJoin(Predicate * predicate, uint64_t * relations);
-void executeSelfjoin(Predicate * predicate, uint64_t * relations);
+void executeFilter(Predicate * predicate, uint64_t * relations, Intermediate * IR);
+void executeJoin(Predicate * predicate, uint64_t * relations, Intermediate * IR);
+void executeSelfjoin(Predicate * predicate, uint64_t * relations, Intermediate * IR);
 
-void joinUpdateIR(Result * res, uint64_t newRel);
-void selfJoinUpdateIR(Result * selfJoinResults);
+void joinUpdateIR(Result * res, uint64_t newRel, Intermediate * IR);
+void selfJoinUpdateIR(Result * selfJoinResults, Intermediate * IR);
 
 void makeFilter(QueryInfo * q, int relation, int column, char op, int rv,
                 int index);
@@ -53,6 +53,6 @@ void printFilter(Predicate * predicate);
 void printJoin(Predicate * predicate);
 void printSelfjoin(Predicate * predicate);
 
-void calculateSums(QueryInfo * queryInfo);
+void calculateSums(QueryInfo * queryInfo, Intermediate * IR);
 
 #endif
