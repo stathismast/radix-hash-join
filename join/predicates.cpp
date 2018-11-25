@@ -64,10 +64,10 @@ void executeJoin(Predicate * predicate, uint64_t * queryRelations) {
 
     uint64_t relNotInIR;
 
-    std::cout << "Executing join:" << relA << "." << colA << " = "
-                                   << relB << "." << colB << '\n';
-
     if(isInIntermediate(IR, relA) && isInIntermediate(IR, relB)){
+        std::cout << "Executing self join:" << relA << "." << colA << " = "
+                                            << relB << "." << colB << '\n';
+
         Result * res = newResult();
         Column * constructedA;
         Column * constructedB;
@@ -88,14 +88,17 @@ void executeJoin(Predicate * predicate, uint64_t * queryRelations) {
         deleteColumn(constructedA);
         deleteColumn(constructedB);
 
-        std::cout << "Result of join (both relations in IR) is:" << std::endl;
-        printSingleResult(res);
+        // std::cout << "Result of join (both relations in IR) is:" << std::endl;
+        // printSingleResult(res);
 
         // Update intermediate results
         selfJoinUpdateIR(res);
         deleteResult(res);
         return;
     }
+
+    std::cout << "Executing join:" << relA << "." << colA << " = "
+                                   << relB << "." << colB << '\n';
 
     // // If one of the two relations is not in the intermediate results
     Column * fromIntermediate;
@@ -124,8 +127,8 @@ void executeJoin(Predicate * predicate, uint64_t * queryRelations) {
     delete[] fromMappedData->rowid;
     delete fromMappedData;
 
-    std::cout << "Join done. Results are:" << std::endl;
-    printDoubleResult(res);
+    // std::cout << "Join done. Results are:" << std::endl;
+    // printDoubleResult(res);
 
     joinUpdateIR(res, relNotInIR);
 
@@ -181,20 +184,23 @@ void executeSelfjoin(Predicate * predicate, uint64_t * queryRelations) {
     uint64_t columnA = predicate->columnA;
     uint64_t columnB = predicate->columnB;
 
+    std::cout << "Executing self join:" << rel << "." << columnA << " = "
+                                        << rel << "." << columnB << '\n';
+
     SelfJoinColumn * col = selfJoinConstruct(IR, rel,
                                              columnA, columnB,
                                              queryRelations);
     for(uint64_t i = 0; i < col->size; i++){
         if(col->valueA[i] == col->valueB[i]){
-            std::cout << "A:" << col->valueA[i] 
-                      << " B:" << col->valueB[i] << '\n';
+            // std::cout << "A:" << col->valueA[i] 
+            //           << " B:" << col->valueB[i] << '\n';
             insertSingleResult(res, i);
         }
     }
     deleteSJC(col);
 
-    std::cout << "Result of self join is:" << std::endl;
-    printSingleResult(res);
+    // std::cout << "Result of self join is:" << std::endl;
+    // printSingleResult(res);
 
     // Update intermediate results
     selfJoinUpdateIR(res);
@@ -225,8 +231,8 @@ void selfJoinUpdateIR(Result * selfJoinResults){
     
     IR.results = newResults;
 
-    std::cout << "Intermediate after self join:" << '\n';
-    printResult(IR.results,IR.relCount);
+    // std::cout << "Intermediate after self join:" << '\n';
+    // printResult(IR.results,IR.relCount);
 }
 
 void makeFilter(QueryInfo * q, int relation, int column, char op, int rv, int index) {
