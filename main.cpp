@@ -4,7 +4,7 @@
 Relation * r;
 uint64_t relationsSize;
 
-Intermediate intermediate;
+Intermediate IR;
 
 void executeQueries() {
     char * line = NULL;
@@ -22,12 +22,24 @@ void executeQueries() {
         }
 
         QueryInfo * queryInfo = parseInput(line);
+
         std::cout << "RE-ORDERED PREDICATES" << std::endl;
         for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
+            std::cout << "\t";
             printPredicate(&queryInfo->predicates[i]);
-            // execute(&queryInfo->predicates[i], queryInfo->relations);
         }
-        std::cout << std::endl << std::endl;
+
+        for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
+            execute(&queryInfo->predicates[i], queryInfo->relations);
+        }
+
+        calculateSums(queryInfo);
+
+        std::cout << "Intermediate Results after query execution:" << '\n';
+        printResult(IR.results, IR.relCount);
+
+        deleteIntermediate(&IR);
+
 
         deleteQueryInfo(queryInfo);
         // free(line);
@@ -46,15 +58,10 @@ int main(void){
 
     // Print the data from a given file
     // if(relationsSize) printData(r[0]);
-
     std::cout << '\n';
 
     //execute queries etc
     executeQueries();
-
-    // printResult(intermediate.results, intermediate.relCount);
-
-    // deleteIntermediate(&intermediate);
 
     unMapAllData(r, relationsSize);
 
