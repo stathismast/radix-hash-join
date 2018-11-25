@@ -33,6 +33,8 @@ void executeQueries() {
             execute(&queryInfo->predicates[i], queryInfo->relations);
         }
 
+        calculateSums(queryInfo);
+
         std::cout << "Intermediate Results after query execution:" << '\n';
         printResult(IR.results, IR.relCount);
 

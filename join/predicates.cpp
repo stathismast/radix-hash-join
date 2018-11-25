@@ -235,6 +235,33 @@ void selfJoinUpdateIR(Result * selfJoinResults){
     // printResult(IR.results,IR.relCount);
 }
 
+void calculateSums(QueryInfo * qi){
+    uint64_t sum = 0;
+
+    for(uint64_t j=0; j<qi->sumsCount; j++){
+        uint64_t relation = qi->sums[j].relation;
+        uint64_t relColumn = qi->sums[j].column;
+
+        uint64_t intermediateIndex;
+        for(uint64_t i=0; i<IR.relCount; i++){
+            if(IR.relations[i] == relation){
+                intermediateIndex = i;
+                break;
+            }
+        }
+
+        for(uint64_t i=0; i<IR.results->totalEntries; i++){
+            uint64_t relIndex = qi->relations[IR.relations[intermediateIndex]];
+            uint64_t relRowID = (getEntry(IR.results,i,IR.relCount))[intermediateIndex];
+            sum += r[relIndex].data[relColumn][relRowID];
+        }
+            
+        std::cout << qi->sums[j].relation << "." << qi->sums[j].column
+        << " sum is: " << sum << std::endl;
+        sum = 0;
+    }
+}
+
 void makeFilter(QueryInfo * q, int relation, int column, char op, int rv, int index) {
     q->predicates[index].op = op;
     q->predicates[index].value = (uint64_t) rv;

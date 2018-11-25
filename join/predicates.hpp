@@ -53,4 +53,6 @@ void printFilter(Predicate * predicate);
 void printJoin(Predicate * predicate);
 void printSelfjoin(Predicate * predicate);
 
+void calculateSums(QueryInfo * queryInfo);
+
 #endif
