@@ -119,6 +119,7 @@ Column * constructMappedData(uint64_t relIndex,
 void deleteIntermediate(Intermediate * im){
     deleteResult(im->results);
     delete[] im->relations;
+    delete im;
 }
 
 void deleteSJC(SelfJoinColumn * sjc){

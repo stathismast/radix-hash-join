@@ -9,7 +9,6 @@ uint64_t relationsSize;
 void executeQueries() {
     char * line = NULL;
     size_t s = 0;
-    Intermediate * IR = new Intermediate;
     while (getline(&line, &s, stdin) > 0) {
          if(ignoreLine(line)){
              continue;
@@ -28,6 +27,9 @@ void executeQueries() {
             std::cout << "\t";
             printPredicate(&queryInfo->predicates[i]);
         }
+
+        
+        Intermediate * IR = new Intermediate;
 
         for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
             execute(&queryInfo->predicates[i], queryInfo->relations, IR);
