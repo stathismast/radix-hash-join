@@ -44,6 +44,21 @@ void reOrderPredicates(QueryInfo * queryInfo){
     }
 
     while(viStart != viEnd){
+
+        // Prioritize self join executions
+        for(uint64_t i=orderedCount; i<count; i++){
+            // If the next relation in intermediate is included in a self join
+            if(vIntermediate[viStart] == predicates[i].relationA &&
+                predicates[i].predicateType == 3){
+
+                // Bring that predicate up to the next spot
+                swapPredicates(&predicates[i], &predicates[orderedCount]);
+
+                // Increase the number of ordered relations
+                orderedCount++;
+            }
+        }
+
         for(uint64_t i=orderedCount; i<count; i++){
 
             // If the next relation in intermediate is included in a join
@@ -110,8 +125,8 @@ QueryInfo * parseInput(char * query) {
     // std::cout << "SUMS" << '\n';
     parseSums(sumsStr, queryInfo);
     // for (uint64_t i = 0; i < queryInfo->sumsCount; i++) {
-    //     std::cout << "\tsum = " << queryInfo->sums[i].relation << \
-    //     "." << queryInfo->sums[i].column << '\n';
+    //     std::cout << "\tsum = " << queryInfo->sums[i].relation
+    //     << "." << queryInfo->sums[i].column << '\n';
     // }
 
 

@@ -28,7 +28,6 @@ void executeQueries() {
             printPredicate(&queryInfo->predicates[i]);
         }
 
-        
         Intermediate * IR = new Intermediate;
 
         for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
