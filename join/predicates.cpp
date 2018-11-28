@@ -19,9 +19,9 @@ bool compare(uint64_t x, uint64_t y, char op) {
 }
 
 void execute(Predicate * predicate, uint64_t * queryRelations, Intermediate * IR) {
-    if (predicate->predicateType == 1) {
+    if (predicate->predicateType == FILTER) {
         executeFilter(predicate, queryRelations, IR);
-    } else if (predicate->predicateType == 2) {
+    } else if (predicate->predicateType == JOIN) {
         executeJoin(predicate, queryRelations, IR);
     } else {
         executeSelfjoin(predicate, queryRelations, IR);
@@ -260,7 +260,7 @@ void makeFilter(QueryInfo * q, int relation, int column, char op, int rv, int in
     q->predicates[index].value = (uint64_t) rv;
     q->predicates[index].relationA= (uint64_t) relation;
     q->predicates[index].columnA = (uint64_t) column;
-    q->predicates[index].predicateType = 1;
+    q->predicates[index].predicateType = FILTER;
 }
 
 void makeJoin(QueryInfo * q, int relationA, int columnA, int relationB, int columnB, int index) {
@@ -268,20 +268,20 @@ void makeJoin(QueryInfo * q, int relationA, int columnA, int relationB, int colu
     q->predicates[index].columnA = (uint64_t) columnA;
     q->predicates[index].relationB = (uint64_t) relationB;
     q->predicates[index].columnB = (uint64_t) columnB;
-    q->predicates[index].predicateType = 2;
+    q->predicates[index].predicateType = JOIN;
 }
 
 void makeSelfJoin(QueryInfo * q, int relation, int columnA, int columnB, int index) {
     q->predicates[index].relationA = (uint64_t) relation;
     q->predicates[index].columnA = (uint64_t) columnA;
     q->predicates[index].columnB = (uint64_t) columnB;
-    q->predicates[index].predicateType = 3;
+    q->predicates[index].predicateType = SELFJOIN;
 }
 
 void printPredicate(Predicate * predicate) {
-    if (predicate->predicateType == 1) {
+    if (predicate->predicateType == FILTER) {
         printFilter(predicate);
-    } else if (predicate->predicateType == 2) {
+    } else if (predicate->predicateType == JOIN) {
         printJoin(predicate);
     } else {
         printSelfjoin(predicate);

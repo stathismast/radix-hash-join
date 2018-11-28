@@ -35,7 +35,7 @@ void reOrderPredicates(QueryInfo * queryInfo){
 
     // Find the filter and bring it at the first position
     for(uint64_t i=0; i<count; i++){
-        if(predicates[i].predicateType == 1){
+        if(predicates[i].predicateType == FILTER){
             swapPredicates(&predicates[i], &predicates[orderedCount]);
             vIntermediate[viEnd] = predicates[orderedCount].relationA;
             viEnd++;
@@ -49,7 +49,7 @@ void reOrderPredicates(QueryInfo * queryInfo){
         for(uint64_t i=orderedCount; i<count; i++){
             // If the next relation in intermediate is included in a self join
             if(vIntermediate[viStart] == predicates[i].relationA &&
-                predicates[i].predicateType == 3){
+                predicates[i].predicateType == SELFJOIN){
 
                 // Bring that predicate up to the next spot
                 swapPredicates(&predicates[i], &predicates[orderedCount]);
@@ -68,7 +68,7 @@ void reOrderPredicates(QueryInfo * queryInfo){
                 swapPredicates(&predicates[i], &predicates[orderedCount]);
 
                 // Add new relation into vIntermediate if it isn't already there
-                if(predicates[i].predicateType == 2 &&
+                if(predicates[i].predicateType == JOIN &&
                    !inArray(predicates[orderedCount].relationB, vIntermediate, viEnd)){
                         vIntermediate[viEnd] = predicates[orderedCount].relationB;
                         viEnd++;
@@ -80,7 +80,7 @@ void reOrderPredicates(QueryInfo * queryInfo){
 
             // If this is certainly not a self join
             // And if the next relation in intermediate is included in a join
-            if(predicates[i].predicateType == 2 &&
+            if(predicates[i].predicateType == JOIN &&
                vIntermediate[viStart] == predicates[i].relationB){
 
                 // Bring that predicate up to the next spot

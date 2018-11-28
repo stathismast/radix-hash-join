@@ -6,6 +6,10 @@
 #ifndef PREDICATES_HPP
 #define PREDICATES_HPP
 
+#define FILTER 1
+#define JOIN 2
+#define SELFJOIN 3
+
 typedef struct Predicate {
     uint64_t relationA;
     uint64_t columnA;
