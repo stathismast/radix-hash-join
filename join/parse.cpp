@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include <iostream>
 #include "parse.hpp"
+#include <vector>
 
 // uint64_t * queryRelations;
 
@@ -130,6 +131,50 @@ void reOrderPredicates(QueryInfo * queryInfo){
     }
 
     delete[] vIntermediate;
+}
+
+void testReOrderPredicates(QueryInfo * queryInfo){
+    Predicate * predicates  = queryInfo->predicates;
+    uint64_t count = queryInfo->predicatesCount;
+    uint64_t relCount = queryInfo->relationsCount;
+
+    //make a vector of each relation
+    std::vector<Predicate *> allRelations[relCount];
+
+    //group predicates by relation
+    //joins are stored in relationA vector
+    for(uint64_t i=0; i<count; i++){
+        allRelations[predicates[i].relationA].push_back(&predicates[i]);
+    }
+
+    //order each group so as to be F > SJ > J and Joins must be grouped by
+    //relation B
+    //we could sort by smaller number if we had F -> 1 , SJ -> 2 and J -> 3
+    for(uint64_t i=0; i<relCount; i++){
+        //sort group and keep the first index of Join so as we can group them
+        //by relation B the next time
+    }
+
+    //Now each relation has its predicates sorted
+    //Start from relation with the unique filter (or by first relation with filter
+    //if we have many filters)
+
+    //(A) put at the orderedArray all filter and selfJoin predicates
+    //    of current relation
+
+    //now we are at the first join of current relation
+    //(B) go to relationB of this join and execute all of its filters and SelfJoins
+    //    then execute the join between current relation and relationB
+
+    //(C) execute all joins between current relation and relationB (or between
+    //    relation B and current relation)
+
+    //(D) then go to next "different" join of current relation and do again the
+    //    steps (B) and (C)
+
+    //When we finish with current relation,we move to next relation of the vector
+    //and we do again all the steps from (A)
+
 }
 
 QueryInfo * parseInput(char * query) {
