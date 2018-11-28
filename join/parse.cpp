@@ -21,6 +21,76 @@ bool inArray(uint64_t value, uint64_t * array, uint64_t arrayLength){
 
 }
 
+// Order self joins that are related to relation
+void prioritizeSelfJoins(uint64_t & start, uint64_t end,
+                        uint64_t relation, Predicate * predicates){
+
+    //[start,end] are the predicates that they haven't been sorted yet
+    for(uint64_t i=start; i<end; i++){
+        // If predicate is related to relation and it is self join
+        if(predicates[i].relationA == relation &&
+            predicates[i].predicateType == SELFJOIN){
+
+            // Bring that predicate up to the next spot
+            swapPredicates(&predicates[i], &predicates[start]);
+
+            // Move to next unordered predicate
+            start++;
+        }
+    }
+
+}
+
+// Order joins that are related to relation and insert new relations
+// to vIntermediate
+void prioritizeJoins(uint64_t & start, uint64_t end,
+                        uint64_t relation, Predicate * predicates,
+                        uint64_t * vIntermediate, uint64_t & newRelIndex){
+
+    //[start,end] are the predicates that they haven't been sorted yet
+    for(uint64_t i=start; i<end; i++){
+
+        // If predicate (which isn't self join, as we have checked all self joins
+        // of this relation before) is related to relation
+        if(predicates[i].relationA == relation){
+
+            // Bring that predicate up to the next spot
+            swapPredicates(&predicates[i], &predicates[start]);
+
+            // Check if the other part/relation of this join is into vIntermediate
+            // otherwise add it
+            if(predicates[i].predicateType == JOIN &&
+                !inArray(predicates[start].relationB, vIntermediate, newRelIndex)){
+                vIntermediate[newRelIndex] = predicates[end].relationB;
+                newRelIndex++;
+            }
+
+            // Move to next unordered predicate
+            start++;
+        }
+
+        // If this is certainly not a self join
+        // And if the next relation in intermediate is included in a join
+        if(predicates[i].predicateType == JOIN &&
+            predicates[i].relationB == relation){
+
+            // Bring that predicate up to the next spot
+            swapPredicates(&predicates[i], &predicates[start]);
+
+            // Add new relation into vIntermediate if it isn't already there
+            if(!inArray(predicates[start].relationA, vIntermediate, newRelIndex)){
+                vIntermediate[newRelIndex] = predicates[start].relationA;
+                newRelIndex++;
+            }
+
+            // Move to next unordered predicate
+            start++;
+
+        }
+    }
+
+}
+
 void reOrderPredicates(QueryInfo * queryInfo){
     Predicate * predicates  = queryInfo->predicates;
     uint64_t count = queryInfo->predicatesCount;
@@ -40,64 +110,23 @@ void reOrderPredicates(QueryInfo * queryInfo){
             vIntermediate[viEnd] = predicates[orderedCount].relationA;
             viEnd++;
             orderedCount++;
+            break;
         }
     }
 
     while(viStart != viEnd){
 
-        // Prioritize self join executions
-        for(uint64_t i=orderedCount; i<count; i++){
-            // If the next relation in intermediate is included in a self join
-            if(vIntermediate[viStart] == predicates[i].relationA &&
-                predicates[i].predicateType == SELFJOIN){
+        // Prioritize self join executions for vIntermediate[viStart] relation
+        prioritizeSelfJoins(orderedCount,count,vIntermediate[viStart],predicates);
 
-                // Bring that predicate up to the next spot
-                swapPredicates(&predicates[i], &predicates[orderedCount]);
+        // Prioritize join executions for vIntermediate[viStart] relation and
+        // add new relations to check into the vIntermediate
+        prioritizeJoins(orderedCount,count,vIntermediate[viStart],predicates,
+                            vIntermediate,viEnd);
 
-                // Increase the number of ordered relations
-                orderedCount++;
-            }
-        }
-
-        for(uint64_t i=orderedCount; i<count; i++){
-
-            // If the next relation in intermediate is included in a join
-            if(vIntermediate[viStart] == predicates[i].relationA){
-
-                // Bring that predicate up to the next spot
-                swapPredicates(&predicates[i], &predicates[orderedCount]);
-
-                // Add new relation into vIntermediate if it isn't already there
-                if(predicates[i].predicateType == JOIN &&
-                   !inArray(predicates[orderedCount].relationB, vIntermediate, viEnd)){
-                        vIntermediate[viEnd] = predicates[orderedCount].relationB;
-                        viEnd++;
-                }
-
-                // Increase the number of ordered relations
-                orderedCount++;
-            }
-
-            // If this is certainly not a self join
-            // And if the next relation in intermediate is included in a join
-            if(predicates[i].predicateType == JOIN &&
-               vIntermediate[viStart] == predicates[i].relationB){
-
-                // Bring that predicate up to the next spot
-                swapPredicates(&predicates[i], &predicates[orderedCount]);
-
-                // Add new relation into vIntermediate if it isn't already there
-                if(!inArray(predicates[orderedCount].relationA, vIntermediate, viEnd)){
-                        vIntermediate[viEnd] = predicates[orderedCount].relationA;
-                        viEnd++;
-                }
-
-                // Increase the number of ordered relations
-                orderedCount++;
-
-            }
-        }
+        //check next relation
         viStart++;
+
     }
 
     delete[] vIntermediate;
