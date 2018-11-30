@@ -36,8 +36,8 @@ void executeQueries() {
 
         calculateSums(queryInfo, IR);
 
-        std::cout << "Intermediate Results after query execution:" << '\n';
-        printResult(IR->results, IR->relCount);
+        // std::cout << "Intermediate Results after query execution:" << '\n';
+        // printResult(IR->results, IR->relCount);
 
         deleteIntermediate(IR);
 

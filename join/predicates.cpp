@@ -61,8 +61,8 @@ void executeJoin(Predicate * predicate, uint64_t * queryRelations, Intermediate 
     uint64_t relNotInIR;
 
     if(isInIntermediate(IR, relA) && isInIntermediate(IR, relB)){
-        std::cout << "Executing self join:" << relA << "." << colA << " = "
-                                            << relB << "." << colB << '\n';
+        // std::cout << "Executing self join:" << relA << "." << colA << " = "
+        //                                     << relB << "." << colB << '\n';
 
         Result * res = newResult();
         Column * constructedA;
@@ -91,8 +91,8 @@ void executeJoin(Predicate * predicate, uint64_t * queryRelations, Intermediate 
         return;
     }
 
-    std::cout << "Executing join:" << relA << "." << colA << " = "
-                                   << relB << "." << colB << '\n';
+    // std::cout << "Executing join:" << relA << "." << colA << " = "
+    //                                << relB << "." << colB << '\n';
 
     // // If one of the two relations is not in the intermediate results
     Column * fromIntermediate;
@@ -177,8 +177,8 @@ void executeSelfjoin(Predicate * predicate, uint64_t * queryRelations, Intermedi
     uint64_t columnA = predicate->columnA;
     uint64_t columnB = predicate->columnB;
 
-    std::cout << "Executing self join:" << rel << "." << columnA << " = "
-                                        << rel << "." << columnB << '\n';
+    // std::cout << "Executing self join:" << rel << "." << columnA << " = "
+    //                                     << rel << "." << columnB << '\n';
 
     SelfJoinColumn * col = selfJoinConstruct(IR, rel,
                                              columnA, columnB,

@@ -107,7 +107,7 @@ QueryInfo * parseInput(char * query) {
     QueryInfo * queryInfo = new QueryInfo;
     queryInfo->predicatesCount = 0;
     queryInfo->sumsCount = 0;
-    std::cout << "query: " << query << '\n';
+    std::cout << '\n' << "query: " << query;
     char* relationsStr = strtok(query, "|");
     char* predicatesStr = strtok(NULL, "|");
     char* sumsStr = strtok(NULL, "|");
