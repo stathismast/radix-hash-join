@@ -15,18 +15,18 @@ void executeQueries() {
          }
 
         if (strcmp(line, "F\n") == 0) {
-            std::cout << "**End of Batch**" << '\n';
+            // std::cout << "**End of Batch**" << '\n';
             // free(line);
             continue;
         }
 
         QueryInfo * queryInfo = parseInput(line);
 
-        std::cout << "RE-ORDERED PREDICATES" << std::endl;
-        for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
-            std::cout << "\t";
-            printPredicate(&queryInfo->predicates[i]);
-        }
+        // std::cout << "RE-ORDERED PREDICATES" << std::endl;
+        // for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
+        //     std::cout << "\t";
+        //     printPredicate(&queryInfo->predicates[i]);
+        // }
 
         Intermediate * IR = new Intermediate;
 

@@ -2,6 +2,7 @@
 #include "memmap.hpp"
 #include "intermediate.hpp"
 #include <cstdio>
+#include <sys/time.h>
 
 #ifndef PREDICATES_HPP
 #define PREDICATES_HPP
@@ -9,6 +10,8 @@
 #define FILTER 1
 #define JOIN 2
 #define SELFJOIN 3
+
+#define TIMEVAR unsigned long long
 
 typedef struct Predicate {
     uint64_t relationA;
