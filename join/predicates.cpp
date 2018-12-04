@@ -132,11 +132,6 @@ void executeJoin(Predicate * predicate, uint64_t * queryRelations, Intermediate 
 
     Result * res = join(fromIntermediate, fromMappedData);
 
-    std::cout << "Join: " << relA << "." << colA << " = "
-                         << relB << "." << colB
-    << " (" << ((double)(currentTime() - startTime))/1000000
-    << " seconds, " << res->totalEntries << " entries)" << '\n';
-
     deleteColumn(fromIntermediate);
     delete[] fromMappedData->rowid;
     delete fromMappedData;
@@ -144,16 +139,14 @@ void executeJoin(Predicate * predicate, uint64_t * queryRelations, Intermediate 
     // std::cout << "Join done. Results are:" << std::endl;
     // printDoubleResult(res);
 
-    startTime = currentTime();
-
     joinUpdateIR(res, relNotInIR, IR);
 
-    std::cout << "IR Update: " << relA << "." << colA << " = "
+    deleteResult(res);
+
+    std::cout << "Join: " << relA << "." << colA << " = "
                          << relB << "." << colB
     << " (" << ((double)(currentTime() - startTime))/1000000
     << " seconds, " << res->totalEntries << " entries)" << '\n';
-
-    deleteResult(res);
 }
 
 // In the results, the 'left' column will always be from the IR
