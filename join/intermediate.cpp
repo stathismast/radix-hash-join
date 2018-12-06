@@ -30,24 +30,14 @@ Column * construct(Intermediate * IR,
                    uint64_t relation,
                    uint64_t relColumn,
                    uint64_t * queryRelations){
-    Result * res = IR->results;
 
-    // Find the index of given relation in the intermediate results
-    uint64_t intermediateIndex;
-    for(uint64_t i=0; i<IR->relCount; i++){
-        if(IR->relations[i] == relation){
-            intermediateIndex = i;
-            break;
-        }
-    }
+    Column * constructed = newColumn(IR->length);
 
-    Column * constructed = newColumn(res->totalEntries);
-
-    for(uint64_t i=0; i<res->totalEntries; i++){
+    for(uint64_t i=0; i<IR->length; i++){
         constructed->rowid[i] = i;
 
-        uint64_t relIndex = queryRelations[IR->relations[intermediateIndex]];
-        uint64_t relRowID = (getEntry(res,i,IR->relCount))[intermediateIndex];
+        uint64_t relIndex = queryRelations[relation];
+        uint64_t relRowID = IR->results[relation][i];
         constructed->value[i] = r[relIndex].data[relColumn][relRowID];
     }
 
@@ -63,29 +53,19 @@ SelfJoinColumn * selfJoinConstruct(Intermediate * IR,
                                    uint64_t relColumnA,
                                    uint64_t relColumnB,
                                    uint64_t * queryRelations){
-    Result * res = IR->results;
-
-    // Find the index of given relation in the intermediate results
-    uint64_t intermediateIndex;
-    for(uint64_t i=0; i<IR->relCount; i++){
-        if(IR->relations[i] == relation){
-            intermediateIndex = i;
-            break;
-        }
-    }
 
     // Create new SelfJoinColumn
     SelfJoinColumn * constructed = new SelfJoinColumn();
-    constructed->rowid = new uint64_t[res->totalEntries];
-    constructed->valueA = new uint64_t[res->totalEntries];
-    constructed->valueB = new uint64_t[res->totalEntries];
-    constructed->size = res->totalEntries;
+    constructed->rowid = new uint64_t[IR->length];
+    constructed->valueA = new uint64_t[IR->length];
+    constructed->valueB = new uint64_t[IR->length];
+    constructed->size = IR->length;
 
-    for(uint64_t i=0; i<res->totalEntries; i++){
+    for(uint64_t i=0; i<IR->length; i++){
         constructed->rowid[i] = i;
 
-        uint64_t relIndex = queryRelations[IR->relations[intermediateIndex]];
-        uint64_t relRowID = (getEntry(res,i,IR->relCount))[intermediateIndex];
+        uint64_t relIndex = queryRelations[relation];
+        uint64_t relRowID = IR->results[relation][i];
 
         constructed->valueA[i] = r[relIndex].data[relColumnA][relRowID];
         constructed->valueB[i] = r[relIndex].data[relColumnB][relRowID];
@@ -117,8 +97,11 @@ Column * constructMappedData(uint64_t relIndex,
 }
 
 void deleteIntermediate(Intermediate * im){
-    deleteResult(im->results);
-    delete[] im->relations;
+    for(uint64_t i=0; i<4; i++){
+        if(im->results[i] != NULL)
+            delete[] im->results[i];
+    }
+
     delete im;
 }
 
@@ -130,8 +113,23 @@ void deleteSJC(SelfJoinColumn * sjc){
 }
 
 bool isInIntermediate(Intermediate * intermediate, uint64_t relation){
-    for(uint64_t i=0; i<intermediate->relCount; i++)
-        if(intermediate->relations[i] == relation)
-            return 1;
-    return 0;
+    return (intermediate->results[relation] != NULL);
+}
+
+// Convert a Result with a single entry into an array
+uint64_t * singleResultToArray(Result * res){
+    uint64_t * array = new uint64_t[res->totalEntries];
+    for(uint64_t i=0; i<res->totalEntries; i++){
+        array[i] = getEntry(res,i,1)[0];
+    }
+    return array;
+}
+
+// Convert the second entry of a Result with two entries into an array
+uint64_t * resultToArray(Result * res, uint64_t count, uint64_t index){
+    uint64_t * array = new uint64_t[res->totalEntries];
+    for(uint64_t i=0; i<res->totalEntries; i++){
+        array[i] = getEntry(res,i,count)[index];
+    }
+    return array;
 }

@@ -29,6 +29,9 @@ void executeQueries() {
         // }
 
         Intermediate * IR = new Intermediate;
+        for(uint64_t i=0; i<4; i++)
+            IR->results[i] = NULL;
+        IR->length = 0;
 
         for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
             execute(&queryInfo->predicates[i], queryInfo->relations, IR);

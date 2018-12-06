@@ -52,17 +52,15 @@ void executeFilter(Predicate * predicate, uint64_t * queryRelations, Intermediat
     }
 
     // Load results into Intermediate Results
-    IR->results = res;
-    IR->relCount = 1;
+    IR->results[predicate->relationA] = singleResultToArray(res);
+    IR->length = res->totalEntries;
 
-    uint64_t * temp = new uint64_t[1];
-    temp[0] = predicate->relationA;
-    IR->relations = temp;
+    deleteResult(res);
 
     std::cout << "Filter: " << predicate->relationA << "." << column << " "
               << op << " " << value
     << " (" << ((double)(currentTime() - startTime))/1000000
-    << " seconds, " << res->totalEntries << " entries)" << '\n';
+    << " seconds, " << IR->length << " entries)" << '\n';
 }
 
 void executeJoin(Predicate * predicate, uint64_t * queryRelations, Intermediate * IR) {
@@ -100,7 +98,7 @@ void executeJoin(Predicate * predicate, uint64_t * queryRelations, Intermediate 
         std::cout << "Secondary Self Join: " << relA << "." << colA << " = "
                   << relB << "." << colB 
         << " (" << ((double)(currentTime() - startTime))/1000000
-        << " seconds, " << res->totalEntries << " entries)" << '\n';
+        << " seconds, " << IR->length << " entries)" << '\n';
         
         deleteResult(res);
 
@@ -141,54 +139,37 @@ void executeJoin(Predicate * predicate, uint64_t * queryRelations, Intermediate 
 
     joinUpdateIR(res, relNotInIR, IR);
 
-    deleteResult(res);
-
     std::cout << "Join: " << relA << "." << colA << " = "
                          << relB << "." << colB
     << " (" << ((double)(currentTime() - startTime))/1000000
-    << " seconds, " << res->totalEntries << " entries)" << '\n';
+    << " seconds, " << IR->length << " entries)" << '\n';
+
+    deleteResult(res);
 }
 
 // In the results, the 'left' column will always be from the IR
 void joinUpdateIR(Result * res, uint64_t newRel, Intermediate * IR){
-    uint64_t * resEntry;
-    uint64_t * IREntry;
-    uint64_t * newIREntry = new uint64_t[IR->relCount+1];
-    Result * newResults = newResult();
+    uint64_t newLength = res->totalEntries;
 
-    // Iterate over the join results
-    for(uint64_t i=0; i<res->totalEntries; i++){
+    // Convert the results of the most recent join into an array
+    uint64_t * fromIntermediate = resultToArray(res,2,0);
+    uint64_t * fromMappedData = resultToArray(res,2,1);
 
-        // Get next result
-        resEntry = getEntry(res,i,2);
-
-        // Get the row from 'intermediate' that we want to add to the new IR
-        IREntry = getEntry(IR->results,resEntry[0],IR->relCount);
-
-        // Create the new IR entry by using the previous IR entry and adding
-        // the value from the most recent join at the end
-        memcpy(newIREntry, IREntry, IR->relCount * sizeof(uint64_t));
-        newIREntry[IR->relCount] = resEntry[1];
-
-        // Add the old IR row to the the new IR
-        insertResult(newResults,newIREntry,IR->relCount+1);
+    // Run through the exising results in the IR and
+    // update them based on the latest join results
+    for(uint64_t i=0; i<4; i++){
+        if(IR->results[i] == NULL) continue;
+        uint64_t * temp = IR->results[i];
+        IR->results[i] = new uint64_t[newLength];
+        for(uint64_t j=0; j<newLength; j++){
+            IR->results[i][j] = temp[fromIntermediate[j]];
+        }
+        delete[] temp;
     }
-    delete[] newIREntry;
-    deleteResult(IR->results);
+    delete[] fromIntermediate;
 
-    // Update intermediate.relations array
-    uint64_t * newRelations = new uint64_t[IR->relCount+1];
-    memcpy(newRelations, IR->relations, IR->relCount * sizeof(uint64_t));
-    newRelations[IR->relCount] = newRel;
-    delete[] IR->relations;
-
-    IR->relations = newRelations;
-
-    // Update intermediate.relCount
-    IR->relCount++;
-
-    // Update intermidiate.results
-    IR->results = newResults;
+    IR->results[newRel] = fromMappedData;
+    IR->length = newLength;
 }
 
 void executeSelfjoin(Predicate * predicate, uint64_t * queryRelations, Intermediate * IR) {
@@ -220,36 +201,32 @@ void executeSelfjoin(Predicate * predicate, uint64_t * queryRelations, Intermedi
     std::cout << "Self Join: " << rel << "." << columnA << " = "
                                << rel << "." << columnB
     << " (" << ((double)(currentTime() - startTime))/1000000
-    << " seconds, " << res->totalEntries << " entries)" << '\n';
+    << " seconds, " << IR->length << " entries)" << '\n';
 
     deleteResult(res);
 }
 
 // Update interemediate results after a self join execution
 void selfJoinUpdateIR(Result * selfJoinResults, Intermediate * IR){
-    uint64_t * entry;
-    uint64_t * rowID;
-    Result * newResults = newResult();
+    uint64_t newLength = selfJoinResults->totalEntries;
 
-    // Iterate over the selfJoin results
-    for(uint64_t i=0; i<selfJoinResults->totalEntries; i++){
+    // Convert the results of the most recent self join into an array
+    uint64_t * rowIDs = resultToArray(selfJoinResults,1,0);
 
-        // Get next result (an index of a row in IR that we want to keep)
-        rowID = getEntry(selfJoinResults,i,1);
-
-        // Get the row from 'intermediate' that we want to add to the new IR
-        entry = getEntry(IR->results,*rowID,IR->relCount);
-
-        // Add the old IR row to the the new IR
-        insertResult(newResults,entry,IR->relCount);
+    // Run through the exising results in the IR and
+    // update them based on the latest self join results
+    for(uint64_t i=0; i<4; i++){
+        if(IR->results[i] == NULL) continue;
+        uint64_t * temp = IR->results[i];
+        IR->results[i] = new uint64_t[newLength];
+        for(uint64_t j=0; j<newLength; j++){
+            IR->results[i][j] = temp[rowIDs[j]];
+        }
+        delete[] temp;
     }
+    delete[] rowIDs;
 
-    deleteResult(IR->results);
-
-    IR->results = newResults;
-
-    // std::cout << "Intermediate after self join:" << '\n';
-    // printResult(IR.results,IR.relCount);
+    IR->length = newLength;
 }
 
 void calculateSums(QueryInfo * qi, Intermediate *IR){
@@ -261,24 +238,16 @@ void calculateSums(QueryInfo * qi, Intermediate *IR){
         uint64_t relation = qi->sums[j].relation;
         uint64_t relColumn = qi->sums[j].column;
 
-        uint64_t intermediateIndex;
-        for(uint64_t i=0; i<IR->relCount; i++){
-            if(IR->relations[i] == relation){
-                intermediateIndex = i;
-                break;
-            }
-        }
-
-        for(uint64_t i=0; i<IR->results->totalEntries; i++){
-            uint64_t relIndex = qi->relations[IR->relations[intermediateIndex]];
-            uint64_t relRowID = (getEntry(IR->results,i,IR->relCount))[intermediateIndex];
+        for(uint64_t i=0; i<IR->length; i++){
+            uint64_t relIndex = qi->relations[relation];
+            uint64_t relRowID = IR->results[relation][i];
             sum += r[relIndex].data[relColumn][relRowID];
         }
 
         std::cout << "Sum " << qi->sums[j].relation << "." 
         << qi->sums[j].column << ": " << sum
     << " (" << ((double)(currentTime() - startTime))/1000000
-    << " seconds, " << IR->results->totalEntries << " entries)" << '\n';
+    << " seconds, " << IR->length << " entries)" << '\n';
 
         sum = 0;
     }

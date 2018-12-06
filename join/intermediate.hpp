@@ -3,9 +3,8 @@
 #include "memmap.hpp"
 
 struct Intermediate{
-    Result * results;
-    uint64_t relCount;
-    uint64_t * relations;
+    uint64_t * results[4];
+    uint64_t length;
 };
 
 struct SelfJoinColumn{
@@ -32,3 +31,6 @@ void deleteIntermediate(Intermediate * im);
 void deleteSJC(SelfJoinColumn * sjc);
 
 bool isInIntermediate(Intermediate * intermediate, uint64_t relIndex);
+
+uint64_t * singleResultToArray(Result * res);
+uint64_t * resultToArray(Result * res, uint64_t count, uint64_t index);
