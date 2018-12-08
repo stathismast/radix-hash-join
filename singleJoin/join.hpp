@@ -2,7 +2,7 @@
 #include "h2.hpp"
 #include "result.hpp"
 
-Result * join(Column * A, Column * B);
+Result ** join(Column * A, Column * B);
 
 void compare(Column * orderedBig,
             Column * orderedSmall,
@@ -12,7 +12,7 @@ void compare(Column * orderedBig,
             uint64_t startIndexSmall,
             uint64_t * bucketArray,
             uint64_t * chainArray,
-            Result * result,
+            Result ** result,
             bool flag);
 
 void checkEquals(uint64_t rowidA,
@@ -22,7 +22,7 @@ void checkEquals(uint64_t rowidA,
                  uint64_t startIndexSmall,
                  uint64_t * bucketArray,
                  uint64_t * chainArray,
-                 Result * result,
+                 Result ** result,
                  bool flag,
                  int rowIdBig);
 

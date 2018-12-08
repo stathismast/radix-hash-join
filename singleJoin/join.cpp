@@ -2,7 +2,7 @@
 
 extern uint64_t numberOfBuckets;
 
-Result * join(Column * A, Column * B){
+Result ** join(Column * A, Column * B){
     // Order given touples bucket by bucket (basically produces A' and B')
     uint64_t * histogramA;
     uint64_t * startingPosA;
@@ -29,7 +29,9 @@ Result * join(Column * A, Column * B){
 
     uint64_t * bucketArray;
     uint64_t * chainArray;
-    Result * result = newResult();
+    Result ** result = new Result*[2];
+    result[0] = newResult();
+    result[1] = newResult();
     for (uint64_t i = 0; i < numberOfBuckets; i++) {
 
         if(histogramA[i] == 0 || histogramB[i] == 0){
@@ -75,7 +77,7 @@ void compare(Column * orderedBig,
             uint64_t startIndexSmall,
             uint64_t * bucketArray,
             uint64_t * chainArray,
-            Result * result,
+            Result ** result,
             bool flag) {
 
     int hash_value, prime = nextPrime(bucketSizeSmall);
@@ -98,7 +100,7 @@ void checkEquals(uint64_t rowidA,
                  uint64_t startIndexSmall,
                  uint64_t * bucketArray,
                  uint64_t * chainArray,
-                 Result * result,
+                 Result ** result,
                  bool flag,
                  int rowIdBig) {
     
@@ -118,10 +120,12 @@ void checkEquals(uint64_t rowidA,
             // We need this flag so we will know which rowId goes first and
             // which second
             if (flag == 0) {
-                insertDoubleResult(result, rowidA, rowidB);
+                insertSingleResult(result[0], rowidA);
+                insertSingleResult(result[1], rowidB);
             }
             else{
-                insertDoubleResult(result, rowidB, rowidA);
+                insertSingleResult(result[0], rowidB);
+                insertSingleResult(result[1], rowidA);
             }
         }
         // Find the next element in the current bucket

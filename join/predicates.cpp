@@ -128,7 +128,7 @@ void executeJoin(Predicate * predicate, uint64_t * queryRelations, Intermediate 
         exit(0);
     }
 
-    Result * res = join(fromIntermediate, fromMappedData);
+    Result ** res = join(fromIntermediate, fromMappedData);
 
     deleteColumn(fromIntermediate);
     delete[] fromMappedData->rowid;
@@ -144,16 +144,18 @@ void executeJoin(Predicate * predicate, uint64_t * queryRelations, Intermediate 
     << " (" << ((double)(currentTime() - startTime))/1000000
     << " seconds, " << IR->length << " entries)" << '\n';
 
-    deleteResult(res);
+    deleteResult(res[0]);
+    deleteResult(res[1]);
+    delete[] res;
 }
 
 // In the results, the 'left' column will always be from the IR
-void joinUpdateIR(Result * res, uint64_t newRel, Intermediate * IR){
-    uint64_t newLength = res->totalEntries;
+void joinUpdateIR(Result ** res, uint64_t newRel, Intermediate * IR){
+    uint64_t newLength = res[0]->totalEntries;
 
     // Convert the results of the most recent join into an array
-    uint64_t * fromIntermediate = resultToArray(res,2,0);
-    uint64_t * fromMappedData = resultToArray(res,2,1);
+    uint64_t * fromIntermediate = resultToArray(res[0],1,0);
+    uint64_t * fromMappedData = resultToArray(res[1],1,0);
 
     // Run through the exising results in the IR and
     // update them based on the latest join results
