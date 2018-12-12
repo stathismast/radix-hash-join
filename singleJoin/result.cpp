@@ -222,3 +222,16 @@ uint64_t * getEntry(Result * res, uint64_t index, uint64_t entryCount){
     uint64_t offset = index % (BUFFER_SIZE / (entryCount*sizeof(uint64_t)));
     return node->buffer + offset * entryCount;
 }
+
+uint64_t getSingleEntry(Result * res, uint64_t index){
+    uint64_t entriesPerNode = BUFFER_SIZE >> 3;
+    uint64_t nodeIndex = index / entriesPerNode;
+
+    Node * node = res->first;
+    for(uint64_t i=0; i<nodeIndex; i++){
+        node = node->next;
+    }
+
+    uint64_t offset = index % entriesPerNode;
+    return node->buffer[offset];
+}

@@ -60,4 +60,6 @@ void printNodeResult(Node * node, uint64_t entryCount);
 
 uint64_t * getEntry(Result * res, uint64_t index, uint64_t entryCount);
 
+uint64_t getSingleEntry(Result * res, uint64_t index);
+
 #endif /* LIST_H */

@@ -120,7 +120,7 @@ bool isInIntermediate(Intermediate * intermediate, uint64_t relation){
 uint64_t * singleResultToArray(Result * res){
     uint64_t * array = new uint64_t[res->totalEntries];
     for(uint64_t i=0; i<res->totalEntries; i++){
-        array[i] = getEntry(res,i,1)[0];
+        array[i] = getSingleEntry(res,i);
     }
     return array;
 }

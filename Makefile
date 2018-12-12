@@ -28,7 +28,7 @@ PARSER_OBJS = testMain/parserTest.o  ./join/memmap.o ./join/stringList.o ./join/
 		./singleJoin/result.o ./singleJoin/structs.o ./join/inputManager.o \
 		./join/intermediate.o ./join/predicates.o
 
-FLAGS = -g3 -Wall
+FLAGS = -g3 -Wall -O2
 
 all:$(OBJS)
 	$(CC) -o main $(OBJS) $(FLAGS)
