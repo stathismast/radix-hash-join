@@ -128,7 +128,20 @@ void executeJoin(Predicate * predicate, uint64_t * queryRelations, Intermediate 
         exit(0);
     }
 
+
+    std::cout << "Constructs: " 
+    << " (" << ((double)(currentTime() - startTime))/1000000
+    << " seconds, " << fromIntermediate->size 
+    << "/" << fromMappedData->size << " entries)" << '\n';
+
+    startTime = currentTime();
+
     Result ** res = join(fromIntermediate, fromMappedData);
+
+    std::cout << "Join: " << relA << "." << colA << " = "
+                         << relB << "." << colB
+    << " (" << ((double)(currentTime() - startTime))/1000000
+    << " seconds, " << IR->length << " entries)" << '\n';
 
     deleteColumn(fromIntermediate);
     delete[] fromMappedData->rowid;
@@ -137,12 +150,13 @@ void executeJoin(Predicate * predicate, uint64_t * queryRelations, Intermediate 
     // std::cout << "Join done. Results are:" << std::endl;
     // printDoubleResult(res);
 
+
+    startTime = currentTime();
     joinUpdateIR(res, relNotInIR, IR);
 
-    std::cout << "Join: " << relA << "." << colA << " = "
-                         << relB << "." << colB
+    std::cout << "Total Update IR: "
     << " (" << ((double)(currentTime() - startTime))/1000000
-    << " seconds, " << IR->length << " entries)" << '\n';
+    << " seconds)" << '\n';
 
     deleteResult(res[0]);
     deleteResult(res[1]);
@@ -168,6 +182,8 @@ void joinUpdateIR(Result ** res, uint64_t newRel, Intermediate * IR){
 
     // Run through the exising results in the IR and
     // update them based on the latest join results
+
+    startTime = currentTime();
     for(uint64_t i=0; i<4; i++){
         if(IR->results[i] == NULL) continue;
         uint64_t * temp = IR->results[i];
@@ -178,6 +194,10 @@ void joinUpdateIR(Result ** res, uint64_t newRel, Intermediate * IR){
         delete[] temp;
     }
     delete[] fromIntermediate;
+
+    std::cout << "IR replacement: " 
+    << " (" << ((double)(currentTime() - startTime))/1000000
+    << " seconds, " << newLength << " entries)" << '\n';
 
     IR->results[newRel] = fromMappedData;
     IR->length = newLength;
