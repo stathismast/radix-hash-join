@@ -33,4 +33,7 @@ void deleteSJC(SelfJoinColumn * sjc);
 bool isInIntermediate(Intermediate * intermediate, uint64_t relIndex);
 
 uint64_t * singleResultToArray(Result * res);
+uint64_t * fastResultToArray(Result * res);
+uint64_t * fastResultToArray2(Result * res);
+uint64_t * fastResultToArray3(Result * res);
 uint64_t * resultToArray(Result * res, uint64_t count, uint64_t index);

@@ -125,6 +125,55 @@ uint64_t * singleResultToArray(Result * res){
     return array;
 }
 
+// Convert a Result with a single entry into an array
+uint64_t * fastResultToArray(Result * res){
+    uint64_t * array = new uint64_t[res->totalEntries];
+
+    uint64_t count = 0;
+    Node * node = res->first;
+    for(uint64_t i=0; i<res->nodesNum; i++){
+        for(uint64_t j=0; j<node->count; j++){
+            array[count+j] = node->buffer[j];
+        }
+        count += node->count;
+        node = node->next;
+    }
+
+    return array;
+}
+
+// // Convert a Result with a single entry into an array
+// uint64_t * fastResultToArray(Result * res){
+//     uint64_t * array = new uint64_t[res->totalEntries];
+
+//     uint64_t nextPos = 0;
+//     Node * node = res->first;
+//     for(uint64_t i=0; i<res->nodesNum; i++){
+//         memcpy(array+nextPos, node->buffer, 8 * node->count);
+//         nextPos += node->count;
+//         node = node->next;
+//     }
+
+//     return array;
+// }
+
+// // Convert a Result with a single entry into an array
+// uint64_t * fastResultToArray(Result * res){
+//     uint64_t * array = new uint64_t[res->totalEntries];
+
+//     uint64_t count = 0;
+//     Node * node = res->first;
+//     for(uint64_t i=0; i<res->nodesNum; i++){
+//         for(uint64_t j=0; j<node->count; j++){
+//             array[count] = node->buffer[j];
+//             count++;
+//         }
+//         node = node->next;
+//     }
+
+//     return array;
+// }
+
 // Convert the second entry of a Result with two entries into an array
 uint64_t * resultToArray(Result * res, uint64_t count, uint64_t index){
     uint64_t * array = new uint64_t[res->totalEntries];

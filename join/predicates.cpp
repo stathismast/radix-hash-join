@@ -169,13 +169,13 @@ void joinUpdateIR(Result ** res, uint64_t newRel, Intermediate * IR){
 
     TIMEVAR startTime = currentTime();
     // Convert the results of the most recent join into an array
-    uint64_t * fromIntermediate = singleResultToArray(res[0]);
+    uint64_t * fromIntermediate = fastResultToArray(res[0]);
     std::cout << "Conversion from IR to array"
     << " (" << ((double)(currentTime() - startTime))/1000000
     << " seconds, " << newLength << " entries)" << '\n';
 
     startTime = currentTime();
-    uint64_t * fromMappedData = singleResultToArray(res[1]);
+    uint64_t * fromMappedData = fastResultToArray(res[1]);
     std::cout << "Conversion from mapped data to array" 
     << " (" << ((double)(currentTime() - startTime))/1000000
     << " seconds, " << newLength << " entries)" << '\n';
