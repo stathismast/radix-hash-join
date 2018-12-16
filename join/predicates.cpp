@@ -52,7 +52,7 @@ void executeFilter(Predicate * predicate, uint64_t * queryRelations, Intermediat
     }
 
     // Load results into Intermediate Results
-    IR->results[predicate->relationA] = singleResultToArray(res);
+    IR->results[predicate->relationA] = fastResultToArray(res);
     IR->length = res->totalEntries;
 
     deleteResult(res);
@@ -64,6 +64,11 @@ void executeFilter(Predicate * predicate, uint64_t * queryRelations, Intermediat
 }
 
 void executeJoin(Predicate * predicate, uint64_t * queryRelations, Intermediate * IR) {
+    if(isEmpty(IR)){
+        executeNoFilterJoin(predicate, queryRelations, IR);
+        return;
+    }
+
     uint64_t relA = predicate->relationA;
     uint64_t colA = predicate->columnA;
     uint64_t relB = predicate->relationB;
@@ -203,7 +208,67 @@ void joinUpdateIR(Result ** res, uint64_t newRel, Intermediate * IR){
     IR->length = newLength;
 }
 
+void executeNoFilterJoin(Predicate * predicate, uint64_t * queryRelations, Intermediate * IR) {
+    uint64_t relA = predicate->relationA;
+    uint64_t colA = predicate->columnA;
+    uint64_t relB = predicate->relationB;
+    uint64_t colB = predicate->columnB;
+
+    TIMEVAR startTime = currentTime();
+
+    // // If one of the two relations is not in the intermediate results
+    Column * constructedA;
+    Column * constructedB;
+
+    constructedA = constructMappedData(relA,colA,queryRelations);
+    constructedB = constructMappedData(relB,colB,queryRelations);
+
+
+    std::cout << "No Filter Constructs: " 
+    << " (" << ((double)(currentTime() - startTime))/1000000
+    << " seconds, " << constructedA->size 
+    << "/" << constructedA->size << " entries)" << '\n';
+
+    startTime = currentTime();
+
+    Result ** res = join(constructedA, constructedB);
+
+    std::cout << "No Filter Join: " << relA << "." << colA << " = "
+                         << relB << "." << colB
+    << " (" << ((double)(currentTime() - startTime))/1000000
+    << " seconds, " << res[0]->totalEntries << " entries)" << '\n';
+
+    delete[] constructedA->rowid;
+    delete constructedA;
+    delete[] constructedB->rowid;
+    delete constructedB;
+
+    // std::cout << "Join done. Results are:" << std::endl;
+    // printDoubleResult(res);
+
+
+    startTime = currentTime();
+
+    // Update intermediate results
+    IR->length = res[0]->totalEntries;
+    IR->results[relA] = fastResultToArray(res[0]);
+    IR->results[relB] = fastResultToArray(res[1]);
+
+    std::cout << "Total Update IR: "
+    << " (" << ((double)(currentTime() - startTime))/1000000
+    << " seconds)" << '\n';
+
+    deleteResult(res[0]);
+    deleteResult(res[1]);
+    delete[] res;
+}
+
 void executeSelfjoin(Predicate * predicate, uint64_t * queryRelations, Intermediate * IR) {
+    if(isEmpty(IR)){
+        executeNoFilterSelfjoin(predicate, queryRelations, IR);
+        return;
+    }
+
     TIMEVAR startTime = currentTime();
 
     Result * res = newResult();
@@ -242,7 +307,7 @@ void selfJoinUpdateIR(Result * selfJoinResults, Intermediate * IR){
     uint64_t newLength = selfJoinResults->totalEntries;
 
     // Convert the results of the most recent self join into an array
-    uint64_t * rowIDs = resultToArray(selfJoinResults,1,0);
+    uint64_t * rowIDs = fastResultToArray(selfJoinResults);
 
     // Run through the exising results in the IR and
     // update them based on the latest self join results
@@ -258,6 +323,43 @@ void selfJoinUpdateIR(Result * selfJoinResults, Intermediate * IR){
     delete[] rowIDs;
 
     IR->length = newLength;
+}
+
+void executeNoFilterSelfjoin(Predicate * predicate, uint64_t * queryRelations, Intermediate * IR){
+    TIMEVAR startTime = currentTime();
+
+    Result * res = newResult();
+    uint64_t rel = predicate->relationA;
+    uint64_t columnA = predicate->columnA;
+    uint64_t columnB = predicate->columnB;
+
+    SelfJoinColumn * col = selfJoinConstructMappedData(IR, rel,
+                                                       columnA, columnB,
+                                                       queryRelations);
+    for(uint64_t i = 0; i < col->size; i++){
+        if(col->valueA[i] == col->valueB[i]){
+            // std::cout << "A:" << col->valueA[i]
+            //           << " B:" << col->valueB[i] << '\n';
+            insertSingleResult(res, i);
+        }
+    }
+    delete[] col->rowid;
+    delete col;
+
+    // std::cout << "Result of self join is:" << std::endl;
+    // printSingleResult(res);
+
+    // Update intermediate results
+    uint64_t * resultsArray = fastResultToArray(res);
+    IR->length = res->totalEntries;
+    IR->results[rel] = resultsArray;
+
+    std::cout << "No Filter Self Join: " << rel << "." << columnA << " = "
+                               << rel << "." << columnB
+    << " (" << ((double)(currentTime() - startTime))/1000000
+    << " seconds, " << IR->length << " entries)" << '\n';
+
+    deleteResult(res);
 }
 
 void calculateSums(QueryInfo * qi, Intermediate *IR){

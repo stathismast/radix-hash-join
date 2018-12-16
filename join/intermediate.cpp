@@ -96,6 +96,29 @@ Column * constructMappedData(uint64_t relIndex,
     return constructed;
 }
 
+SelfJoinColumn * selfJoinConstructMappedData(Intermediate * IR,
+                                             uint64_t relation,
+                                             uint64_t relColumnA,
+                                             uint64_t relColumnB,
+                                             uint64_t * queryRelations){
+
+    // Convert relative index to actual index in mapped data
+    relation = queryRelations[relation];
+
+    // Create new SelfJoinColumn
+    SelfJoinColumn * constructed = new SelfJoinColumn();
+    constructed->valueA = r[relation].data[relColumnA];
+    constructed->valueB = r[relation].data[relColumnB];
+    constructed->size = r[relation].rows;
+
+    constructed->rowid = new uint64_t[r[relation].rows];
+    for(uint64_t i=0; i<r[relation].rows; i++){
+        constructed->rowid[i] = i;
+    }
+
+    return constructed;
+}
+
 void deleteIntermediate(Intermediate * im){
     for(uint64_t i=0; i<4; i++){
         if(im->results[i] != NULL)
@@ -181,4 +204,9 @@ uint64_t * resultToArray(Result * res, uint64_t count, uint64_t index){
         array[i] = getEntry(res,i,count)[index];
     }
     return array;
+}
+
+bool isEmpty(Intermediate * IR){
+    return IR->results[0] == NULL && IR->results[1] == NULL &&
+           IR->results[2] == NULL && IR->results[3] == NULL;
 }

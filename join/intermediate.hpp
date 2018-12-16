@@ -24,6 +24,11 @@ SelfJoinColumn * selfJoinConstruct(Intermediate * IR,
                                    uint64_t relColumnA,
                                    uint64_t relColumnB,
                                    uint64_t * queryRelations);
+SelfJoinColumn * selfJoinConstructMappedData(Intermediate * IR,
+                                             uint64_t relation,
+                                             uint64_t relColumnA,
+                                             uint64_t relColumnB,
+                                             uint64_t * queryRelations);
 Column * constructMappedData(uint64_t relIndex,
                              uint64_t column,
                              uint64_t * queryRelations);
@@ -37,3 +42,5 @@ uint64_t * fastResultToArray(Result * res);
 uint64_t * fastResultToArray2(Result * res);
 uint64_t * fastResultToArray3(Result * res);
 uint64_t * resultToArray(Result * res, uint64_t count, uint64_t index);
+
+bool isEmpty(Intermediate *);

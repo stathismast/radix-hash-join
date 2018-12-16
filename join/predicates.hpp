@@ -44,6 +44,8 @@ void execute(Predicate * p, uint64_t * relations, Intermediate * IR);
 void executeFilter(Predicate * predicate, uint64_t * relations, Intermediate * IR);
 void executeJoin(Predicate * predicate, uint64_t * relations, Intermediate * IR);
 void executeSelfjoin(Predicate * predicate, uint64_t * relations, Intermediate * IR);
+void executeNoFilterSelfjoin(Predicate * predicate, uint64_t * relations, Intermediate * IR);
+void executeNoFilterJoin(Predicate * predicate, uint64_t * queryRelations, Intermediate * IR);
 
 void joinUpdateIR(Result ** res, uint64_t newRel, Intermediate * IR);
 void selfJoinUpdateIR(Result * selfJoinResults, Intermediate * IR);
