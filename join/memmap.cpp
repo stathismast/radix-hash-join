@@ -20,6 +20,60 @@ uint64_t ** convertMap(uint64_t * data, uint64_t rows, uint64_t cols){
     return index;
 }
 
+// This function calculates the requiredstatistics (l,u,f,d)
+// for every column in a given relation
+void calculateStats(Relation * rel){
+    // Allocate arrays for statistics of each column
+    rel->l = new uint64_t[rel->cols];
+    rel->u = new uint64_t[rel->cols];
+    rel->f = new uint64_t[rel->cols];
+    rel->d = new uint64_t[rel->cols];
+
+    for(uint64_t i=0; i<rel->cols; i++){
+
+        // Calculate min and max values
+        uint64_t max = rel->data[i][0];
+        uint64_t min = rel->data[i][0];
+        for(uint64_t j=1; j<rel->rows; j++){
+            if(rel->data[i][j] > max) max = rel->data[i][j];
+            if(rel->data[i][j] < min) min = rel->data[i][j];
+        }
+        rel->l[i] = min;
+        rel->u[i] = max;
+
+        // Calculate total number of values
+        rel->f[i] = rel->rows;
+
+        // Initialize and calculate boolean array
+        uint64_t arraySize = rel->u[i] - rel->l[i] + 1;
+        if(arraySize > 50000000) arraySize = 50000000;
+        bool * tempArray = new bool[arraySize];
+        for(uint64_t j=0; j<arraySize; j++){
+            tempArray[j] = false;
+        }
+        for(uint64_t j=0; j<rel->rows; j++){
+            tempArray[(rel->data[i][j] - rel->l[i]) % arraySize] = true;
+        }
+
+        // Calculate the total number of different values
+        rel->d[i] = 0;
+        for(uint64_t j=0; j<arraySize; j++){
+            if(tempArray[j] == true){
+                rel->d[i]++;
+            }
+        }
+
+        std::cout << i << ": l=" << rel->l[i]
+                       << "  u=" << rel->u[i]
+                       << "  f=" << rel->f[i]
+                       << "  d=" << rel->d[i] << "\n";
+
+        delete[] tempArray;
+    }
+
+    std::cout << "\n";
+}
+
 // Given a file name, this function will create a return a Relation struct
 // containing the number of columns, rows and all the data in a 2D array
 Relation mapFile(const char inputFile[]){
@@ -38,6 +92,8 @@ Relation mapFile(const char inputFile[]){
     uint64_t * data = memmap(fd, size);
     rel.data = convertMap(data+2, rel.rows, rel.cols);
 
+    calculateStats(&rel);
+
     close(fd);
     return rel;
 }
@@ -46,6 +102,10 @@ Relation mapFile(const char inputFile[]){
 void unmapData(Relation rel){
     munmap(*rel.data - 2, getFileSize(rel.rows, rel.cols));
     delete[] rel.data;
+    delete[] rel.l;
+    delete[] rel.u;
+    delete[] rel.f;
+    delete[] rel.d;
 }
 
 void printData(Relation rel){
