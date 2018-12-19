@@ -44,11 +44,22 @@ void executeFilter(Predicate * predicate, uint64_t * queryRelations, Intermediat
     int column = predicate->columnA;
     uint64_t value = predicate->value;
     char op = predicate->op;
+
     // make the list
-    for (uint64_t i = 0; i < rel.rows; i++) {
-        if (compare(rel.data[column][i], value, op) ) {
-            insertSingleResult(res, i);
-        }
+    if(op == '<'){
+        for(uint64_t i=0; i<rel.rows; i++)
+            if(rel.data[column][i] < value)
+                insertSingleResult(res, i);
+    }
+    else if(op == '>'){
+        for(uint64_t i=0; i<rel.rows; i++)
+            if(rel.data[column][i] > value)
+                insertSingleResult(res, i);
+    }
+    else{
+        for(uint64_t i=0; i<rel.rows; i++)
+            if(rel.data[column][i] == value)
+                insertSingleResult(res, i);
     }
 
     // Load results into Intermediate Results
