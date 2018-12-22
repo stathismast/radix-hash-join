@@ -6,6 +6,7 @@
 //global
 Relation * r;
 uint64_t relationsSize;
+Stats ** stats;
 
 // Intermediate IR;
 
@@ -23,6 +24,7 @@ void executeQueries() {
             continue;
         }
 
+        initializeStats();
         QueryInfo * queryInfo = parseInput(line);
 
         // std::cout << "RE-ORDERED PREDICATES" << std::endl;
@@ -57,6 +59,7 @@ void executeQueries() {
 
 int main(void){
     mapAllData(&r, &relationsSize);
+    createStats();
 
     if( r == NULL ){ //no file found
         std::cout << "No file found. Please try again. Bye!" << '\n';
@@ -73,33 +76,34 @@ int main(void){
 
 
         std::cout   << "Before\n"
-                    << "0.0" << ": l=" << r[0].l[0]
-                       << "  u=" << r[0].u[0]
-                       << "  f=" << r[0].f[0]
-                       << "  d=" << r[0].d[0] << "\n"
-                    << "0.1" << ": l=" << r[0].l[1]
-                       << "  u=" << r[0].u[1]
-                       << "  f=" << r[0].f[1]
-                       << "  d=" << r[0].d[1] << "\n"
-                    << "0.2" << ": l=" << r[0].l[2]
-                       << "  u=" << r[0].u[2]
-                       << "  f=" << r[0].f[2]
-                       << "  d=" << r[0].d[2] << "\n";
+                    << "0.0" << ": l=" << stats[0][0].l
+                       << "  u=" << stats[0][0].u
+                       << "  f=" << stats[0][0].f
+                       << "  d=" << stats[0][0].d << "\n"
+                    << "0.1" << ": l=" << stats[0][1].l
+                       << "  u=" << stats[0][1].u
+                       << "  f=" << stats[0][1].f
+                       << "  d=" << stats[0][1].d << "\n"
+                    << "0.2" << ": l=" << stats[0][2].l
+                       << "  u=" << stats[0][2].u
+                       << "  f=" << stats[0][2].f
+                       << "  d=" << stats[0][2].d << "\n";
         equalFilter(0,1,9403);
         std::cout   << "\n\nAfter\n"
-                    << "0.0" << ": l=" << r[0].l[0]
-                       << "  u=" << r[0].u[0]
-                       << "  f=" << r[0].f[0]
-                       << "  d=" << r[0].d[0] << "\n"
-                    << "0.1" << ": l=" << r[0].l[1]
-                       << "  u=" << r[0].u[1]
-                       << "  f=" << r[0].f[1]
-                       << "  d=" << r[0].d[1] << "\n"
-                    << "0.2" << ": l=" << r[0].l[2]
-                       << "  u=" << r[0].u[2]
-                       << "  f=" << r[0].f[2]
-                       << "  d=" << r[0].d[2] << "\n";
+                    << "0.0" << ": l=" << stats[0][0].l
+                       << "  u=" << stats[0][0].u
+                       << "  f=" << stats[0][0].f
+                       << "  d=" << stats[0][0].d << "\n"
+                    << "0.1" << ": l=" << stats[0][1].l
+                       << "  u=" << stats[0][1].u
+                       << "  f=" << stats[0][1].f
+                       << "  d=" << stats[0][1].d << "\n"
+                    << "0.2" << ": l=" << stats[0][2].l
+                       << "  u=" << stats[0][2].u
+                       << "  f=" << stats[0][2].f
+                       << "  d=" << stats[0][2].d << "\n";
 
+    deleteStats();
     unMapAllData(r, relationsSize);
 
     return 0;

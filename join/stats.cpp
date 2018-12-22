@@ -1,12 +1,40 @@
 #include "stats.hpp"
 
 extern Relation * r;
+extern uint64_t relationsSize;
+extern Stats ** stats;
+
+void createStats(){
+    stats = new Stats*[relationsSize];
+    for(uint64_t i=0; i<relationsSize; i++){
+        stats[i] = new Stats[r[i].cols];
+    }
+}
+
+void deleteStats(){
+    for(uint64_t i=0; i<relationsSize; i++){
+        delete[] stats[i];
+    }
+    delete[] stats;
+}
+
+// Create a new Stats array with the statistics in 'r'
+void initializeStats(){
+    for(uint64_t i=0; i<relationsSize; i++){
+        for(uint64_t j=0; j<r[i].cols; j++){
+            stats[i][j].l = r[i].l[j];
+            stats[i][j].u = r[i].u[j];
+            stats[i][j].f = r[i].f[j];
+            stats[i][j].d = r[i].d[j];
+        }
+    }
+}
 
 void equalFilter(uint64_t rel, uint64_t col, uint64_t k){
-    double l = r[rel].l[col];
-    double u = r[rel].u[col];
-    double f = r[rel].f[col];
-    double d = r[rel].d[col];
+    double l = stats[rel][col].l;
+    double u = stats[rel][col].u;
+    double f = stats[rel][col].f;
+    double d = stats[rel][col].d;
 
     Stats newStats;
     newStats.l = k;
@@ -39,28 +67,28 @@ void equalFilter(uint64_t rel, uint64_t col, uint64_t k){
     for(uint64_t i=0; i<r[rel].cols; i++){
         if(i == col) continue;
 
-        uint64_t dc = r[rel].d[i];
-        uint64_t fc = r[rel].f[i];
+        uint64_t dc = stats[rel][i].d;
+        uint64_t fc = stats[rel][i].f;
         // Check if dc or f are equal to 0 and act accoridingly
         // This way we can avoid dividing by 0
         if(dc == 0){
-            r[rel].d[i] = 0;
-            r[rel].f[i] = 0;
+            stats[rel][i].d = 0;
+            stats[rel][i].f = 0;
         }
         else if(f == 0){
-            r[rel].d[i] = 0;
-            r[rel].f[i] = 0;
+            stats[rel][i].d = 0;
+            stats[rel][i].f = 0;
         }
         std::cout << fc/dc << std::endl;
         std::cout << 1-(newStats.f/f) << std::endl;
-        r[rel].d[i] = dc * (1-pow((1-(newStats.f/f)), fc/dc));
-        r[rel].f[i] = newStats.f;
+        stats[rel][i].d = dc * (1-pow((1-(newStats.f/f)), fc/dc));
+        stats[rel][i].f = newStats.f;
     }
 }
 
 void updateStats(uint64_t rel, uint64_t col, Stats newStats){
-    r[rel].l[col] = newStats.l;
-    r[rel].u[col] = newStats.u;
-    r[rel].f[col] = newStats.f;
-    r[rel].d[col] = newStats.d;
+    stats[rel][col].l = newStats.l;
+    stats[rel][col].u = newStats.u;
+    stats[rel][col].f = newStats.f;
+    stats[rel][col].d = newStats.d;
 }

@@ -9,6 +9,8 @@ typedef struct Stats{
     double f;
     double d;
 } Stats;
-
+void createStats();
+void deleteStats();
+void initializeStats();
 void equalFilter(uint64_t rel, uint64_t col, uint64_t k);
 void updateStats(uint64_t rel, uint64_t col, Stats newStats);
