@@ -1,6 +1,9 @@
 #include "jobs.hpp"
 #include <iostream>
 
+//global
+uint64_t * histograms[4];
+
 // Takes A as input and returns A'
 Column * bucketifyThread(Column * rel,
                   uint64_t ** histogram,
@@ -16,11 +19,11 @@ Column * bucketifyThread(Column * rel,
 
     uint64_t i;
     for (i = 0; i < 3; i++) {
-        jobsArray[i] = new HistogramJob(startA,length);
+        jobsArray[i] = new HistogramJob(startA,length,&histograms[i]);
         startA += length;
     }
     //last thread may take extra length
-    jobsArray[i] = new HistogramJob(startA,length+lastExtra);
+    jobsArray[i] = new HistogramJob(startA,length+lastExtra,&histograms[i]);
 
     for (uint64_t i = 0; i < 4; i++) {
         jobsArray[i]->Run();
@@ -31,15 +34,15 @@ Column * bucketifyThread(Column * rel,
     for(uint64_t i=0; i<numberOfBuckets; i++){
         wholeHistogram[i] = 0;
         for (int j = 0; j < 4; j++) {
-            wholeHistogram[i] += jobsArray[j]->myHistogram[i];
+            wholeHistogram[i] += histograms[j][i];
         }
     }
-
 
     *histogram = wholeHistogram;
 
     for (uint64_t i = 0; i < 4; i++) {
         delete jobsArray[i];
+        delete[] histograms[i];
     }
 
     // Calculate starting position of each bucket
@@ -65,21 +68,21 @@ uint64_t * calculateThreadHistogram( uint64_t * start, uint64_t length ){
 
 }
 
-HistogramJob::HistogramJob( uint64_t * curStart, uint64_t curLength)
-:start(curStart),length(curLength)
+HistogramJob::HistogramJob( uint64_t * curStart, uint64_t curLength,
+                            uint64_t ** curGlobalPos)
+:start(curStart),length(curLength),myHistogram(curGlobalPos)
 {
     //std::cout << "A HistogramJob is created!" << '\n';
 }
 
 HistogramJob::~HistogramJob(){
     //std::cout << "A HistogramJob is destroyed!" << '\n';
-    delete[] myHistogram;
 }
 
 uint64_t HistogramJob::Run(){
     //std::cout << "A HistogramJob is running!" << '\n';
 
-    myHistogram = calculateThreadHistogram(start,length);
+    *myHistogram = calculateThreadHistogram(start,length);
 
     return 1;
 }

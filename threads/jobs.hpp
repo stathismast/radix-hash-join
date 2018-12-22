@@ -26,11 +26,12 @@ public:
 };
 
 class HistogramJob : public Job{
-    uint64_t *start;
+    uint64_t * start;
     uint64_t length;
+    uint64_t ** myHistogram;
 public:
-    uint64_t * myHistogram;
-    HistogramJob( uint64_t * curStart, uint64_t curLength);
+    HistogramJob( uint64_t * curStart, uint64_t curLength,
+                  uint64_t ** curGlobalPos);
     ~HistogramJob();
     uint64_t Run();
 };
