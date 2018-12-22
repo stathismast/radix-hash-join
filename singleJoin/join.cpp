@@ -6,11 +6,11 @@ Result ** join(Column * A, Column * B){
     // Order given touples bucket by bucket (basically produces A' and B')
     uint64_t * histogramA;
     uint64_t * startingPosA;
-    Column * orderedA = bucketify(A, &histogramA, &startingPosA);
+    Column * orderedA = bucketifyThread(A, &histogramA, &startingPosA);
 
     uint64_t * histogramB;
     uint64_t * startingPosB;
-    Column * orderedB = bucketify(B, &histogramB, &startingPosB);
+    Column * orderedB = bucketifyThread(B, &histogramB, &startingPosB);
 
     // std::cout << "Original A array:" << std::endl;
     // printColumn(A);
@@ -103,7 +103,7 @@ void checkEquals(uint64_t rowidA,
                  Result ** result,
                  bool flag,
                  int rowIdBig) {
-    
+
     uint64_t rowidB;
     uint64_t valueB;
     // Get the rowId of the first value in the current bucket

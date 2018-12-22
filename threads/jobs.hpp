@@ -1,17 +1,25 @@
+#ifndef JOBS_H
+#define JOBS_H
+
 #include <iostream>
 #include "../singleJoin/structs.hpp"
 #include "../singleJoin/h1.hpp"
 
-extern int numberOfBuckets;
+extern uint64_t numberOfBuckets;
 
 uint64_t * calculateThreadHistogram( uint64_t * start, uint64_t length );
+Column * bucketifyThread(Column * rel,
+                  uint64_t ** histogram,
+                  uint64_t ** startingPositions);
 
 // Abstract Class Job
 class Job {
 
 public:
     Job() = default;
-    virtual ~Job() { std::cout << "A job will be destroyed!" << '\n';}
+    virtual ~Job() {
+        //  std::cout << "A job will be destroyed!" << '\n';
+      }
 
     // This method should be implemented by subclasses.
     virtual uint64_t Run() = 0;
@@ -68,3 +76,5 @@ public:
 //     void Stop();
 //
 // };
+
+#endif /* JOBS_H */
