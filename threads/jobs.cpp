@@ -3,6 +3,7 @@
 
 //global
 uint64_t * histograms[4];
+uint64_t * psums[4];
 
 // Takes A as input and returns A'
 Column * bucketifyThread(Column * rel,
@@ -40,9 +41,30 @@ Column * bucketifyThread(Column * rel,
 
     *histogram = wholeHistogram;
 
+    //calculate psums for each next thread
+    for (uint64_t i = 0; i < 4; i++) {
+        psums[i] = new uint64_t[numberOfBuckets];
+    }
+
+    //for first psum
+    psums[0][0] = 0;
+    for (uint64_t i = 1; i < 4; i++) {
+        psums[i][0] = psums[i-1][0] + histograms[i-1][0];
+    }
+
+    //for rest psums
+    for(uint64_t i=1; i<numberOfBuckets; i++){
+        psums[0][i] = psums[3][i-1] + histograms[3][i-1];
+        for(uint64_t j = 1; j < 4; j++){
+            psums[j][i] = psums[j-1][i] + histograms[j-1][i];
+        }
+    }
+
+
     for (uint64_t i = 0; i < 4; i++) {
         delete jobsArray[i];
         delete[] histograms[i];
+        delete[] psums[i];
     }
 
     // Calculate starting position of each bucket
