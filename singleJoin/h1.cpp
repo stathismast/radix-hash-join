@@ -1,7 +1,7 @@
 #include "h1.hpp"
 
 // Number of least significant bits that are used in the hash function
-#define BITS 2
+#define BITS 8
 
 uint64_t numberOfBuckets = 1 << BITS;
 
