@@ -1,6 +1,6 @@
 CC = g++
 OBJS = main.o ./join/memmap.o ./join/stringList.o \
-		./join/parse.o ./join/inputManager.o \
+		./join/parse.o ./join/inputManager.o ./join/stats.o \
 		./join/intermediate.o ./join/predicates.o \
 		./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
 		./singleJoin/structs.o ./singleJoin/result.o
@@ -28,7 +28,7 @@ PARSER_OBJS = testMain/parserTest.o  ./join/memmap.o ./join/stringList.o ./join/
 		./singleJoin/result.o ./singleJoin/structs.o ./join/inputManager.o \
 		./join/intermediate.o ./join/predicates.o
 
-FLAGS = -g3 -Wall -O2
+FLAGS = -g3 -Wall -O2 -lm
 
 all:$(OBJS)
 	$(CC) -o main $(OBJS) $(FLAGS)
@@ -47,6 +47,9 @@ all:$(OBJS)
 
 ./join/intermediate.o:./join/intermediate.cpp
 	$(CC) -c ./join/intermediate.cpp $(FLAGS) -o ./join/intermediate.o
+
+./join/stats.o:./join/stats.cpp
+	$(CC) -c ./join/stats.cpp $(FLAGS) -o ./join/stats.o
 
 ./singleJoin/h1.o:./singleJoin/h1.cpp
 	$(CC) -c ./singleJoin/h1.cpp $(FLAGS) -o ./singleJoin/h1.o

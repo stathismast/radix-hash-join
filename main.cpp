@@ -1,5 +1,8 @@
 #include "join/parse.hpp"
 #include "join/inputManager.hpp" //for ignoreLine
+
+#include "join/stats.hpp"
+
 //global
 Relation * r;
 uint64_t relationsSize;
@@ -66,6 +69,36 @@ int main(void){
 
     //execute queries etc
     executeQueries();
+
+
+
+        std::cout   << "Before\n"
+                    << "0.0" << ": l=" << r[0].l[0]
+                       << "  u=" << r[0].u[0]
+                       << "  f=" << r[0].f[0]
+                       << "  d=" << r[0].d[0] << "\n"
+                    << "0.1" << ": l=" << r[0].l[1]
+                       << "  u=" << r[0].u[1]
+                       << "  f=" << r[0].f[1]
+                       << "  d=" << r[0].d[1] << "\n"
+                    << "0.2" << ": l=" << r[0].l[2]
+                       << "  u=" << r[0].u[2]
+                       << "  f=" << r[0].f[2]
+                       << "  d=" << r[0].d[2] << "\n";
+        equalFilter(0,1,9403);
+        std::cout   << "\n\nAfter\n"
+                    << "0.0" << ": l=" << r[0].l[0]
+                       << "  u=" << r[0].u[0]
+                       << "  f=" << r[0].f[0]
+                       << "  d=" << r[0].d[0] << "\n"
+                    << "0.1" << ": l=" << r[0].l[1]
+                       << "  u=" << r[0].u[1]
+                       << "  f=" << r[0].f[1]
+                       << "  d=" << r[0].d[1] << "\n"
+                    << "0.2" << ": l=" << r[0].l[2]
+                       << "  u=" << r[0].u[2]
+                       << "  f=" << r[0].f[2]
+                       << "  d=" << r[0].d[2] << "\n";
 
     unMapAllData(r, relationsSize);
 

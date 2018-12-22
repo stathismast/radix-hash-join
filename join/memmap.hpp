@@ -11,10 +11,10 @@ typedef struct Relation{
     uint64_t cols;
     uint64_t ** data;
 
-    uint64_t * l;
-    uint64_t * u;
-    uint64_t * f;
-    uint64_t * d;
+    double * l;
+    double * u;
+    double * f;
+    double * d;
 } Relation;
 
 uint64_t getFileSize(uint64_t rows, uint64_t cols);

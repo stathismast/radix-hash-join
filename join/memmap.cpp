@@ -24,10 +24,10 @@ uint64_t ** convertMap(uint64_t * data, uint64_t rows, uint64_t cols){
 // for every column in a given relation
 void calculateStats(Relation * rel){
     // Allocate arrays for statistics of each column
-    rel->l = new uint64_t[rel->cols];
-    rel->u = new uint64_t[rel->cols];
-    rel->f = new uint64_t[rel->cols];
-    rel->d = new uint64_t[rel->cols];
+    rel->l = new double[rel->cols];
+    rel->u = new double[rel->cols];
+    rel->f = new double[rel->cols];
+    rel->d = new double[rel->cols];
 
     for(uint64_t i=0; i<rel->cols; i++){
 
@@ -38,8 +38,8 @@ void calculateStats(Relation * rel){
             if(rel->data[i][j] > max) max = rel->data[i][j];
             if(rel->data[i][j] < min) min = rel->data[i][j];
         }
-        rel->l[i] = min;
-        rel->u[i] = max;
+        rel->l[i] = (double) min;
+        rel->u[i] = (double) max;
 
         // Calculate total number of values
         rel->f[i] = rel->rows;
@@ -52,7 +52,7 @@ void calculateStats(Relation * rel){
             tempArray[j] = false;
         }
         for(uint64_t j=0; j<rel->rows; j++){
-            tempArray[(rel->data[i][j] - rel->l[i]) % arraySize] = true;
+            tempArray[(rel->data[i][j] - (uint64_t)rel->l[i]) % arraySize] = true;
         }
 
         // Calculate the total number of different values
