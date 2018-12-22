@@ -3,15 +3,15 @@ OBJS = main.o ./join/memmap.o ./join/stringList.o \
 		./join/parse.o ./join/inputManager.o ./join/stats.o \
 		./join/intermediate.o ./join/predicates.o \
 		./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
-		./singleJoin/structs.o ./singleJoin/result.o
+		./singleJoin/structs.o ./singleJoin/result.o ./threads/jobs.o
 SERIAL_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
-		./singleJoin/structs.o ./singleJoin/result.o \
+		./singleJoin/structs.o ./singleJoin/result.o ./threads/jobs.o\
 		./testMain/serialJoin.o
 ODD_EVEN_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
-		./singleJoin/structs.o ./singleJoin/result.o \
+		./singleJoin/structs.o ./singleJoin/result.o ./threads/jobs.o\
 		./testMain/oddEvenJoin.o
 RANDOM_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
-		./singleJoin/structs.o ./singleJoin/result.o \
+		./singleJoin/structs.o ./singleJoin/result.o ./threads/jobs.o\
 		./testMain/randomJoin.o
 RESULT_OBJS = ./singleJoin/result.o ./testMain/resultTest.o \
 			 ./singleJoin/structs.o ./join/intermediate.o
@@ -23,12 +23,12 @@ SELF_JOIN_OBJS = testMain/selfJoinTest.o ./join/memmap.o ./join/stringList.o \
 		./join/parse.o ./join/inputManager.o \
 		./join/intermediate.o ./join/predicates.o \
 		./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
-		./singleJoin/structs.o ./singleJoin/result.o
+		./singleJoin/structs.o ./singleJoin/result.o ./threads/jobs.o
 PARSER_OBJS = testMain/parserTest.o  ./join/memmap.o ./join/stringList.o ./join/parse.o \
 		./singleJoin/result.o ./singleJoin/structs.o ./join/inputManager.o \
 		./join/intermediate.o ./join/predicates.o
 
-FLAGS = -g3 -Wall -O2 -lm
+FLAGS = -g3 -Wall -O2 -std=c++11 -lm
 
 all:$(OBJS)
 	$(CC) -o main $(OBJS) $(FLAGS)
@@ -119,6 +119,9 @@ parserTest:$(PARSER_OBJS)
 
 ./join/parse.o:./join/parse.cpp
 	$(CC) -c ./join/parse.cpp $(FLAGS) -o ./join/parse.o
+
+./threads/jobs.o:./threads/jobs.cpp
+	$(CC) -c ./threads/jobs.cpp $(FLAGS) -o ./threads/jobs.o
 
 clean:
 	rm -rf ./*/*.o *.o ./*/*/*.o a.out main randomJoin serialJoin testParse \

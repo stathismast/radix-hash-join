@@ -1,6 +1,7 @@
 #include "h1.hpp"
 #include "h2.hpp"
 #include "result.hpp"
+#include "../threads/jobs.hpp"
 
 Result ** join(Column * A, Column * B);
 
