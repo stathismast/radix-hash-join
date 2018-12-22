@@ -31,14 +31,20 @@ int main(int argc, char const *argv[]) {
 
     uint64_t * myHistogramA = calculateThreadHistogram(arrayA,20);
 
-    std::cout << "Whole histogramA:" << '\n';
+    std::cout << "Main histogram:" << '\n';
     printHistogram(myHistogramA);
 
-    for (int i = 0; i < 4; i++) {
-        std::cout << "HistogramA of job " << i << ":" << '\n';
-        printHistogram(jobsArray[i]->myHistogram);
-        std::cout << '\n';
+    //construct the whole histogramA
+    uint64_t * wholeHistogram = new uint64_t[numberOfBuckets];
+    for(uint64_t i=0; i<numberOfBuckets; i++){
+        wholeHistogram[i] = 0;
+        for (int j = 0; j < 4; j++) {
+            wholeHistogram[i] += jobsArray[j]->myHistogram[i];
+        }
     }
+
+    std::cout << "Jobs' histogram:" << '\n';
+    printHistogram(wholeHistogram);
 
     for (int i = 0; i < 4; i++) {
         delete jobsArray[i];
@@ -46,6 +52,8 @@ int main(int argc, char const *argv[]) {
     }
 
     delete[] myHistogramA;
+
+    delete[] wholeHistogram;
 
     delete[] arrayA;
 
