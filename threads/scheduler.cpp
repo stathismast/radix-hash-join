@@ -2,6 +2,7 @@
 
 pthread_mutex_t mutex;
 sem_t count;
+bool threadFinish;
 
 Queue * globalQueue;
 
@@ -48,25 +49,31 @@ pthread_mutex_t printMutex = PTHREAD_MUTEX_INITIALIZER;
 
 void * myRoutine(void *arg){
 
-    sem_wait(&count);
-    pthread_mutex_lock(&mutex);
-    Job * curJob = popFromQueue(globalQueue);
-    pthread_mutex_unlock(&mutex);
+    sem_wait(&count); //we use sem_wait at the end of loop so as we can check
+                      //if we should terminate
 
-    pthread_mutex_lock(&printMutex);
-    std::cout << "Hello from thread " << pthread_self() << '\n';
+    while(!threadFinish){
 
-    curJob->Run();
+        pthread_mutex_lock(&mutex);
+        Job * curJob = popFromQueue(globalQueue);
+        pthread_mutex_unlock(&mutex);
 
-    pthread_mutex_unlock(&printMutex);
+        pthread_mutex_lock(&printMutex);
+        std::cout << "Hello from thread " << pthread_self() << '\n';
+        curJob->Run();
+        pthread_mutex_unlock(&printMutex);
 
-    delete curJob;
+        delete curJob;
+
+        sem_wait(&count);
+    }
 
     return NULL;
 }
 
 bool JobScheduler::Init(uint64_t num_of_threads){
     threadNum = num_of_threads;
+    threadFinish = false;
     threadPool = createThreadPool(&myRoutine,threadNum);
     return true;
 }
@@ -90,7 +97,26 @@ bool JobScheduler::Schedule(Job* job){
 }
 
 void JobScheduler::Stop(){
+
+    //VVV to be replaced VVV
+    uint64_t counter = 1;
+    sem_getvalue (&count,(int*) &counter);
+
+    while( counter > 0 ){
+        sem_getvalue (&count,(int*) &counter);
+    }
+    //^^^ to be replaced ^^^
+
+
+    //send "signal" to all threads to exit
+    threadFinish = true;
+    //some threads may be stuck on count semaphore so do sem_post(&count);
+    for( uint64_t i = 0; i < threadNum; i ++ ){
+        sem_post(&count);
+    }
+
     for( uint64_t i = 0; i < threadNum; i ++ ){
         joinThread(threadPool[i]);
     }
+
 }

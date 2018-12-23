@@ -60,6 +60,11 @@ Column * bucketifyThread(Column * rel,
         }
     }
 
+    //delete HistogramJobs
+    for (uint64_t i = 0; i < 4; i++) {
+        delete jobsArray[i];
+    }
+
     // Create the final ordered Column
     Column * threadOrdered = newColumn(rel->size);
 
