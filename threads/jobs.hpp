@@ -59,30 +59,4 @@ public:
     uint64_t Run();
 };
 
-// // Class JobScheduler
-// class JobScheduler {
-//
-// public:
-//     JobScheduler() = default;
-//     ~JobScheduler() = default;
-//
-//     // Initializes the JobScheduler with the number of open threads.
-//     // Returns true if everything done right false else.
-//     bool Init(uint64_t num_of_threads);
-//
-//     // Free all resources that the are allocated by JobScheduler
-//     // Returns true if everything done right false else.
-//     bool Destroy();
-//
-//     // Waits Until executed all jobs in the queue.
-//     void Barrier();
-//
-//     // Add a job in the queue and returns a JobId
-//     JobID Schedule(Job* job);
-//
-//     // Waits until all threads finish their job, and after that close all threads.
-//     void Stop();
-//
-// };
-
 #endif /* JOBS_H */

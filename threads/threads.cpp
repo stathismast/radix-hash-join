@@ -13,7 +13,10 @@ pthread_t createThread(void *(*start_routine) (void *)){
 
 void joinThread(pthread_t thread){
     int err, status;
-     pthread_join(thread, (void **) &status);
+    
+    pthread_join(thread, NULL);
+
+    //  pthread_join(thread, (void **) &status);
     // printf("Thread %ld exited with code %d\n", thread, status);
 }
 
