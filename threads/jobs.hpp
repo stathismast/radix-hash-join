@@ -37,9 +37,16 @@ public:
 };
 
 class PartitionJob : public Job{
+    Column * original;
+    uint64_t start;
+    uint64_t length;
+    uint64_t * myPsum;
+    uint64_t bucketCount;
+    Column * ordered;
 
 public:
-    PartitionJob();
+    PartitionJob(Column * curOriginal, uint64_t curStart, uint64_t curLength,
+                 uint64_t * myPsum, uint64_t curCount, Column * curOrdered);
     ~PartitionJob();
     uint64_t Run();
 };

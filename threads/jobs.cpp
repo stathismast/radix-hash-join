@@ -11,7 +11,7 @@ Column * bucketifyThread(Column * rel,
                   uint64_t ** startingPositions){
 
     // Calculate histograms
-    HistogramJob* jobsArray[4];
+    Job * jobsArray[4];
     uint64_t * startA = rel->value;
 
     //jobs for histogramA
@@ -60,6 +60,23 @@ Column * bucketifyThread(Column * rel,
         }
     }
 
+    // Create the final ordered Column
+    Column * threadOrdered = newColumn(rel->size);
+
+    // Create partition jobs
+    uint64_t start = 0;
+    for (i = 0; i < 3; i++) {
+        jobsArray[i] = new PartitionJob(rel,start,length,psums[i],
+                                        numberOfBuckets,threadOrdered);
+        start += length;
+    }
+    //last thread may take extra length
+    jobsArray[i] = new PartitionJob(rel,start,length+lastExtra,psums[i],
+                                    numberOfBuckets,threadOrdered);
+
+    for (uint64_t i = 0; i < 4; i++) {
+        jobsArray[i]->Run();
+    }
 
     for (uint64_t i = 0; i < 4; i++) {
         delete jobsArray[i];
@@ -70,10 +87,7 @@ Column * bucketifyThread(Column * rel,
     // Calculate starting position of each bucket
     *startingPositions = calculateStartingPositions(*histogram);
 
-    // Order the given touples bucket by bucket (basically produces A' from A)
-    Column * ordered = order(rel, *startingPositions);
-
-    return ordered;
+    return threadOrdered;
 }
 
 uint64_t * calculateThreadHistogram( uint64_t * start, uint64_t length ){
@@ -109,16 +123,34 @@ uint64_t HistogramJob::Run(){
     return 1;
 }
 
-PartitionJob::PartitionJob(){
-    std::cout << "A PartitionJob is created!" << '\n';
+PartitionJob::PartitionJob( Column * curOriginal,
+                            uint64_t  curStart,uint64_t curLength,
+                            uint64_t * curPsum, uint64_t curCount, 
+                            Column * curOrdered)
+:original(curOriginal), start(curStart), length(curLength), myPsum(curPsum), bucketCount(curCount), ordered(curOrdered){
 }
 
 PartitionJob::~PartitionJob(){
-    std::cout << "A PartitionJob is destroyed!" << '\n';
 }
 
 uint64_t PartitionJob::Run(){
-    std::cout << "A PartitionJob is running!" << '\n';
+
+    uint64_t * offsets = new uint64_t[bucketCount];
+    memcpy(offsets, myPsum, bucketCount * sizeof(uint64_t));
+
+    for(uint64_t i=start; i<start+length; i++){
+        uint64_t val = original->value[i];
+
+        // Store value & rowid of Tuple in the appropriate position
+        ordered->value[offsets[h1(val)]] = val;
+        ordered->rowid[offsets[h1(val)]] = original->rowid[i];
+
+        // Increment starting position of the bucket since we just added to it
+        offsets[h1(val)]++;
+    }
+
+    delete[] offsets;
+
     return 1;
 }
 
