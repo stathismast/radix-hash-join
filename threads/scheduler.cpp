@@ -1,5 +1,7 @@
 #include "scheduler.hpp"
 
+Queue * globalQueue;
+
 Queue * newQueue(){
     Queue * queue = new Queue;
     *queue = (Queue){0};
@@ -31,7 +33,7 @@ Job * popFromQueue(Queue * queue){
     queue->first = queue->first->next;
 
     Job * job = node->job;
-    free(node);
+    delete node;
     return job;
 }
 
@@ -39,9 +41,20 @@ char notEmpty(Queue * queue){
     return !(queue->first == NULL);
 }
 
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
 void * myRoutine(void *arg){
 
+    pthread_mutex_lock(&mutex);
     std::cout << "Hello from thread " << pthread_self() << '\n';
+
+    Job * curJob = popFromQueue(globalQueue);
+
+    curJob->Run();
+
+    pthread_mutex_unlock(&mutex);
+    
+    delete curJob;
 
     return NULL;
 }
@@ -57,11 +70,11 @@ bool JobScheduler::Destroy(){
 }
 
 void JobScheduler::Barrier(){
-
     return;
 }
 
 bool JobScheduler::Schedule(Job* job){
+    addToQueue(globalQueue,job);
     return true;
 }
 

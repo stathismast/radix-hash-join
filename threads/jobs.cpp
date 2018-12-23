@@ -125,7 +125,7 @@ uint64_t HistogramJob::Run(){
 
 PartitionJob::PartitionJob( Column * curOriginal,
                             uint64_t  curStart,uint64_t curLength,
-                            uint64_t * curPsum, uint64_t curCount, 
+                            uint64_t * curPsum, uint64_t curCount,
                             Column * curOrdered)
 :original(curOriginal), start(curStart), length(curLength), myPsum(curPsum), bucketCount(curCount), ordered(curOrdered){
 }
@@ -154,8 +154,10 @@ uint64_t PartitionJob::Run(){
     return 1;
 }
 
-JoinJob::JoinJob(){
-    std::cout << "A JoinJob is created!" << '\n';
+JoinJob::JoinJob(uint64_t x)
+{
+    this->x = x;
+    //std::cout << "A JoinJob is created!" << '\n';
 }
 
 JoinJob::~JoinJob(){
@@ -163,6 +165,6 @@ JoinJob::~JoinJob(){
 }
 
 uint64_t JoinJob::Run(){
-    std::cout << "A JoinJob is running!" << '\n';
+    std::cout << "A JoinJob with x - " << x << " - is running!" << '\n';
     return 1;
 }

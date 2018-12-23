@@ -52,9 +52,9 @@ public:
 };
 
 class JoinJob : public Job{
-
+    uint64_t x;
 public:
-    JoinJob();
+    JoinJob( uint64_t x );
     ~JoinJob();
     uint64_t Run();
 };
