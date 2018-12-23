@@ -83,6 +83,14 @@ bool JobScheduler::Destroy(){
 }
 
 void JobScheduler::Barrier(){
+    //VVV to be replaced VVV
+    uint64_t counter = 1;
+    sem_getvalue (&count,(int*) &counter);
+
+    while( counter > 0 ){
+        sem_getvalue (&count,(int*) &counter);
+    }
+    //^^^ to be replaced ^^^
     return;
 }
 
@@ -97,16 +105,6 @@ bool JobScheduler::Schedule(Job* job){
 }
 
 void JobScheduler::Stop(){
-
-    //VVV to be replaced VVV
-    uint64_t counter = 1;
-    sem_getvalue (&count,(int*) &counter);
-
-    while( counter > 0 ){
-        sem_getvalue (&count,(int*) &counter);
-    }
-    //^^^ to be replaced ^^^
-
 
     //send "signal" to all threads to exit
     threadFinish = true;

@@ -22,6 +22,8 @@ int main(int argc, char const *argv[]) {
         myJobScheduler->Schedule(new JoinJob(i));
     }
 
+    myJobScheduler->Barrier();
+
     myJobScheduler->Stop();
 
     myJobScheduler->Destroy();
