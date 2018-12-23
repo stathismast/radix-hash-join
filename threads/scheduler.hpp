@@ -1,6 +1,7 @@
 #include <stdint.h>     // for uint64_t
 #include "jobs.hpp"
 #include "threads.hpp"
+#include <semaphore.h>
 
 typedef struct Queue{
     struct QueueNode * first;

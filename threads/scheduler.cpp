@@ -1,5 +1,8 @@
 #include "scheduler.hpp"
 
+pthread_mutex_t mutex;
+sem_t count;
+
 Queue * globalQueue;
 
 Queue * newQueue(){
@@ -41,19 +44,22 @@ char notEmpty(Queue * queue){
     return !(queue->first == NULL);
 }
 
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t printMutex = PTHREAD_MUTEX_INITIALIZER;
 
 void * myRoutine(void *arg){
 
+    sem_wait(&count);
     pthread_mutex_lock(&mutex);
-    std::cout << "Hello from thread " << pthread_self() << '\n';
-
     Job * curJob = popFromQueue(globalQueue);
+    pthread_mutex_unlock(&mutex);
+
+    pthread_mutex_lock(&printMutex);
+    std::cout << "Hello from thread " << pthread_self() << '\n';
 
     curJob->Run();
 
-    pthread_mutex_unlock(&mutex);
-    
+    pthread_mutex_unlock(&printMutex);
+
     delete curJob;
 
     return NULL;
@@ -74,7 +80,12 @@ void JobScheduler::Barrier(){
 }
 
 bool JobScheduler::Schedule(Job* job){
+
+    pthread_mutex_lock(&mutex);
     addToQueue(globalQueue,job);
+    pthread_mutex_unlock(&mutex);
+    sem_post(&count);
+
     return true;
 }
 
