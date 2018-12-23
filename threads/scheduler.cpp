@@ -3,8 +3,8 @@
 Queue * newQueue(){
     Queue * queue = new Queue;
     *queue = (Queue){0};
-    queue->first == 0;
-    queue->last == 0;
+    queue->first = NULL;
+    queue->last = NULL;
     return queue;
 }
 
