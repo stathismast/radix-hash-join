@@ -20,3 +20,11 @@ void joinThread(pthread_t thread){
 int terminateThread(pthread_t thread){
     return pthread_cancel(thread);
 }
+
+pthread_t * createThreadPool(void *(*start_routine) (void *), uint64_t size){
+    pthread_t * pool = new pthread_t[size];
+    for(uint64_t i=0; i<size; i++){
+        pool[i] = createThread(start_routine);
+    }
+    return pool;
+}
