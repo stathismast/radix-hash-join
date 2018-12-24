@@ -1,9 +1,10 @@
 #include "scheduler.hpp"
 #include <iostream>
+JobScheduler * myJobScheduler;
 
 int main(int argc, char const *argv[]) {
 
-    JobScheduler * myJobScheduler = new JobScheduler();
+    myJobScheduler = new JobScheduler();
 
     myJobScheduler->Init(4);
 

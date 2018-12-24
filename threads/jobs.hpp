@@ -7,7 +7,7 @@
 
 extern uint64_t numberOfBuckets;
 
-uint64_t * calculateThreadHistogram( uint64_t * start, uint64_t length );
+void calculateThreadHistogram(uint64_t * start, uint64_t length, uint64_t * histogram);
 Column * bucketifyThread(Column * rel,
                   uint64_t ** histogram,
                   uint64_t ** startingPositions);

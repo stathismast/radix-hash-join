@@ -1,3 +1,6 @@
+#ifndef JS_H
+#define JS_H
+
 #include <stdint.h>     // for uint64_t
 #include "jobs.hpp"
 #include "threads.hpp"
@@ -47,3 +50,5 @@ public:
     void Stop();
 
 };
+
+#endif /* JS_H */

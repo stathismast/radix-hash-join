@@ -1,9 +1,12 @@
 #include "jobs.hpp"
 #include <iostream>
 
+#include "scheduler.hpp"
+
 //global
 uint64_t * histograms[4];
 uint64_t * psums[4];
+extern JobScheduler * myJobScheduler;
 
 // Takes A as input and returns A'
 Column * bucketifyThread(Column * rel,
@@ -19,19 +22,28 @@ Column * bucketifyThread(Column * rel,
     uint64_t lastExtra = rel->size % 4;
 
     uint64_t i;
+
+    for (i = 0; i < 4; i++) {
+        histograms[i] = new uint64_t[numberOfBuckets];
+        for(uint64_t j=0; j<numberOfBuckets; j++){
+            histograms[i][j] = 0;
+        }
+    }
+
     for (i = 0; i < 3; i++) {
-        jobsArray[i] = new HistogramJob(startA,length,&histograms[i]);
+        myJobScheduler->Schedule(new HistogramJob(startA,length,&histograms[i]));
         startA += length;
     }
     //last thread may take extra length
-    jobsArray[i] = new HistogramJob(startA,length+lastExtra,&histograms[i]);
+    myJobScheduler->Schedule(new HistogramJob(startA,length+lastExtra,&histograms[i]));
 
-    for (uint64_t i = 0; i < 4; i++) {
-        jobsArray[i]->Run();
-    }
+    //std::cout << "Before barrier 1" << '\n';
+    myJobScheduler->Barrier();
+    //std::cout << "After barrier 1" << '\n';
 
     //construct the whole histogram
     uint64_t * wholeHistogram = new uint64_t[numberOfBuckets];
+
     for(uint64_t i=0; i<numberOfBuckets; i++){
         wholeHistogram[i] = 0;
         for (int j = 0; j < 4; j++) {
@@ -60,31 +72,25 @@ Column * bucketifyThread(Column * rel,
         }
     }
 
-    //delete HistogramJobs
-    for (uint64_t i = 0; i < 4; i++) {
-        delete jobsArray[i];
-    }
-
     // Create the final ordered Column
     Column * threadOrdered = newColumn(rel->size);
 
     // Create partition jobs
     uint64_t start = 0;
     for (i = 0; i < 3; i++) {
-        jobsArray[i] = new PartitionJob(rel,start,length,psums[i],
-                                        numberOfBuckets,threadOrdered);
+        myJobScheduler->Schedule(new PartitionJob(rel,start,length,psums[i],
+                                        numberOfBuckets,threadOrdered));
         start += length;
     }
     //last thread may take extra length
-    jobsArray[i] = new PartitionJob(rel,start,length+lastExtra,psums[i],
-                                    numberOfBuckets,threadOrdered);
+    myJobScheduler->Schedule(new PartitionJob(rel,start,length+lastExtra,psums[i],
+                                    numberOfBuckets,threadOrdered));
+
+    //std::cout << "Before barrier 2" << '\n';
+    myJobScheduler->Barrier();
+    //std::cout << "After barrier 2" << '\n';
 
     for (uint64_t i = 0; i < 4; i++) {
-        jobsArray[i]->Run();
-    }
-
-    for (uint64_t i = 0; i < 4; i++) {
-        delete jobsArray[i];
         delete[] histograms[i];
         delete[] psums[i];
     }
@@ -95,17 +101,13 @@ Column * bucketifyThread(Column * rel,
     return threadOrdered;
 }
 
-uint64_t * calculateThreadHistogram( uint64_t * start, uint64_t length ){
-
-    // Create and initialize histogram
-    uint64_t * histogram = new uint64_t[numberOfBuckets];
-    for(uint64_t i=0; i<numberOfBuckets; i++)
-        histogram[i] = 0;
+void calculateThreadHistogram( uint64_t * start, uint64_t length, uint64_t * histogram ){
 
     // Add up the number of tuples in each bucket
     for(uint64_t i=0; i<length; i++)
         histogram[h1(start[i])]++;
-    return histogram;
+
+    return;
 
 }
 
@@ -123,7 +125,7 @@ HistogramJob::~HistogramJob(){
 uint64_t HistogramJob::Run(){
     //std::cout << "A HistogramJob is running!" << '\n';
 
-    *myHistogram = calculateThreadHistogram(start,length);
+    calculateThreadHistogram(start,length,*myHistogram);
 
     return 1;
 }
@@ -136,6 +138,7 @@ PartitionJob::PartitionJob( Column * curOriginal,
 }
 
 PartitionJob::~PartitionJob(){
+    //std::cout << "A PartitionJob is destroyed!" << '\n';
 }
 
 uint64_t PartitionJob::Run(){

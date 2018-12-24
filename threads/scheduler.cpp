@@ -7,6 +7,9 @@ bool threadFinish;
 
 Queue * globalQueue;
 
+extern uint64_t * histograms[4];
+extern uint64_t * psums[4];
+
 Queue * newQueue(){
     Queue * queue = new Queue;
     *queue = (Queue){0};
@@ -65,14 +68,13 @@ void * myRoutine(void *arg){
             empty = isEmpty(globalQueue);
         pthread_mutex_unlock(&mutex);
 
-        pthread_mutex_lock(&printMutex);
-            std::cout << "Hello from thread " << pthread_self() << '\n';
+        //pthread_mutex_lock(&printMutex);
+            //std::cout << "Hello from thread " << pthread_self() << '\n';
             curJob->Run();
-        pthread_mutex_unlock(&printMutex);
+            delete curJob;
+        //pthread_mutex_unlock(&printMutex);
 
         if(empty) pthread_cond_signal(&emptyQueue);
-
-        delete curJob;
 
         sem_wait(&count);
     }
@@ -99,6 +101,8 @@ bool JobScheduler::Destroy(){
     pthread_mutex_destroy(&mutex);
     pthread_cond_destroy(&emptyQueue);
     delete globalQueue;
+
+    return true;
 }
 
 void JobScheduler::Barrier(){

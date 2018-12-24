@@ -1,12 +1,15 @@
 #include "join/parse.hpp"
 #include "join/inputManager.hpp" //for ignoreLine
-
+#include "threads/scheduler.hpp"
 #include "join/stats.hpp"
 
 //global
 Relation * r;
 uint64_t relationsSize;
 Stats ** stats;
+JobScheduler * myJobScheduler;
+extern uint64_t * histograms[4];
+extern uint64_t * psums[4];
 
 // Intermediate IR;
 
@@ -70,6 +73,9 @@ int main(void){
     // if(relationsSize) printData(r[0]);
     std::cout << '\n';
 
+    myJobScheduler = new JobScheduler();
+    myJobScheduler->Init(4);
+
     //execute queries etc
     executeQueries();
 
@@ -105,6 +111,10 @@ int main(void){
 
     deleteStats();
     unMapAllData(r, relationsSize);
+
+    myJobScheduler->Stop();
+    myJobScheduler->Destroy();
+    delete myJobScheduler;
 
     return 0;
 }

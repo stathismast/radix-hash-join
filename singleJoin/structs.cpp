@@ -8,10 +8,10 @@ Column * newColumn(uint64_t size){
     rel->size = size;
 
     // Initialize with 0 (maybe not needed)
-    // for(uint64_t i = 0; i<size; i++){
-    //     rel->rowid[i] = 0;
-    //     rel->value[i] = 0;
-    // }
+     for(uint64_t i = 0; i<size; i++){
+         rel->rowid[i] = 0;
+         rel->value[i] = 0;
+     }
 
     return rel;
 }
