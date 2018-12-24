@@ -72,6 +72,8 @@ void * myRoutine(void *arg){
 }
 
 bool JobScheduler::Init(uint64_t num_of_threads){
+    sem_init(&count,0,0);
+    pthread_mutex_init(&mutex,NULL);
     threadNum = num_of_threads;
     threadFinish = false;
     threadPool = createThreadPool(&myRoutine,threadNum);
@@ -80,6 +82,8 @@ bool JobScheduler::Init(uint64_t num_of_threads){
 
 bool JobScheduler::Destroy(){
     delete[] threadPool;
+    sem_destroy(&count);
+    pthread_mutex_destroy(&mutex);
 }
 
 void JobScheduler::Barrier(){
