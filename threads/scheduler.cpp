@@ -2,6 +2,7 @@
 
 pthread_mutex_t mutex;
 sem_t count;
+pthread_cond_t emptyQueue;
 bool threadFinish;
 
 Queue * globalQueue;
@@ -41,13 +42,18 @@ Job * popFromQueue(Queue * queue){
     return job;
 }
 
-char notEmpty(Queue * queue){
+bool notEmpty(Queue * queue){
     return !(queue->first == NULL);
+}
+
+bool isEmpty(Queue * queue){
+    return (queue->first == NULL);
 }
 
 pthread_mutex_t printMutex = PTHREAD_MUTEX_INITIALIZER;
 
 void * myRoutine(void *arg){
+    bool empty = false;
 
     sem_wait(&count); //we use sem_wait at the end of loop so as we can check
                       //if we should terminate
@@ -55,13 +61,16 @@ void * myRoutine(void *arg){
     while(!threadFinish){
 
         pthread_mutex_lock(&mutex);
-        Job * curJob = popFromQueue(globalQueue);
+            Job * curJob = popFromQueue(globalQueue);
+            empty = isEmpty(globalQueue);
         pthread_mutex_unlock(&mutex);
 
         pthread_mutex_lock(&printMutex);
-        std::cout << "Hello from thread " << pthread_self() << '\n';
-        curJob->Run();
+            std::cout << "Hello from thread " << pthread_self() << '\n';
+            curJob->Run();
         pthread_mutex_unlock(&printMutex);
+
+        if(empty) pthread_cond_signal(&emptyQueue);
 
         delete curJob;
 
@@ -74,6 +83,10 @@ void * myRoutine(void *arg){
 bool JobScheduler::Init(uint64_t num_of_threads){
     sem_init(&count,0,0);
     pthread_mutex_init(&mutex,NULL);
+    pthread_cond_init(&emptyQueue, NULL);
+
+    globalQueue = newQueue();
+
     threadNum = num_of_threads;
     threadFinish = false;
     threadPool = createThreadPool(&myRoutine,threadNum);
@@ -84,24 +97,23 @@ bool JobScheduler::Destroy(){
     delete[] threadPool;
     sem_destroy(&count);
     pthread_mutex_destroy(&mutex);
+    pthread_cond_destroy(&emptyQueue);
+    delete globalQueue;
 }
 
 void JobScheduler::Barrier(){
-    //VVV to be replaced VVV
-    uint64_t counter = 1;
-    sem_getvalue (&count,(int*) &counter);
+    pthread_mutex_lock(&mutex);
 
-    while( counter > 0 ){
-        sem_getvalue (&count,(int*) &counter);
-    }
-    //^^^ to be replaced ^^^
-    return;
+    while(notEmpty(globalQueue))
+        pthread_cond_wait(&emptyQueue, &mutex);
+
+    pthread_mutex_unlock(&mutex);
 }
 
 bool JobScheduler::Schedule(Job* job){
 
     pthread_mutex_lock(&mutex);
-    addToQueue(globalQueue,job);
+        addToQueue(globalQueue,job);
     pthread_mutex_unlock(&mutex);
     sem_post(&count);
 

@@ -1,11 +1,7 @@
 #include "scheduler.hpp"
 #include <iostream>
 
-extern Queue * globalQueue;
-
 int main(int argc, char const *argv[]) {
-
-    globalQueue = newQueue();
 
     JobScheduler * myJobScheduler = new JobScheduler();
 
@@ -22,7 +18,6 @@ int main(int argc, char const *argv[]) {
     myJobScheduler->Destroy();
 
     delete myJobScheduler;
-    delete globalQueue;
 
     return 0;
 }

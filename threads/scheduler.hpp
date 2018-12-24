@@ -17,7 +17,8 @@ Queue * newQueue();
 QueueNode * newQueueNode(Job * job);
 void addToQueue(Queue * queue, Job * job);
 Job * popFromQueue(Queue * queue);
-char notEmpty(Queue * queue);
+bool notEmpty(Queue * queue);
+bool isEmpty(Queue * queue);
 
 // Class JobScheduler
 class JobScheduler {
