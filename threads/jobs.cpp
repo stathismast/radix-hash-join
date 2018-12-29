@@ -8,10 +8,16 @@ uint64_t * histograms[4];
 uint64_t * psums[4];
 extern JobScheduler * myJobScheduler;
 
+
+pthread_mutex_t memcpy_mtx;
+
 // Takes A as input and returns A'
 Column * bucketifyThread(Column * rel,
                   uint64_t ** histogram,
                   uint64_t ** startingPositions){
+
+                      
+    pthread_mutex_init(&memcpy_mtx,NULL);
 
     // Calculate histograms
     Job * jobsArray[4];
@@ -97,6 +103,8 @@ Column * bucketifyThread(Column * rel,
 
     // Calculate starting position of each bucket
     *startingPositions = calculateStartingPositions(*histogram);
+    
+    pthread_mutex_destroy(&memcpy_mtx);
 
     return threadOrdered;
 }
@@ -144,7 +152,9 @@ PartitionJob::~PartitionJob(){
 uint64_t PartitionJob::Run(){
 
     uint64_t * offsets = new uint64_t[bucketCount];
+    pthread_mutex_lock(&memcpy_mtx);
     memcpy(offsets, myPsum, bucketCount * sizeof(uint64_t));
+    pthread_mutex_unlock(&memcpy_mtx);
 
     for(uint64_t i=start; i<start+length; i++){
         uint64_t val = original->value[i];

@@ -5,6 +5,8 @@ sem_t count;
 pthread_cond_t emptyQueue;
 bool threadFinish;
 
+int jobsDone;
+
 Queue * globalQueue;
 
 extern uint64_t * histograms[4];
@@ -65,7 +67,6 @@ void * myRoutine(void *arg){
 
         pthread_mutex_lock(&mutex);
             Job * curJob = popFromQueue(globalQueue);
-            empty = isEmpty(globalQueue);
         pthread_mutex_unlock(&mutex);
 
         //pthread_mutex_lock(&printMutex);
@@ -74,7 +75,11 @@ void * myRoutine(void *arg){
             delete curJob;
         //pthread_mutex_unlock(&printMutex);
 
-        if(empty) pthread_cond_signal(&emptyQueue);
+        
+        pthread_mutex_lock(&mutex);
+            jobsDone++;
+            if(jobsDone == 4) pthread_cond_signal(&emptyQueue);
+        pthread_mutex_unlock(&mutex);
 
         sem_wait(&count);
     }
@@ -88,6 +93,8 @@ bool JobScheduler::Init(uint64_t num_of_threads){
     pthread_cond_init(&emptyQueue, NULL);
 
     globalQueue = newQueue();
+
+    jobsDone = 0;
 
     threadNum = num_of_threads;
     threadFinish = false;
@@ -108,9 +115,11 @@ bool JobScheduler::Destroy(){
 void JobScheduler::Barrier(){
     pthread_mutex_lock(&mutex);
 
-    while(notEmpty(globalQueue))
-        pthread_cond_wait(&emptyQueue, &mutex);
+        while(jobsDone != 4){
+            pthread_cond_wait(&emptyQueue, &mutex);
+        }
 
+        jobsDone = 0;
     pthread_mutex_unlock(&mutex);
 }
 
