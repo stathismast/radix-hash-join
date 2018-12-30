@@ -20,7 +20,6 @@ Column * bucketifyThread(Column * rel,
     pthread_mutex_init(&memcpy_mtx,NULL);
 
     // Calculate histograms
-    Job * jobsArray[4];
     uint64_t * startA = rel->value;
 
     //jobs for histogramA

@@ -58,7 +58,6 @@ bool isEmpty(Queue * queue){
 pthread_mutex_t printMutex = PTHREAD_MUTEX_INITIALIZER;
 
 void * myRoutine(void *arg){
-    bool empty = false;
 
     sem_wait(&count); //we use sem_wait at the end of loop so as we can check
                       //if we should terminate
