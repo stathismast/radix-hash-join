@@ -111,10 +111,10 @@ bool JobScheduler::Destroy(){
     return true;
 }
 
-void JobScheduler::Barrier(){
+void JobScheduler::Barrier(int totalJobs){
     pthread_mutex_lock(&mutex);
 
-        while(jobsDone != 4){
+        while(jobsDone != totalJobs){
             pthread_cond_wait(&emptyQueue, &mutex);
         }
 

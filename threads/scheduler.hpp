@@ -40,7 +40,7 @@ public:
     bool Destroy();
 
     // Waits Until executed all jobs in the queue.
-    void Barrier();
+    void Barrier(int totalJobs);
 
     // Add a job in the queue
     // Returns true if everything done right false else.

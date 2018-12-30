@@ -43,7 +43,7 @@ Column * bucketifyThread(Column * rel,
     myJobScheduler->Schedule(new HistogramJob(startA,length+lastExtra,&histograms[i]));
 
     //std::cout << "Before barrier 1" << '\n';
-    myJobScheduler->Barrier();
+    myJobScheduler->Barrier(4);
     //std::cout << "After barrier 1" << '\n';
 
     //construct the whole histogram
@@ -92,7 +92,7 @@ Column * bucketifyThread(Column * rel,
                                     numberOfBuckets,threadOrdered));
 
     //std::cout << "Before barrier 2" << '\n';
-    myJobScheduler->Barrier();
+    myJobScheduler->Barrier(4);
     //std::cout << "After barrier 2" << '\n';
 
     for (uint64_t i = 0; i < 4; i++) {
