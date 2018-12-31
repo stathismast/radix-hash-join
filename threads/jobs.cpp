@@ -95,13 +95,14 @@ Column * bucketifyThread(Column * rel,
     myJobScheduler->Barrier(4);
     //std::cout << "After barrier 2" << '\n';
 
-    for (uint64_t i = 0; i < 4; i++) {
+    delete[] histograms[0];
+    for (uint64_t i = 1; i < 4; i++) {
         delete[] histograms[i];
         delete[] psums[i];
     }
 
     // Calculate starting position of each bucket
-    *startingPositions = calculateStartingPositions(*histogram);
+    *startingPositions = psums[0];
     
     pthread_mutex_destroy(&memcpy_mtx);
 
