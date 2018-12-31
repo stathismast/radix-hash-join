@@ -77,7 +77,7 @@ void * myRoutine(void *arg){
         
         pthread_mutex_lock(&mutex);
             jobsDone++;
-            if(jobsDone == 4) pthread_cond_signal(&emptyQueue);
+            pthread_cond_signal(&emptyQueue);
         pthread_mutex_unlock(&mutex);
 
         sem_wait(&count);

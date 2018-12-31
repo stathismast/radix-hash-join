@@ -4,6 +4,7 @@
 #include <iostream>
 #include "../singleJoin/structs.hpp"
 #include "../singleJoin/h1.hpp"
+#include "../singleJoin/result.hpp"
 
 extern uint64_t numberOfBuckets;
 
@@ -11,6 +12,9 @@ void calculateThreadHistogram(uint64_t * start, uint64_t length, uint64_t * hist
 Column * bucketifyThread(Column * rel,
                   uint64_t ** histogram,
                   uint64_t ** startingPositions);
+
+void threadJoin(uint64_t);
+Result ** convertResult(uint64_t numberOfBuckets);
 
 // Abstract Class Job
 class Job {
@@ -52,7 +56,7 @@ public:
 };
 
 class JoinJob : public Job{
-    uint64_t x;
+    uint64_t bucketNumber;
 public:
     JoinJob( uint64_t x );
     ~JoinJob();

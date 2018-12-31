@@ -1,6 +1,8 @@
 #include "jobs.hpp"
 #include <iostream>
 
+#include "../singleJoin/join.hpp"
+
 #include "scheduler.hpp"
 
 //global
@@ -8,6 +10,15 @@ uint64_t * histograms[4];
 uint64_t * psums[4];
 extern JobScheduler * myJobScheduler;
 
+extern uint64_t * globalHistA;
+extern uint64_t * globalPsumA;
+extern uint64_t * globalHistB;
+extern uint64_t * globalPsumB;
+
+extern Result *** globalResults;
+
+extern Column * orderedA;
+extern Column * orderedB;
 
 pthread_mutex_t memcpy_mtx;
 
@@ -109,6 +120,31 @@ Column * bucketifyThread(Column * rel,
     return threadOrdered;
 }
 
+
+void threadJoin(uint64_t numberOfBuckets){
+    for (uint64_t i = 0; i < numberOfBuckets; i++){
+        myJobScheduler->Schedule(new JoinJob(i));
+    }
+
+    myJobScheduler->Barrier((int) numberOfBuckets);
+}
+
+Result ** convertResult(uint64_t numberOfBuckets){
+    Result ** result = new Result*[2];
+    result[0] = newResult();
+    result[1] = newResult();
+
+    for (uint64_t i = 0; i < numberOfBuckets; i++){
+        for(uint64_t j=0; j<globalResults[i][0]->totalEntries; j++){
+            insertSingleResult(result[0], getSingleEntry(globalResults[i][0],j));
+        }
+        for(uint64_t j=0; j<globalResults[i][1]->totalEntries; j++){
+            insertSingleResult(result[1], getSingleEntry(globalResults[i][1],j));
+        }
+    }
+    return result;
+}
+
 void calculateThreadHistogram( uint64_t * start, uint64_t length, uint64_t * histogram ){
 
     // Add up the number of tuples in each bucket
@@ -172,17 +208,46 @@ uint64_t PartitionJob::Run(){
     return 1;
 }
 
-JoinJob::JoinJob(uint64_t x)
+JoinJob::JoinJob(uint64_t bucketNumber)
 {
-    this->x = x;
+    this->bucketNumber = bucketNumber;
     //std::cout << "A JoinJob is created!" << '\n';
 }
 
 JoinJob::~JoinJob(){
-    std::cout << "A JoinJob is destroyed!" << '\n';
 }
 
 uint64_t JoinJob::Run(){
-    std::cout << "A JoinJob with x - " << x << " - is running!" << '\n';
+    uint64_t * bucketArray;
+    uint64_t * chainArray;
+
+    Result *** result = &globalResults[bucketNumber];
+    *result = new Result*[2];
+    (*result)[0] = newResult();
+    (*result)[1] = newResult();
+
+    uint64_t i = bucketNumber;
+
+    if(globalHistA[i] == 0 || globalHistB[i] == 0){
+        //the one bucket is empty so there is nothing to compare with
+        //the other bucket
+        return 0;
+    }
+    // For each bucket find the smaller one and make an index with h2 for
+    // that one. Then find the equal values and store them in result
+    if (globalHistA[i] >= globalHistB[i]) {
+        bucketify2(orderedB, globalHistB[i], globalPsumB[i], &bucketArray, &chainArray);
+        compare(orderedA, orderedB, globalHistA[i], globalPsumA[i], globalHistB[i], \
+            globalPsumB[i], bucketArray, chainArray, (*result), 0);
+    }
+    else {
+        bucketify2(orderedA, globalHistA[i], globalPsumA[i], &bucketArray, &chainArray);
+        compare(orderedB, orderedA, globalHistB[i], globalPsumB[i], globalHistA[i], \
+            globalPsumA[i], bucketArray, chainArray, (*result), 1);
+    }
+
+    delete[] bucketArray;
+    delete[] chainArray;
+
     return 1;
 }

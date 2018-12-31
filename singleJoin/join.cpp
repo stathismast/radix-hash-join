@@ -2,15 +2,21 @@
 
 extern uint64_t numberOfBuckets;
 
+uint64_t * globalHistA;
+uint64_t * globalPsumA;
+uint64_t * globalHistB;
+uint64_t * globalPsumB;
+
+Result *** globalResults;
+
+Column * orderedA;
+Column * orderedB;
+
 Result ** join(Column * A, Column * B){
     // Order given touples bucket by bucket (basically produces A' and B')
-    uint64_t * histogramA;
-    uint64_t * startingPosA;
-    Column * orderedA = bucketifyThread(A, &histogramA, &startingPosA);
+    orderedA = bucketifyThread(A, &globalHistA, &globalPsumA);
 
-    uint64_t * histogramB;
-    uint64_t * startingPosB;
-    Column * orderedB = bucketifyThread(B, &histogramB, &startingPosB);
+    orderedB = bucketifyThread(B, &globalHistB, &globalPsumB);
 
     // std::cout << "Original A array:" << std::endl;
     // printColumn(A);
@@ -26,6 +32,12 @@ Result ** join(Column * A, Column * B){
     //     std::cout << i << "\t" << h1(orderedA[i].value) << "  " << orderedA[i].value << "\t|\t";
     //     std::cout << "\t" << h1(orderedB[i].value) << "  " << orderedB[i].value <<std::endl;
     // }
+
+    uint64_t * histogramA = globalHistA;
+    uint64_t * histogramB = globalHistB;
+    uint64_t * startingPosA = globalPsumA;
+    uint64_t * startingPosB = globalPsumB;
+
 
     uint64_t * bucketArray;
     uint64_t * chainArray;
@@ -58,6 +70,12 @@ Result ** join(Column * A, Column * B){
 
     //printDoubleResult(result);
 
+    globalResults = new Result**[numberOfBuckets];
+    threadJoin(numberOfBuckets);
+    Result ** threadResult = convertResult(numberOfBuckets);
+
+    delete [] globalResults;
+
     deleteColumn(orderedA);
     delete[] histogramA;
     delete[] startingPosA;
@@ -66,7 +84,7 @@ Result ** join(Column * A, Column * B){
     delete[] histogramB;
     delete[] startingPosB;
 
-    return result;
+    return threadResult;
 }
 
 void compare(Column * orderedBig,
