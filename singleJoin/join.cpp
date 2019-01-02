@@ -74,7 +74,16 @@ Result ** join(Column * A, Column * B){
     threadJoin(numberOfBuckets);
     Result ** threadResult = convertResult(numberOfBuckets);
 
-    delete [] globalResults;
+    for(uint64_t i=0; i<numberOfBuckets; i++){
+        deleteResult(globalResults[i][0]);
+        deleteResult(globalResults[i][1]);
+        delete[] globalResults[i];
+    }
+    delete[] globalResults;
+
+    deleteResult(result[0]);
+    deleteResult(result[1]);
+    delete[] result;
 
     deleteColumn(orderedA);
     delete[] histogramA;
