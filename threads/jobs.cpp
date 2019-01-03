@@ -120,11 +120,43 @@ Column * bucketifyThread(Column * rel,
     return threadOrdered;
 }
 
+void swap(uint64_t * a, uint64_t * b){
+    uint64_t temp = *a;
+    *a = *b;
+    *b = temp;
+}
 
 void threadJoin(uint64_t numberOfBuckets){
-    for (uint64_t i = 0; i < numberOfBuckets; i++){
-        myJobScheduler->Schedule(new JoinJob(i));
+    uint64_t * bucketSize = new uint64_t[numberOfBuckets];
+    uint64_t * finalOrder = new uint64_t[numberOfBuckets];
+
+    for(uint64_t i = 0; i < numberOfBuckets; i++){
+        finalOrder[i] = i;
+        if(globalHistA[i] > globalHistB[i])
+            bucketSize[i] = globalHistA[i];
+        else
+            bucketSize[i] = globalHistB[i];
     }
+
+    uint64_t swaps;
+    for(uint64_t j=0; j<numberOfBuckets-2; j++){
+        swaps = 0;
+        for(uint64_t j=0; j<numberOfBuckets-1; j++){
+            if(bucketSize[j] < bucketSize[j+1]){
+                swap(&bucketSize[j], &bucketSize[j+1]);
+                swap(&finalOrder[j], &finalOrder[j+1]);
+                swaps++;
+            }
+        }
+        if(swaps == 0) break;
+    }
+
+    for(uint64_t i = 0; i < numberOfBuckets; i++){
+        myJobScheduler->Schedule(new JoinJob(finalOrder[i]));
+    }
+
+    delete[] bucketSize;
+    delete[] finalOrder;
 
     myJobScheduler->Barrier((int) numberOfBuckets);
 }
