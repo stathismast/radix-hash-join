@@ -12,88 +12,84 @@ Result *** globalResults;
 Column * orderedA;
 Column * orderedB;
 
+#define USE_THREADS 1
+
 Result ** join(Column * A, Column * B){
-    // Order given touples bucket by bucket (basically produces A' and B')
-    orderedA = bucketifyThread(A, &globalHistA, &globalPsumA);
+    if(USE_THREADS){
+        orderedA = bucketifyThread(A, &globalHistA, &globalPsumA);
+        orderedB = bucketifyThread(B, &globalHistB, &globalPsumB);
 
-    orderedB = bucketifyThread(B, &globalHistB, &globalPsumB);
+        globalResults = new Result**[numberOfBuckets];
+        threadJoin(numberOfBuckets);
+        Result ** threadResult = convertResult(numberOfBuckets);
 
-    // std::cout << "Original A array:" << std::endl;
-    // printColumn(A);
-    // std::cout << "Original B array:" << std::endl;
-    // printColumn(B);
-
-    // Print out the hashed values of A' and B'
-    // to confirm that they are in order
-    // std::cout << std::endl << "index\tA\' Bu\t|\tB\' Bu" << std::endl;
-    // for(uint64_t i=0; i<A->size; i++){
-    //     std::cout << h1(orderedA[i].value) << "\t|\t";
-    //     std::cout << h1(orderedB[i].value) << std::endl;
-    //     std::cout << i << "\t" << h1(orderedA[i].value) << "  " << orderedA[i].value << "\t|\t";
-    //     std::cout << "\t" << h1(orderedB[i].value) << "  " << orderedB[i].value <<std::endl;
-    // }
-
-    uint64_t * histogramA = globalHistA;
-    uint64_t * histogramB = globalHistB;
-    uint64_t * startingPosA = globalPsumA;
-    uint64_t * startingPosB = globalPsumB;
-
-
-    uint64_t * bucketArray;
-    uint64_t * chainArray;
-    Result ** result = new Result*[2];
-    result[0] = newResult();
-    result[1] = newResult();
-    for (uint64_t i = 0; i < numberOfBuckets; i++) {
-
-        if(histogramA[i] == 0 || histogramB[i] == 0){
-            //the one bucket is empty so there is nothing to compare with
-            //the other bucket
-            continue;
+        for(uint64_t i=0; i<numberOfBuckets; i++){
+            deleteResult(globalResults[i][0]);
+            deleteResult(globalResults[i][1]);
+            delete[] globalResults[i];
         }
-        // For each bucket find the smaller one and make an index with h2 for
-        // that one. Then find the equal values and store them in result
-        if (histogramA[i] >= histogramB[i]) {
-            bucketify2(orderedB, histogramB[i], startingPosB[i], &bucketArray, &chainArray);
-            compare(orderedA, orderedB, histogramA[i], startingPosA[i], histogramB[i], \
-                startingPosB[i], bucketArray, chainArray, result, 0);
-        }
-        else {
-            bucketify2(orderedA, histogramA[i], startingPosA[i], &bucketArray, &chainArray);
-            compare(orderedB, orderedA, histogramB[i], startingPosB[i], histogramA[i], \
-                startingPosA[i], bucketArray, chainArray, result, 1);
-        }
+        delete[] globalResults;
 
-        delete[] bucketArray;
-        delete[] chainArray;
+        deleteColumn(orderedA);
+        delete[] globalHistA;
+        delete[] globalPsumA;
+
+        deleteColumn(orderedB);
+        delete[] globalHistB;
+        delete[] globalPsumB;
+
+        return threadResult;
     }
+    else{
+        // Order given touples bucket by bucket (basically produces A' and B')
+        uint64_t * histogramA;
+        uint64_t * startingPosA;
+        Column * orderedA = bucketify(A, &histogramA, &startingPosA);
 
-    //printDoubleResult(result);
+        uint64_t * histogramB;
+        uint64_t * startingPosB;
+        Column * orderedB = bucketify(B, &histogramB, &startingPosB);
 
-    globalResults = new Result**[numberOfBuckets];
-    threadJoin(numberOfBuckets);
-    Result ** threadResult = convertResult(numberOfBuckets);
+        uint64_t * bucketArray;
+        uint64_t * chainArray;
+        Result ** result = new Result*[2];
+        result[0] = newResult();
+        result[1] = newResult();
+        for (uint64_t i = 0; i < numberOfBuckets; i++) {
+            if(histogramA[i] == 0 || histogramB[i] == 0){
+                //the one bucket is empty so there is nothing to compare with
+                //the other bucket
+                continue;
+            }
+            // For each bucket find the smaller one and make an index with h2 for
+            // that one. Then find the equal values and store them in result
+            if (histogramA[i] >= histogramB[i]) {
+                bucketify2(orderedB, histogramB[i], startingPosB[i], &bucketArray, &chainArray);
+                compare(orderedA, orderedB, histogramA[i], startingPosA[i], histogramB[i], \
+                    startingPosB[i], bucketArray, chainArray, result, 0);
+            }
+            else {
+                bucketify2(orderedA, histogramA[i], startingPosA[i], &bucketArray, &chainArray);
+                compare(orderedB, orderedA, histogramB[i], startingPosB[i], histogramA[i], \
+                    startingPosA[i], bucketArray, chainArray, result, 1);
+            }
 
-    for(uint64_t i=0; i<numberOfBuckets; i++){
-        deleteResult(globalResults[i][0]);
-        deleteResult(globalResults[i][1]);
-        delete[] globalResults[i];
+            delete[] bucketArray;
+            delete[] chainArray;
+        }
+
+        //printDoubleResult(result);
+
+        deleteColumn(orderedA);
+        delete[] histogramA;
+        delete[] startingPosA;
+
+        deleteColumn(orderedB);
+        delete[] histogramB;
+        delete[] startingPosB;
+
+        return result;
     }
-    delete[] globalResults;
-
-    deleteResult(result[0]);
-    deleteResult(result[1]);
-    delete[] result;
-
-    deleteColumn(orderedA);
-    delete[] histogramA;
-    delete[] startingPosA;
-
-    deleteColumn(orderedB);
-    delete[] histogramB;
-    delete[] startingPosB;
-
-    return threadResult;
 }
 
 void compare(Column * orderedBig,
