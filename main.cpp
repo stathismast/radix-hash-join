@@ -92,7 +92,20 @@ int main(void){
                        << "  u=" << stats[0][2].u
                        << "  f=" << stats[0][2].f
                        << "  d=" << stats[0][2].d << "\n";
-        lessFilter(0,1,9403);
+        std::cout   << "Before\n"
+                     << "1.0" << ": l=" << stats[1][0].l
+                        << "  u=" << stats[1][0].u
+                        << "  f=" << stats[1][0].f
+                        << "  d=" << stats[1][0].d << "\n"
+                     << "1.1" << ": l=" << stats[1][1].l
+                        << "  u=" << stats[1][1].u
+                        << "  f=" << stats[1][1].f
+                        << "  d=" << stats[1][1].d << "\n"
+                     << "1.2" << ": l=" << stats[1][2].l
+                        << "  u=" << stats[1][2].u
+                        << "  f=" << stats[1][2].f
+                        << "  d=" << stats[1][2].d << "\n";
+        join(0,0,1,1);
         std::cout   << "\n\nAfter\n"
                     << "0.0" << ": l=" << stats[0][0].l
                        << "  u=" << stats[0][0].u
@@ -106,6 +119,19 @@ int main(void){
                        << "  u=" << stats[0][2].u
                        << "  f=" << stats[0][2].f
                        << "  d=" << stats[0][2].d << "\n";
+        std::cout   << "Before\n"
+                  << "1.0" << ": l=" << stats[1][0].l
+                     << "  u=" << stats[1][0].u
+                     << "  f=" << stats[1][0].f
+                     << "  d=" << stats[1][0].d << "\n"
+                  << "1.1" << ": l=" << stats[1][1].l
+                     << "  u=" << stats[1][1].u
+                     << "  f=" << stats[1][1].f
+                     << "  d=" << stats[1][1].d << "\n"
+                  << "1.2" << ": l=" << stats[1][2].l
+                     << "  u=" << stats[1][2].u
+                     << "  f=" << stats[1][2].f
+                     << "  d=" << stats[1][2].d << "\n";
 
     deleteStats();
     unMapAllData(r, relationsSize);

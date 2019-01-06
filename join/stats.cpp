@@ -4,6 +4,15 @@ extern Relation * r;
 extern uint64_t relationsSize;
 extern Stats ** stats;
 
+
+double max(double a, double b) {
+    return a > b ? a : b;
+}
+
+double min(double a, double b) {
+    return a < b ? a : b;
+}
+
 void createStats(){
     stats = new Stats*[relationsSize];
     for(uint64_t i=0; i<relationsSize; i++){
@@ -195,6 +204,109 @@ void greaterFilter(uint64_t rel, uint64_t col, uint64_t k) {
             stats[rel][i].f = newStats.f;
         }
     }
+}
+
+void selfJoin(uint64_t rel, uint64_t colA, uint64_t colB) {
+    double f = stats[rel][colA].f;
+    double d = stats[rel][colA].d;
+
+    Stats newStatsA;
+    Stats newStatsB;
+    newStatsA.l = newStatsB.l = max(stats[rel][colA].l, stats[rel][colB].l);
+    newStatsA.u = newStatsB.u = min(stats[rel][colA].u, stats[rel][colB].u);
+    double n = newStatsA.u - newStatsA.l +1;
+    std::cout << "n = " << n << '\n';
+    if (n == 0) {
+        newStatsA.f = newStatsB.f = 0;
+    }
+    else {
+        newStatsA.f = newStatsB.f = f/n;
+    }
+    newStatsA.d = newStatsB.d = d * (1-pow((1-(newStatsA.f/f)), f/d));
+
+    updateStats(rel,colA,newStatsA);
+    updateStats(rel,colB,newStatsB);
+    // Update the stats of every other column of given relation
+    for(uint64_t i=0; i<r[rel].cols; i++){
+        if(i == colA || i == colB) continue;
+
+        uint64_t dc = stats[rel][i].d;
+        uint64_t fc = stats[rel][i].f;
+        // Check if dc or f are equal to 0 and act accoridingly
+        // This way we can avoid dividing by 0
+        if(dc == 0){
+            stats[rel][i].d = 0;
+            stats[rel][i].f = 0;
+        }
+        else if(f == 0){
+            stats[rel][i].d = 0;
+            stats[rel][i].f = 0;
+        } else {
+            std::cout << fc/dc << std::endl;
+            std::cout << 1-(newStatsA.f/f) << std::endl;
+            stats[rel][i].d = dc * (1-pow((1-(newStatsA.f/f)), fc/dc));
+            stats[rel][i].f = newStatsA.f;
+        }
+    }
+
+}
+
+void join(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB) {
+
+        // change
+
+        Stats newStatsA;
+        Stats newStatsB;
+        newStatsA.l = newStatsB.l = max(stats[relA][colA].l, stats[relA][colB].l);
+        newStatsA.u = newStatsB.u = min(stats[relA][colA].u, stats[relB][colB].u);
+        double n = newStatsA.u - newStatsA.l +1;
+        std::cout << "n = " << n << '\n';
+        if (n == 0) {
+            newStatsA.f = newStatsB.f = 0;
+        }
+        else {
+            newStatsA.f = newStatsB.f = stats[relA][colA].f*stats[relB][colB].f/n;
+        }
+        newStatsA.d = newStatsB.d = stats[relA][colA].d*stats[relB][colB].d/n;
+
+        updateStats(relA,colA,newStatsA);
+        updateStats(relB,colB,newStatsB);
+        // Update the stats of every other column of the first relation
+        for(uint64_t i=0; i<r[relA].cols; i++){
+            if(i == colA) continue;
+
+            uint64_t dc = stats[relA][i].d;
+            uint64_t fc = stats[relA][i].f;
+            // Check if dc or f are equal to 0 and act accoridingly
+            // This way we can avoid dividing by 0
+            if(dc == 0){
+                stats[relA][i].d = 0;
+                stats[relA][i].f = 0;
+            } else {
+                std::cout << fc/dc << std::endl;
+                stats[relA][i].d = dc * (1-pow((1-(newStatsA.d/stats[relA][colA].d)), fc/dc));
+                stats[relA][i].f = newStatsA.f;
+            }
+        }
+
+        // Update the stats of every other column of the second relation
+        for(uint64_t i=0; i<r[relB].cols; i++){
+            if(i == colB) continue;
+
+            uint64_t dc = stats[relB][i].d;
+            uint64_t fc = stats[relB][i].f;
+            // Check if dc or f are equal to 0 and act accoridingly
+            // This way we can avoid dividing by 0
+            if(dc == 0){
+                stats[relB][i].d = 0;
+                stats[relB][i].f = 0;
+            } else {
+                std::cout << fc/dc << std::endl;
+                stats[relB][i].d = dc * (1-pow((1-(newStatsA.d/stats[relB][colB].d)), fc/dc));
+                stats[relB][i].f = newStatsA.f;
+            }
+        }
+
 }
 
 void updateStats(uint64_t rel, uint64_t col, Stats newStats){
