@@ -79,8 +79,6 @@ int main(void){
     //execute queries etc
     executeQueries();
 
-
-
         std::cout   << "Before\n"
                     << "0.0" << ": l=" << stats[0][0].l
                        << "  u=" << stats[0][0].u
@@ -94,7 +92,7 @@ int main(void){
                        << "  u=" << stats[0][2].u
                        << "  f=" << stats[0][2].f
                        << "  d=" << stats[0][2].d << "\n";
-        equalFilter(0,1,9403);
+        lessFilter(0,1,9403);
         std::cout   << "\n\nAfter\n"
                     << "0.0" << ": l=" << stats[0][0].l
                        << "  u=" << stats[0][0].u

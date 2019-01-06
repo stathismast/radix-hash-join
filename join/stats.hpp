@@ -13,4 +13,6 @@ void createStats();
 void deleteStats();
 void initializeStats();
 void equalFilter(uint64_t rel, uint64_t col, uint64_t k);
+void lessFilter(uint64_t rel, uint64_t col, uint64_t k);
+void greaterFilter(uint64_t rel, uint64_t col, uint64_t k);
 void updateStats(uint64_t rel, uint64_t col, Stats newStats);

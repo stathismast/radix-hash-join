@@ -62,7 +62,6 @@ void equalFilter(uint64_t rel, uint64_t col, uint64_t k){
     }
 
     updateStats(rel,col,newStats);
-    
     // Update the stats of every other column of given relation
     for(uint64_t i=0; i<r[rel].cols; i++){
         if(i == col) continue;
@@ -78,11 +77,123 @@ void equalFilter(uint64_t rel, uint64_t col, uint64_t k){
         else if(f == 0){
             stats[rel][i].d = 0;
             stats[rel][i].f = 0;
+        } else {
+            std::cout << fc/dc << std::endl;
+            std::cout << 1-(newStats.f/f) << std::endl;
+            stats[rel][i].d = dc * (1-pow((1-(newStats.f/f)), fc/dc));
+            stats[rel][i].f = newStats.f;
         }
-        std::cout << fc/dc << std::endl;
-        std::cout << 1-(newStats.f/f) << std::endl;
-        stats[rel][i].d = dc * (1-pow((1-(newStats.f/f)), fc/dc));
-        stats[rel][i].f = newStats.f;
+    }
+}
+
+
+void lessFilter(uint64_t rel, uint64_t col, uint64_t k) {
+    double l = stats[rel][col].l;
+    double u = stats[rel][col].u;
+    double f = stats[rel][col].f;
+    double d = stats[rel][col].d;
+
+    Stats newStats;
+    // The lowest value after the filter execution will still be the same and
+    // the highest will be k
+    newStats.l = stats[rel][col].l;
+    if (k > u) {
+        k = u;
+    }
+    newStats.u = k;
+    if (k < l) {
+        // if filter value is lower than the lowest value there will be no results
+        newStats.d = 0;
+        newStats.f = 0;
+    }
+    else if (stats[rel][col].l == stats[rel][col].u) {
+        // check if u and l of current collumn are not equal to avoid division
+        // by zero
+        newStats.d = 0;
+        newStats.f = 0;
+    }
+    else {
+        newStats.d = d*(k-l)/(u-l);
+        newStats.f = f*(k-l)/(u-l);
+    }
+
+    updateStats(rel,col,newStats);
+    // Update the stats of every other column of given relation
+    for(uint64_t i=0; i<r[rel].cols; i++){
+        if(i == col) continue;
+
+        uint64_t dc = stats[rel][i].d;
+        uint64_t fc = stats[rel][i].f;
+        // Check if dc or f are equal to 0 and act accoridingly
+        // This way we can avoid dividing by 0
+        if(dc == 0){
+            stats[rel][i].d = 0;
+            stats[rel][i].f = 0;
+        }
+        else if(f == 0){
+            stats[rel][i].d = 0;
+            stats[rel][i].f = 0;
+        } else {
+            std::cout << fc/dc << std::endl;
+            std::cout << 1-(newStats.f/f) << std::endl;
+            stats[rel][i].d = dc * (1-pow((1-(newStats.f/f)), fc/dc));
+            stats[rel][i].f = newStats.f;
+        }
+    }
+}
+
+void greaterFilter(uint64_t rel, uint64_t col, uint64_t k) {
+    double l = stats[rel][col].l;
+    double u = stats[rel][col].u;
+    double f = stats[rel][col].f;
+    double d = stats[rel][col].d;
+
+    Stats newStats;
+    // The lowest value after the filter execution will still be the same and
+    // the highest will be k
+    if (k < l) {
+        k = l;
+    }
+    newStats.l = k;
+    newStats.u = stats[rel][col].u;
+    if (k > u) {
+        // if filter value is higher than the highest value there will be no results
+        newStats.d = 0;
+        newStats.f = 0;
+    }
+    else if (stats[rel][col].l == stats[rel][col].u) {
+        // check if u and l of current collumn are not equal to avoid division
+        // by zero
+        newStats.d = 0;
+        newStats.f = 0;
+    }
+    else {
+        newStats.d = d*(u-k)/(u-l);
+        newStats.f = f*(u-k)/(u-l);
+    }
+
+    updateStats(rel,col,newStats);
+    // Update the stats of every other column of given relation
+    for(uint64_t i=0; i<r[rel].cols; i++){
+        if(i == col) continue;
+
+        uint64_t dc = stats[rel][i].d;
+        uint64_t fc = stats[rel][i].f;
+        // Check if dc or f are equal to 0 and act accoridingly
+        // This way we can avoid dividing by 0
+        if(dc == 0){
+            stats[rel][i].d = 0;
+            stats[rel][i].f = 0;
+        }
+        else if(f == 0){
+            stats[rel][i].d = 0;
+            stats[rel][i].f = 0;
+        } else {
+            std::cout << fc/dc << std::endl;
+            std::cout << 1-(newStats.f/f) << std::endl;
+            stats[rel][i].d = dc * (1-pow((1-(newStats.f/f)), fc/dc));
+            stats[rel][i].f = newStats.f;
+        }
     }
 }
 
