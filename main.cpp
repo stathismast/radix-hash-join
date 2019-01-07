@@ -1,7 +1,7 @@
 #include "join/parse.hpp"
 #include "join/inputManager.hpp" //for ignoreLine
-#include "threads/scheduler.hpp"
 #include "join/stats.hpp"
+#include "threads/scheduler.hpp"
 
 //global
 Relation * r;
@@ -12,6 +12,16 @@ extern uint64_t * histograms[4];
 extern uint64_t * psums[4];
 
 // Intermediate IR;
+
+void printStats(uint64_t rel) {
+    for (size_t i = 0; i < r[rel].cols; i++) {
+        std::cout << rel << "." << i
+                    << ": l=" << stats[rel][i].l
+                    << "  u=" << stats[rel][i].u
+                    << "  f=" << stats[rel][i].f
+                    << "  d=" << stats[rel][i].d << "\n";
+    }
+}
 
 void executeQueries() {
     char * line = NULL;
@@ -29,6 +39,13 @@ void executeQueries() {
 
         initializeStats();
         QueryInfo * queryInfo = parseInput(line);
+        joinEnumeration(queryInfo);
+        std::cout << '\n';
+
+        for (size_t i = 0; i < queryInfo->relationsCount; i++) {
+            printStats(queryInfo->relations[i]);
+            std::cout << '\n';
+        }
 
         // std::cout << "RE-ORDERED PREDICATES" << std::endl;
         // for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
@@ -79,71 +96,18 @@ int main(void){
     //execute queries etc
     executeQueries();
 
-        std::cout   << "Before 1\n"
-                    << "0.0" << ": l=" << stats[0][0].l
-                       << "  u=" << stats[0][0].u
-                       << "  f=" << stats[0][0].f
-                       << "  d=" << stats[0][0].d << "\n"
-                    << "0.1" << ": l=" << stats[0][1].l
-                       << "  u=" << stats[0][1].u
-                       << "  f=" << stats[0][1].f
-                       << "  d=" << stats[0][1].d << "\n"
-                    << "0.2" << ": l=" << stats[0][2].l
-                       << "  u=" << stats[0][2].u
-                       << "  f=" << stats[0][2].f
-                       << "  d=" << stats[0][2].d << "\n"
-                     << "0.2" << ": l=" << stats[0][3].l
-                        << "  u=" << stats[0][3].u
-                        << "  f=" << stats[0][3].f
-                        << "  d=" << stats[0][3].d << "\n";
-        std::cout   << "\nBefore 1\n"
-                     << "1.0" << ": l=" << stats[1][0].l
-                        << "  u=" << stats[1][0].u
-                        << "  f=" << stats[1][0].f
-                        << "  d=" << stats[1][0].d << "\n"
-                     << "1.1" << ": l=" << stats[1][1].l
-                        << "  u=" << stats[1][1].u
-                        << "  f=" << stats[1][1].f
-                        << "  d=" << stats[1][1].d << "\n"
-                     << "1.2" << ": l=" << stats[1][2].l
-                        << "  u=" << stats[1][2].u
-                        << "  f=" << stats[1][2].f
-                        << "  d=" << stats[1][2].d << "\n";
-        joinStats(0,3,1,0);
-        // if (stats[1][0].f == 0) {
-        //     /* code */
-        //     std::cout << "uwu" << '\n';
-        // }
-        std::cout   << "\n\nAfter 0\n"
-                    << "0.0" << ": l=" << stats[0][0].l
-                       << "  u=" << stats[0][0].u
-                       << "  f=" << stats[0][0].f
-                       << "  d=" << stats[0][0].d << "\n"
-                    << "0.1" << ": l=" << stats[0][1].l
-                       << "  u=" << stats[0][1].u
-                       << "  f=" << stats[0][1].f
-                       << "  d=" << stats[0][1].d << "\n"
-                    << "0.2" << ": l=" << stats[0][2].l
-                       << "  u=" << stats[0][2].u
-                       << "  f=" << stats[0][2].f
-                       << "  d=" << stats[0][2].d << "\n"
-                     << "0.3" << ": l=" << stats[0][3].l
-                        << "  u=" << stats[0][3].u
-                        << "  f=" << stats[0][3].f
-                        << "  d=" << stats[0][3].d << "\n";
-        std::cout   << "\nAfter 1\n"
-                  << "1.0" << ": l=" << stats[1][0].l
-                     << "  u=" << stats[1][0].u
-                     << "  f=" << stats[1][0].f
-                     << "  d=" << stats[1][0].d << "\n"
-                  << "1.1" << ": l=" << stats[1][1].l
-                     << "  u=" << stats[1][1].u
-                     << "  f=" << stats[1][1].f
-                     << "  d=" << stats[1][1].d << "\n"
-                  << "1.2" << ": l=" << stats[1][2].l
-                     << "  u=" << stats[1][2].u
-                     << "  f=" << stats[1][2].f
-                     << "  d=" << stats[1][2].d << "\n";
+    // std::cout << "\n\nBefore\n";
+    // printStats(0);
+    // std::cout << '\n';
+    // printStats(1);
+    // joinStats(0,3,1,0);
+    // std::cout << "\n\nAfter\n";
+    // printStats(0);
+    // std::cout << '\n';
+    // printStats(1);
+    // if (stats[1][0].f == 0) {
+    //     std::cout << "uwu" << '\n';
+    // }
 
     deleteStats();
     unMapAllData(r, relationsSize);

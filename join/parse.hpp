@@ -8,6 +8,8 @@
 #ifndef PARSE_HPP
 #define PARSE_HPP
 
+void joinEnumeration(QueryInfo * queryInfo);
+
 QueryInfo * parseInput(char * query);
 
 void parseRelations(char * relationsStr, QueryInfo * queryInfo);

@@ -3,6 +3,13 @@
 #include <ctype.h>
 #include <iostream>
 #include "parse.hpp"
+#include "stats.hpp"
+#include <unordered_map>
+// #include <unordered_map>
+
+extern Stats ** stats;
+
+typedef std::unordered_map<std::string, double> hashTable;
 
 // uint64_t * queryRelations;
 
@@ -103,6 +110,47 @@ void reOrderPredicates(QueryInfo * queryInfo){
     delete[] vIntermediate;
 }
 
+void joinEnumeration(QueryInfo * queryInfo) {
+    Predicate * predicates  = queryInfo->predicates;
+    uint64_t count = queryInfo->predicatesCount;
+
+    if(count == 0) return;
+
+
+    // calculate stats for filters and self joins
+    for (size_t i = 0; i < count; i++) {
+        if (predicates[i].predicateType == FILTER) {
+            if (predicates[i].op == '=') {
+                equalFilterStats(predicates[i].relationA, \
+                        predicates[i].columnA, predicates[i].value);
+            } else if (predicates[i].op == '<') {
+                lessFilterStats(predicates[i].relationA, \
+                        predicates[i].columnA, predicates[i].value);
+            } else {
+                greaterFilterStats(predicates[i].relationA, \
+                        predicates[i].columnA, predicates[i].value);
+            }
+        } else if (predicates[i].predicateType == SELFJOIN) {
+            selfJoinStats(predicates[i].relationA, predicates[i].columnA, predicates[i].columnB);
+        }
+    }
+
+    // calculate stats for joins
+    hashTable bestTree;
+
+    for (size_t i = 0; i < queryInfo->relationsCount; i++) {
+        auto s = std::to_string(queryInfo->relations[i]);
+        // bestTree.insert(std::pair<std::string,double>(s, stats[i][0].d));
+        bestTree[s] = stats[i][0].d;
+    }
+
+    // for ( auto it = bestTree.begin(); it != bestTree.end(); it++ )
+    for ( auto& it: bestTree)
+        std::cout << " " << it.first << ":" << it.second << std::endl;
+    std::cout << std::endl;
+
+}
+
 QueryInfo * parseInput(char * query) {
     QueryInfo * queryInfo = new QueryInfo;
     queryInfo->predicatesCount = 0;
@@ -130,7 +178,8 @@ QueryInfo * parseInput(char * query) {
     // }
 
 
-    reOrderPredicates(queryInfo);
+    // reOrderPredicates(queryInfo);
+    // joinEnumeration(queryInfo);
     return queryInfo;
 }
 

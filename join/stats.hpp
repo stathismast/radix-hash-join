@@ -13,7 +13,7 @@ typedef struct Stats{
 void createStats();
 void deleteStats();
 void initializeStats();
-void equalFilter(uint64_t rel, uint64_t col, uint64_t k);
+void equalFilterStats(uint64_t rel, uint64_t col, uint64_t k);
 void lessFilterStats(uint64_t rel, uint64_t col, uint64_t k);
 void greaterFilterStats(uint64_t rel, uint64_t col, uint64_t k);
 void selfJoinStats(uint64_t rel, uint64_t colA, uint64_t colB);
