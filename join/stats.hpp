@@ -9,6 +9,7 @@ typedef struct Stats{
     double f;
     double d;
 } Stats;
+
 void createStats();
 void deleteStats();
 void initializeStats();

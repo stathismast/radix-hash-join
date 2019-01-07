@@ -212,17 +212,25 @@ void selfJoin(uint64_t rel, uint64_t colA, uint64_t colB) {
 
     Stats newStatsA;
     Stats newStatsB;
-    newStatsA.l = newStatsB.l = max(stats[rel][colA].l, stats[rel][colB].l);
-    newStatsA.u = newStatsB.u = min(stats[rel][colA].u, stats[rel][colB].u);
-    double n = newStatsA.u - newStatsA.l +1;
-    std::cout << "n = " << n << '\n';
-    if (n == 0) {
-        newStatsA.f = newStatsB.f = 0;
+    if (stats[rel][colA].u < stats[rel][colB].l || stats[rel][colB].u < stats[rel][colA].l) {
+        // if the 2 columns have no common elemnts the result will be empty
+        newStatsA.l = newStatsA.u = newStatsA.d = newStatsA.f = 0;
+        newStatsB.l = newStatsB.u = newStatsB.d = newStatsB.f = 0;
     }
     else {
-        newStatsA.f = newStatsB.f = f/n;
+        newStatsA.l = newStatsB.l = max(stats[rel][colA].l, stats[rel][colB].l);
+        newStatsA.u = newStatsB.u = min(stats[rel][colA].u, stats[rel][colB].u);
+        double n = newStatsA.u - newStatsA.l +1;
+        if (n == 0) {
+            // avoid divison by zero (not sure if it's correc to set f,d to 0)
+            newStatsA.f = newStatsB.f = 0;
+        }
+        else {
+            newStatsA.f = newStatsB.f = f/n;
+        }
+        newStatsA.d = newStatsB.d = d * (1-pow((1-(newStatsA.f/f)), f/d));
     }
-    newStatsA.d = newStatsB.d = d * (1-pow((1-(newStatsA.f/f)), f/d));
+
 
     updateStats(rel,colA,newStatsA);
     updateStats(rel,colB,newStatsB);
