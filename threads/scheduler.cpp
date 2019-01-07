@@ -2,7 +2,7 @@
 
 pthread_mutex_t mutex;
 sem_t count;
-pthread_cond_t emptyQueue;
+pthread_cond_t barrier;
 bool threadFinish;
 
 int jobsDone;
@@ -77,7 +77,7 @@ void * myRoutine(void *arg){
         
         pthread_mutex_lock(&mutex);
             jobsDone++;
-            pthread_cond_signal(&emptyQueue);
+            pthread_cond_signal(&barrier);
         pthread_mutex_unlock(&mutex);
 
         sem_wait(&count);
@@ -89,7 +89,7 @@ void * myRoutine(void *arg){
 bool JobScheduler::Init(uint64_t num_of_threads){
     sem_init(&count,0,0);
     pthread_mutex_init(&mutex,NULL);
-    pthread_cond_init(&emptyQueue, NULL);
+    pthread_cond_init(&barrier, NULL);
 
     globalQueue = newQueue();
 
@@ -105,7 +105,7 @@ bool JobScheduler::Destroy(){
     delete[] threadPool;
     sem_destroy(&count);
     pthread_mutex_destroy(&mutex);
-    pthread_cond_destroy(&emptyQueue);
+    pthread_cond_destroy(&barrier);
     delete globalQueue;
 
     return true;
@@ -115,7 +115,7 @@ void JobScheduler::Barrier(int totalJobs){
     pthread_mutex_lock(&mutex);
 
         while(jobsDone != totalJobs){
-            pthread_cond_wait(&emptyQueue, &mutex);
+            pthread_cond_wait(&barrier, &mutex);
         }
 
         jobsDone = 0;
