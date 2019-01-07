@@ -79,7 +79,7 @@ int main(void){
     //execute queries etc
     executeQueries();
 
-        std::cout   << "Before\n"
+        std::cout   << "Before 1\n"
                     << "0.0" << ": l=" << stats[0][0].l
                        << "  u=" << stats[0][0].u
                        << "  f=" << stats[0][0].f
@@ -91,22 +91,30 @@ int main(void){
                     << "0.2" << ": l=" << stats[0][2].l
                        << "  u=" << stats[0][2].u
                        << "  f=" << stats[0][2].f
-                       << "  d=" << stats[0][2].d << "\n";
-        // std::cout   << "Before\n"
-        //              << "1.0" << ": l=" << stats[1][0].l
-        //                 << "  u=" << stats[1][0].u
-        //                 << "  f=" << stats[1][0].f
-        //                 << "  d=" << stats[1][0].d << "\n"
-        //              << "1.1" << ": l=" << stats[1][1].l
-        //                 << "  u=" << stats[1][1].u
-        //                 << "  f=" << stats[1][1].f
-        //                 << "  d=" << stats[1][1].d << "\n"
-        //              << "1.2" << ": l=" << stats[1][2].l
-        //                 << "  u=" << stats[1][2].u
-        //                 << "  f=" << stats[1][2].f
-        //                 << "  d=" << stats[1][2].d << "\n";
-        selfJoin(0,2,3);
-        std::cout   << "\n\nAfter\n"
+                       << "  d=" << stats[0][2].d << "\n"
+                     << "0.2" << ": l=" << stats[0][3].l
+                        << "  u=" << stats[0][3].u
+                        << "  f=" << stats[0][3].f
+                        << "  d=" << stats[0][3].d << "\n";
+        std::cout   << "\nBefore 1\n"
+                     << "1.0" << ": l=" << stats[1][0].l
+                        << "  u=" << stats[1][0].u
+                        << "  f=" << stats[1][0].f
+                        << "  d=" << stats[1][0].d << "\n"
+                     << "1.1" << ": l=" << stats[1][1].l
+                        << "  u=" << stats[1][1].u
+                        << "  f=" << stats[1][1].f
+                        << "  d=" << stats[1][1].d << "\n"
+                     << "1.2" << ": l=" << stats[1][2].l
+                        << "  u=" << stats[1][2].u
+                        << "  f=" << stats[1][2].f
+                        << "  d=" << stats[1][2].d << "\n";
+        joinStats(0,3,1,0);
+        // if (stats[1][0].f == 0) {
+        //     /* code */
+        //     std::cout << "uwu" << '\n';
+        // }
+        std::cout   << "\n\nAfter 0\n"
                     << "0.0" << ": l=" << stats[0][0].l
                        << "  u=" << stats[0][0].u
                        << "  f=" << stats[0][0].f
@@ -118,20 +126,24 @@ int main(void){
                     << "0.2" << ": l=" << stats[0][2].l
                        << "  u=" << stats[0][2].u
                        << "  f=" << stats[0][2].f
-                       << "  d=" << stats[0][2].d << "\n";
-        // std::cout   << "Before\n"
-        //           << "1.0" << ": l=" << stats[1][0].l
-        //              << "  u=" << stats[1][0].u
-        //              << "  f=" << stats[1][0].f
-        //              << "  d=" << stats[1][0].d << "\n"
-        //           << "1.1" << ": l=" << stats[1][1].l
-        //              << "  u=" << stats[1][1].u
-        //              << "  f=" << stats[1][1].f
-        //              << "  d=" << stats[1][1].d << "\n"
-        //           << "1.2" << ": l=" << stats[1][2].l
-        //              << "  u=" << stats[1][2].u
-        //              << "  f=" << stats[1][2].f
-        //              << "  d=" << stats[1][2].d << "\n";
+                       << "  d=" << stats[0][2].d << "\n"
+                     << "0.3" << ": l=" << stats[0][3].l
+                        << "  u=" << stats[0][3].u
+                        << "  f=" << stats[0][3].f
+                        << "  d=" << stats[0][3].d << "\n";
+        std::cout   << "\nAfter 1\n"
+                  << "1.0" << ": l=" << stats[1][0].l
+                     << "  u=" << stats[1][0].u
+                     << "  f=" << stats[1][0].f
+                     << "  d=" << stats[1][0].d << "\n"
+                  << "1.1" << ": l=" << stats[1][1].l
+                     << "  u=" << stats[1][1].u
+                     << "  f=" << stats[1][1].f
+                     << "  d=" << stats[1][1].d << "\n"
+                  << "1.2" << ": l=" << stats[1][2].l
+                     << "  u=" << stats[1][2].u
+                     << "  f=" << stats[1][2].f
+                     << "  d=" << stats[1][2].d << "\n";
 
     deleteStats();
     unMapAllData(r, relationsSize);
