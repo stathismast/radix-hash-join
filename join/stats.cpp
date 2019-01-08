@@ -74,8 +74,8 @@ void equalFilterStats(uint64_t rel, uint64_t col, uint64_t k){
     for(uint64_t i=0; i<r[rel].cols; i++){
         if(i == col) continue;
 
-        uint64_t dc = stats[rel][i].d;
-        uint64_t fc = stats[rel][i].f;
+        double dc = stats[rel][i].d;
+        double fc = stats[rel][i].f;
         // Check if dc or f are equal to 0 and act accoridingly
         // This way we can avoid dividing by 0
         if(dc == 0){
@@ -131,8 +131,8 @@ void lessFilterStats(uint64_t rel, uint64_t col, uint64_t k) {
     for(uint64_t i=0; i<r[rel].cols; i++){
         if(i == col) continue;
 
-        uint64_t dc = stats[rel][i].d;
-        uint64_t fc = stats[rel][i].f;
+        double dc = stats[rel][i].d;
+        double fc = stats[rel][i].f;
         // Check if dc or f are equal to 0 and act accoridingly
         // This way we can avoid dividing by 0
         if(dc == 0){
@@ -186,8 +186,8 @@ void greaterFilterStats(uint64_t rel, uint64_t col, uint64_t k) {
     for(uint64_t i=0; i<r[rel].cols; i++){
         if(i == col) continue;
 
-        uint64_t dc = stats[rel][i].d;
-        uint64_t fc = stats[rel][i].f;
+        double dc = stats[rel][i].d;
+        double fc = stats[rel][i].f;
         // Check if dc or f are equal to 0 and act accoridingly
         // This way we can avoid dividing by 0
         if(dc == 0){
@@ -244,8 +244,8 @@ void selfJoinStats(uint64_t rel, uint64_t colA, uint64_t colB) {
     for(uint64_t i=0; i<r[rel].cols; i++){
         if(i == colA || i == colB) continue;
 
-        uint64_t dc = stats[rel][i].d;
-        uint64_t fc = stats[rel][i].f;
+        double dc = stats[rel][i].d;
+        double fc = stats[rel][i].f;
         // Check if dc or f are equal to 0 and act accoridingly
         // This way we can avoid dividing by 0
         if(dc == 0){
@@ -298,8 +298,8 @@ void joinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB) {
     for(uint64_t i=0; i<r[relA].cols; i++){
         if(i == colA) continue;
 
-        uint64_t dc = stats[relA][i].d;
-        uint64_t fc = stats[relA][i].f;
+        double dc = stats[relA][i].d;
+        double fc = stats[relA][i].f;
         // Check if dc or f are equal to 0 and act accoridingly
         // This way we can avoid dividing by 0
         if(dc == 0){
@@ -316,11 +316,12 @@ void joinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB) {
     for(uint64_t i=0; i<r[relB].cols; i++){
         if(i == colB) continue;
 
-        uint64_t dc = stats[relB][i].d;
-        uint64_t fc = stats[relB][i].f;
+        double dc = stats[relB][i].d;
+        double fc = stats[relB][i].f;
         // Check if dc or f are equal to 0 and act accoridingly
         // This way we can avoid dividing by 0
         if(dc == 0){
+            std::cout << "000:" << relB << "." << i << ": " << dc << '\n';
             stats[relB][i].d = 0;
             stats[relB][i].f = 0;
         } else {
