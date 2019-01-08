@@ -5,11 +5,11 @@
 #include "parse.hpp"
 #include "stats.hpp"
 #include <unordered_map>
-// #include <unordered_map>
+#include <vector>
 
 extern Stats ** stats;
 
-typedef std::unordered_map<std::string, double> hashTable;
+// typedef std::unordered_map<std::string, double> hashTable;
 
 // uint64_t * queryRelations;
 
@@ -110,12 +110,60 @@ void reOrderPredicates(QueryInfo * queryInfo){
     delete[] vIntermediate;
 }
 
+void createRelationsSet(QueryInfo* queryInfo) {
+    uint64_t * relations = queryInfo->relations;
+    uint64_t count = queryInfo->relationsCount;
+
+    uint64_t fact = 1;
+    for (size_t i = 1; i <= count; i++) {
+        fact *= i;
+    }
+    std::cout << "fact = " << fact << '\n';
+    std::vector<std::string> relationsSet;
+    relationsSet.reserve(fact + count);
+    std::cout << "size = " << relationsSet.size() << '\n';
+    // relationsSet.insert(beg, 0 ,std::to_string(1));
+    // beg = relationsSet.begin();
+    // relationsSet.insert(beg, 1, std::to_string(2));
+    // relationsSet.push_back(std::to_string(1));
+    // relationsSet.push_back(std::to_string(2));
+
+
+    // relationsSet.insert(beg, std::to_string(relations[0]));
+    // int offs = 0;
+    for (size_t i = 0; i < count; i++) {
+        std::cout << "relations[" << i << "] = " << relations[i] << '\n';
+        relationsSet.push_back(std::to_string(relations[i]));
+    }
+
+    uint64_t offs = count;
+    for (auto it = relationsSet.begin(); it != relationsSet.end(); it++) {
+        if (offs == fact + count)
+            break;
+        for (size_t j = 0; j < count; j++) {
+            std::string jStr = std::to_string(relations[j]);
+            if (jStr != *it) {
+                auto y = *it + jStr;
+                relationsSet.push_back(y);
+                offs++;
+            }
+        }
+    }
+
+    std::cout << "Vector" << '\n';
+    for (auto it = relationsSet.begin(); it != relationsSet.end(); it++) {
+        std::cout << "  " << *it << '\n';
+    }
+    std::cout << '\n';
+}
+
+
+
 void joinEnumeration(QueryInfo * queryInfo) {
     Predicate * predicates  = queryInfo->predicates;
     uint64_t count = queryInfo->predicatesCount;
 
     if(count == 0) return;
-
 
     // calculate stats for filters and self joins
     for (size_t i = 0; i < count; i++) {
@@ -135,9 +183,10 @@ void joinEnumeration(QueryInfo * queryInfo) {
         }
     }
 
-    // calculate stats for joins
-    hashTable bestTree;
+    // hashTable bestTree;
+    std::unordered_map<std::string, double> bestTree;
 
+    // initialize costs for single relations
     for (size_t i = 0; i < queryInfo->relationsCount; i++) {
         auto s = std::to_string(queryInfo->relations[i]);
         // bestTree.insert(std::pair<std::string,double>(s, stats[i][0].d));
@@ -148,6 +197,9 @@ void joinEnumeration(QueryInfo * queryInfo) {
     for ( auto& it: bestTree)
         std::cout << " " << it.first << ":" << it.second << std::endl;
     std::cout << std::endl;
+
+    // calculate stats for joins
+    // createRelationsSet(queryInfo);
 
 }
 

@@ -13,19 +13,10 @@ extern uint64_t * psums[4];
 
 // Intermediate IR;
 
-void printStats(uint64_t rel) {
-    for (size_t i = 0; i < r[rel].cols; i++) {
-        std::cout << rel << "." << i
-                    << ": l=" << stats[rel][i].l
-                    << "  u=" << stats[rel][i].u
-                    << "  f=" << stats[rel][i].f
-                    << "  d=" << stats[rel][i].d << "\n";
-    }
-}
-
 void executeQueries() {
     char * line = NULL;
     size_t s = 0;
+
     while (getline(&line, &s, stdin) > 0) {
          if(ignoreLine(line)){
              continue;
@@ -39,7 +30,7 @@ void executeQueries() {
 
         initializeStats();
         QueryInfo * queryInfo = parseInput(line);
-        joinEnumeration(queryInfo);
+        // joinEnumeration(queryInfo);
         std::cout << '\n';
 
         for (size_t i = 0; i < queryInfo->relationsCount; i++) {
@@ -59,7 +50,7 @@ void executeQueries() {
         IR->length = 0;
 
         for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
-            execute(&queryInfo->predicates[i], queryInfo->relations, IR);
+            // execute(&queryInfo->predicates[i], queryInfo->relations, IR);
         }
 
         calculateSums(queryInfo, IR);
@@ -68,7 +59,6 @@ void executeQueries() {
         // printResult(IR->results, IR->relCount);
 
         deleteIntermediate(IR);
-
 
         deleteQueryInfo(queryInfo);
         // free(line);
@@ -100,7 +90,21 @@ int main(void){
     // printStats(0);
     // std::cout << '\n';
     // printStats(1);
-    // joinStats(0,3,1,0);
+    // std::cout << '\n';
+    // std::cout << '\n';
+    std::cout << "0 JOIN 1" << '\n';
+    joinStats(0,2,1,0);
+    // std::cout << "\n\nAfter\n";
+    // printStats(0);
+    // std::cout << '\n';
+    // printStats(1);
+
+    executeQueries();
+
+    std::cout << '\n';
+    std::cout << '\n';
+    std::cout << "1 JOIN 0" << '\n';
+    joinStats(1,0,0,2);
     // std::cout << "\n\nAfter\n";
     // printStats(0);
     // std::cout << '\n';

@@ -102,6 +102,8 @@ void lessFilterStats(uint64_t rel, uint64_t col, uint64_t k) {
     double f = stats[rel][col].f;
     double d = stats[rel][col].d;
 
+    std::cout << rel << "." << col << " < " << k << '\n';
+
     Stats newStats;
     // The lowest value after the filter execution will still be the same and
     // the highest will be k
@@ -157,6 +159,7 @@ void greaterFilterStats(uint64_t rel, uint64_t col, uint64_t k) {
     double f = stats[rel][col].f;
     double d = stats[rel][col].d;
 
+    std::cout << rel << "." << col << " > " << k << '\n';
     Stats newStats;
     // The lowest value after the filter execution will still be the same and
     // the highest will be k
@@ -265,6 +268,16 @@ void selfJoinStats(uint64_t rel, uint64_t colA, uint64_t colB) {
 
 }
 
+void printStats(uint64_t rel) {
+    for (size_t i = 0; i < r[rel].cols; i++) {
+        std::cout << rel << "." << i
+                    << ": l=" << stats[rel][i].l
+                    << "  u=" << stats[rel][i].u
+                    << "  f=" << stats[rel][i].f
+                    << "  d=" << stats[rel][i].d << "\n";
+    }
+}
+
 void joinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB) {
     Stats newStatsA;
     Stats newStatsB;
@@ -273,12 +286,19 @@ void joinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB) {
 
     double newL = max(stats[relA][colA].l, stats[relB][colB].l);
     double newU = min(stats[relA][colA].u, stats[relB][colB].u);
+    std::cout << "NewL = " << newL << " and newU = " << newU << '\n';
     // Use filter in each column so they will have same lower and upper value
     // and all other stats will be upadated accordingly
     greaterFilterStats(relA, colA, newL);
     lessFilterStats(relA, colA, newU);
     greaterFilterStats(relB, colB, newL);
     lessFilterStats(relB, colB, newU);
+
+    std::cout << "After filter A" << '\n';
+    printStats(relA);
+
+    std::cout << "After filter B" << '\n';
+    printStats(relB);
 
     newStatsA.l = newStatsB.l = newL;
     newStatsA.u = newStatsB.u = newU;

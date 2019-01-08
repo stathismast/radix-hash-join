@@ -10,6 +10,8 @@ typedef struct Stats{
     double d;
 } Stats;
 
+void printStats(uint64_t rel);
+
 void createStats();
 void deleteStats();
 void initializeStats();
