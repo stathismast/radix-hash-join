@@ -4,7 +4,7 @@ OBJS = main.o ./join/memmap.o ./join/stringList.o \
 		./join/intermediate.o ./join/predicates.o \
 		./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
 		./singleJoin/structs.o ./singleJoin/result.o ./threads/jobs.o \
-		./threads/scheduler.o ./threads/threads.o
+		./threads/scheduler.o ./threads/threads.o ./join/optimizer.o
 SERIAL_OBJS = ./singleJoin/h1.o ./singleJoin/h2.o ./singleJoin/join.o \
 		./singleJoin/structs.o ./singleJoin/result.o ./threads/jobs.o\
 		./threads/scheduler.o ./threads/threads.o ./testMain/serialJoin.o
@@ -130,6 +130,9 @@ parserTest:$(PARSER_OBJS)
 
 ./threads/threads.o:./threads/threads.cpp
 	$(CC) -c ./threads/threads.cpp $(FLAGS) -o ./threads/threads.o
+
+./join/optimizer.o:./join/optimizer.cpp
+	$(CC) -c ./join/optimizer.cpp $(FLAGS) -o ./join/optimizer.o
 
 clean:
 	rm -rf ./*/*.o *.o ./*/*/*.o a.out main randomJoin serialJoin testParse \

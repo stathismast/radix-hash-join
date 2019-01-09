@@ -2,6 +2,7 @@
 #include "join/inputManager.hpp" //for ignoreLine
 #include "join/stats.hpp"
 #include "threads/scheduler.hpp"
+#include "join/optimizer.hpp"
 
 //global
 Relation * r;
@@ -33,11 +34,6 @@ void executeQueries() {
         // joinEnumeration(queryInfo);
         std::cout << '\n';
 
-        for (size_t i = 0; i < queryInfo->relationsCount; i++) {
-            printStats(queryInfo->relations[i]);
-            std::cout << '\n';
-        }
-
         // std::cout << "RE-ORDERED PREDICATES" << std::endl;
         // for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
         //     std::cout << "\t";
@@ -50,7 +46,7 @@ void executeQueries() {
         IR->length = 0;
 
         for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
-            // execute(&queryInfo->predicates[i], queryInfo->relations, IR);
+            execute(&queryInfo->predicates[i], queryInfo->relations, IR);
         }
 
         calculateSums(queryInfo, IR);
@@ -86,29 +82,21 @@ int main(void){
     //execute queries etc
     executeQueries();
 
+    // initializeStats();
     // std::cout << "\n\nBefore\n";
     // printStats(0);
     // std::cout << '\n';
     // printStats(1);
     // std::cout << '\n';
     // std::cout << '\n';
-    std::cout << "0 JOIN 1" << '\n';
-    joinStats(0,2,1,0);
+    // std::cout << "0 JOIN 1" << '\n';
+    // joinStats(0,2,1,0);
     // std::cout << "\n\nAfter\n";
     // printStats(0);
     // std::cout << '\n';
     // printStats(1);
 
-    executeQueries();
 
-    std::cout << '\n';
-    std::cout << '\n';
-    std::cout << "1 JOIN 0" << '\n';
-    joinStats(1,0,0,2);
-    // std::cout << "\n\nAfter\n";
-    // printStats(0);
-    // std::cout << '\n';
-    // printStats(1);
     // if (stats[1][0].f == 0) {
     //     std::cout << "uwu" << '\n';
     // }

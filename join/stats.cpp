@@ -102,8 +102,6 @@ void lessFilterStats(uint64_t rel, uint64_t col, uint64_t k) {
     double f = stats[rel][col].f;
     double d = stats[rel][col].d;
 
-    std::cout << rel << "." << col << " < " << k << '\n';
-
     Stats newStats;
     // The lowest value after the filter execution will still be the same and
     // the highest will be k
@@ -124,8 +122,8 @@ void lessFilterStats(uint64_t rel, uint64_t col, uint64_t k) {
         newStats.f = 0;
     }
     else {
-        newStats.d = d*(k-l)/(u-l);
-        newStats.f = f*(k-l)/(u-l);
+        newStats.d = (d*(k-l))/(u-l);
+        newStats.f = (f*(k-l))/(u-l);
     }
 
     updateStats(rel,col,newStats);
@@ -159,7 +157,6 @@ void greaterFilterStats(uint64_t rel, uint64_t col, uint64_t k) {
     double f = stats[rel][col].f;
     double d = stats[rel][col].d;
 
-    std::cout << rel << "." << col << " > " << k << '\n';
     Stats newStats;
     // The lowest value after the filter execution will still be the same and
     // the highest will be k
@@ -180,8 +177,8 @@ void greaterFilterStats(uint64_t rel, uint64_t col, uint64_t k) {
         newStats.f = 0;
     }
     else {
-        newStats.d = d*(u-k)/(u-l);
-        newStats.f = f*(u-k)/(u-l);
+        newStats.d = (d*(u-k))/(u-l);
+        newStats.f = (f*(u-k))/(u-l);
     }
 
     updateStats(rel,col,newStats);
@@ -230,7 +227,7 @@ void selfJoinStats(uint64_t rel, uint64_t colA, uint64_t colB) {
     else {
         newStatsA.l = newStatsB.l = max(stats[rel][colA].l, stats[rel][colB].l);
         newStatsA.u = newStatsB.u = min(stats[rel][colA].u, stats[rel][colB].u);
-        double n = newStatsA.u - newStatsA.l +1;
+        double n = newStatsA.u - newStatsA.l + 1;
         if (n == 0) {
             // avoid divison by zero (not sure if it's correc to set f,d to 0)
             newStatsA.f = newStatsB.f = 0;
@@ -286,7 +283,6 @@ void joinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB) {
 
     double newL = max(stats[relA][colA].l, stats[relB][colB].l);
     double newU = min(stats[relA][colA].u, stats[relB][colB].u);
-    std::cout << "NewL = " << newL << " and newU = " << newU << '\n';
     // Use filter in each column so they will have same lower and upper value
     // and all other stats will be upadated accordingly
     greaterFilterStats(relA, colA, newL);
@@ -294,22 +290,16 @@ void joinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB) {
     greaterFilterStats(relB, colB, newL);
     lessFilterStats(relB, colB, newU);
 
-    std::cout << "After filter A" << '\n';
-    printStats(relA);
-
-    std::cout << "After filter B" << '\n';
-    printStats(relB);
-
     newStatsA.l = newStatsB.l = newL;
     newStatsA.u = newStatsB.u = newU;
-    double n = newStatsA.u - newStatsA.l +1;
+    double n = newU - newL + 1;
     // std::cout << "n = " << n << '\n';
     if (n == 0) {
         newStatsA.f = newStatsA.d = newStatsB.f = newStatsB.d = 0;
     }
     else {
-        newStatsA.f = newStatsB.f = stats[relA][colA].f*stats[relB][colB].f/n;
-        newStatsA.d = newStatsB.d = stats[relA][colA].d*stats[relB][colB].d/n;
+        newStatsA.f = newStatsB.f = (stats[relA][colA].f*stats[relB][colB].f)/n;
+        newStatsA.d = newStatsB.d = (stats[relA][colA].d*stats[relB][colB].d)/n;
     }
 
     updateStats(relA,colA,newStatsA);
@@ -341,7 +331,6 @@ void joinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB) {
         // Check if dc or f are equal to 0 and act accoridingly
         // This way we can avoid dividing by 0
         if(dc == 0){
-            std::cout << "000:" << relB << "." << i << ": " << dc << '\n';
             stats[relB][i].d = 0;
             stats[relB][i].f = 0;
         } else {

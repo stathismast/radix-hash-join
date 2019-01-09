@@ -6,6 +6,9 @@
 #include "stats.hpp"
 #include <unordered_map>
 #include <vector>
+#include <string>
+#include <cstdlib>
+#include "optimizer.hpp"
 
 extern Stats ** stats;
 
@@ -13,11 +16,11 @@ extern Stats ** stats;
 
 // uint64_t * queryRelations;
 
-void swapPredicates(Predicate * A, Predicate * B){
-    Predicate temp = *A;
-    *A = *B;
-    *B = temp;
-}
+// void swapPredicates(Predicate * A, Predicate * B){
+//     Predicate temp = *A;
+//     *A = *B;
+//     *B = temp;
+// }
 
 // determine whether or not a given value is in the given uint64_t array
 bool inArray(uint64_t value, uint64_t * array, uint64_t arrayLength){
@@ -28,180 +31,88 @@ bool inArray(uint64_t value, uint64_t * array, uint64_t arrayLength){
 
 }
 
-void reOrderPredicates(QueryInfo * queryInfo){
-    Predicate * predicates  = queryInfo->predicates;
-    uint64_t count = queryInfo->predicatesCount;
+// void reOrderPredicates(QueryInfo * queryInfo){
+//     Predicate * predicates  = queryInfo->predicates;
+//     uint64_t count = queryInfo->predicatesCount;
+//
+//     if(count == 0) return;
+//
+//     uint64_t * vIntermediate = new uint64_t[queryInfo->relationsCount];
+//     uint64_t viStart = 0;
+//     uint64_t viEnd = 0;
+//
+//     uint64_t orderedCount = 0;
+//
+//     // Find the filter and bring it at the first position
+//     for(uint64_t i=0; i<count; i++){
+//         if(predicates[i].predicateType == FILTER){
+//             swapPredicates(&predicates[i], &predicates[orderedCount]);
+//             vIntermediate[viEnd] = predicates[orderedCount].relationA;
+//             viEnd++;
+//             orderedCount++;
+//         }
+//     }
+//
+//     while(viStart != viEnd){
+//
+//         // Prioritize self join executions
+//         for(uint64_t i=orderedCount; i<count; i++){
+//             // If the next relation in intermediate is included in a self join
+//             if(vIntermediate[viStart] == predicates[i].relationA &&
+//                 predicates[i].predicateType == SELFJOIN){
+//
+//                 // Bring that predicate up to the next spot
+//                 swapPredicates(&predicates[i], &predicates[orderedCount]);
+//
+//                 // Increase the number of ordered relations
+//                 orderedCount++;
+//             }
+//         }
+//
+//         for(uint64_t i=orderedCount; i<count; i++){
+//
+//             // If the next relation in intermediate is included in a join
+//             if(vIntermediate[viStart] == predicates[i].relationA){
+//
+//                 // Bring that predicate up to the next spot
+//                 swapPredicates(&predicates[i], &predicates[orderedCount]);
+//
+//                 // Add new relation into vIntermediate if it isn't already there
+//                 if(predicates[i].predicateType == JOIN &&
+//                    !inArray(predicates[orderedCount].relationB, vIntermediate, viEnd)){
+//                         vIntermediate[viEnd] = predicates[orderedCount].relationB;
+//                         viEnd++;
+//                 }
+//
+//                 // Increase the number of ordered relations
+//                 orderedCount++;
+//             }
+//
+//             // If this is certainly not a self join
+//             // And if the next relation in intermediate is included in a join
+//             if(predicates[i].predicateType == JOIN &&
+//                vIntermediate[viStart] == predicates[i].relationB){
+//
+//                 // Bring that predicate up to the next spot
+//                 swapPredicates(&predicates[i], &predicates[orderedCount]);
+//
+//                 // Add new relation into vIntermediate if it isn't already there
+//                 if(!inArray(predicates[orderedCount].relationA, vIntermediate, viEnd)){
+//                         vIntermediate[viEnd] = predicates[orderedCount].relationA;
+//                         viEnd++;
+//                 }
+//
+//                 // Increase the number of ordered relations
+//                 orderedCount++;
+//
+//             }
+//         }
+//         viStart++;
+//     }
+//
+//     delete[] vIntermediate;
+// }
 
-    if(count == 0) return;
-
-    uint64_t * vIntermediate = new uint64_t[queryInfo->relationsCount];
-    uint64_t viStart = 0;
-    uint64_t viEnd = 0;
-
-    uint64_t orderedCount = 0;
-
-    // Find the filter and bring it at the first position
-    for(uint64_t i=0; i<count; i++){
-        if(predicates[i].predicateType == FILTER){
-            swapPredicates(&predicates[i], &predicates[orderedCount]);
-            vIntermediate[viEnd] = predicates[orderedCount].relationA;
-            viEnd++;
-            orderedCount++;
-        }
-    }
-
-    while(viStart != viEnd){
-
-        // Prioritize self join executions
-        for(uint64_t i=orderedCount; i<count; i++){
-            // If the next relation in intermediate is included in a self join
-            if(vIntermediate[viStart] == predicates[i].relationA &&
-                predicates[i].predicateType == SELFJOIN){
-
-                // Bring that predicate up to the next spot
-                swapPredicates(&predicates[i], &predicates[orderedCount]);
-
-                // Increase the number of ordered relations
-                orderedCount++;
-            }
-        }
-
-        for(uint64_t i=orderedCount; i<count; i++){
-
-            // If the next relation in intermediate is included in a join
-            if(vIntermediate[viStart] == predicates[i].relationA){
-
-                // Bring that predicate up to the next spot
-                swapPredicates(&predicates[i], &predicates[orderedCount]);
-
-                // Add new relation into vIntermediate if it isn't already there
-                if(predicates[i].predicateType == JOIN &&
-                   !inArray(predicates[orderedCount].relationB, vIntermediate, viEnd)){
-                        vIntermediate[viEnd] = predicates[orderedCount].relationB;
-                        viEnd++;
-                }
-
-                // Increase the number of ordered relations
-                orderedCount++;
-            }
-
-            // If this is certainly not a self join
-            // And if the next relation in intermediate is included in a join
-            if(predicates[i].predicateType == JOIN &&
-               vIntermediate[viStart] == predicates[i].relationB){
-
-                // Bring that predicate up to the next spot
-                swapPredicates(&predicates[i], &predicates[orderedCount]);
-
-                // Add new relation into vIntermediate if it isn't already there
-                if(!inArray(predicates[orderedCount].relationA, vIntermediate, viEnd)){
-                        vIntermediate[viEnd] = predicates[orderedCount].relationA;
-                        viEnd++;
-                }
-
-                // Increase the number of ordered relations
-                orderedCount++;
-
-            }
-        }
-        viStart++;
-    }
-
-    delete[] vIntermediate;
-}
-
-void createRelationsSet(QueryInfo* queryInfo) {
-    uint64_t * relations = queryInfo->relations;
-    uint64_t count = queryInfo->relationsCount;
-
-    uint64_t fact = 1;
-    for (size_t i = 1; i <= count; i++) {
-        fact *= i;
-    }
-    std::cout << "fact = " << fact << '\n';
-    std::vector<std::string> relationsSet;
-    relationsSet.reserve(fact + count);
-    std::cout << "size = " << relationsSet.size() << '\n';
-    // relationsSet.insert(beg, 0 ,std::to_string(1));
-    // beg = relationsSet.begin();
-    // relationsSet.insert(beg, 1, std::to_string(2));
-    // relationsSet.push_back(std::to_string(1));
-    // relationsSet.push_back(std::to_string(2));
-
-
-    // relationsSet.insert(beg, std::to_string(relations[0]));
-    // int offs = 0;
-    for (size_t i = 0; i < count; i++) {
-        std::cout << "relations[" << i << "] = " << relations[i] << '\n';
-        relationsSet.push_back(std::to_string(relations[i]));
-    }
-
-    uint64_t offs = count;
-    for (auto it = relationsSet.begin(); it != relationsSet.end(); it++) {
-        if (offs == fact + count)
-            break;
-        for (size_t j = 0; j < count; j++) {
-            std::string jStr = std::to_string(relations[j]);
-            if (jStr != *it) {
-                auto y = *it + jStr;
-                relationsSet.push_back(y);
-                offs++;
-            }
-        }
-    }
-
-    std::cout << "Vector" << '\n';
-    for (auto it = relationsSet.begin(); it != relationsSet.end(); it++) {
-        std::cout << "  " << *it << '\n';
-    }
-    std::cout << '\n';
-}
-
-
-
-void joinEnumeration(QueryInfo * queryInfo) {
-    Predicate * predicates  = queryInfo->predicates;
-    uint64_t count = queryInfo->predicatesCount;
-
-    if(count == 0) return;
-
-    // calculate stats for filters and self joins
-    for (size_t i = 0; i < count; i++) {
-        if (predicates[i].predicateType == FILTER) {
-            if (predicates[i].op == '=') {
-                equalFilterStats(predicates[i].relationA, \
-                        predicates[i].columnA, predicates[i].value);
-            } else if (predicates[i].op == '<') {
-                lessFilterStats(predicates[i].relationA, \
-                        predicates[i].columnA, predicates[i].value);
-            } else {
-                greaterFilterStats(predicates[i].relationA, \
-                        predicates[i].columnA, predicates[i].value);
-            }
-        } else if (predicates[i].predicateType == SELFJOIN) {
-            selfJoinStats(predicates[i].relationA, predicates[i].columnA, predicates[i].columnB);
-        }
-    }
-
-    // hashTable bestTree;
-    std::unordered_map<std::string, double> bestTree;
-
-    // initialize costs for single relations
-    for (size_t i = 0; i < queryInfo->relationsCount; i++) {
-        auto s = std::to_string(queryInfo->relations[i]);
-        // bestTree.insert(std::pair<std::string,double>(s, stats[i][0].d));
-        bestTree[s] = stats[i][0].d;
-    }
-
-    // for ( auto it = bestTree.begin(); it != bestTree.end(); it++ )
-    for ( auto& it: bestTree)
-        std::cout << " " << it.first << ":" << it.second << std::endl;
-    std::cout << std::endl;
-
-    // calculate stats for joins
-    // createRelationsSet(queryInfo);
-
-}
 
 QueryInfo * parseInput(char * query) {
     QueryInfo * queryInfo = new QueryInfo;
@@ -231,7 +142,7 @@ QueryInfo * parseInput(char * query) {
 
 
     // reOrderPredicates(queryInfo);
-    // joinEnumeration(queryInfo);
+    joinEnumeration(queryInfo);
     return queryInfo;
 }
 
