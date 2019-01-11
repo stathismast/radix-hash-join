@@ -26,6 +26,8 @@ public:
     void updateJoinTree(double eval);
     std::string getPredicateStr();
     double getCost();
+    Predicate * getPredicates();
+    uint64_t getPredicatesCount();
     virtual ~JoinTree ();
 };
 

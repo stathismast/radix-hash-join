@@ -23,40 +23,43 @@ JoinTree::JoinTree (uint64_t rel, QueryInfo * queryInfo) {
     this->predicateStr = std::to_string(rel);
     this->cost = stats[rel][0].d;
     this->set = {rel};
+    this->lastPredicate = 0;
 
     this->predicates = queryInfo->predicates;
     this->predicatesCount = queryInfo->predicatesCount;
+
+    this->lastPredicate = reorderFilters(rel);
 }
 
-JoinTree::JoinTree (JoinTree * n, uint64_t rel, QueryInfo * queryInfo) {
-    this->predicateStr = n->getPredicateStr() + std::to_string(rel);
-    this->predicates = n->predicates;
+JoinTree::JoinTree (JoinTree * jt, uint64_t rel, QueryInfo * queryInfo) {
+    this->predicateStr = jt->getPredicateStr() + std::to_string(rel);
+    this->predicates = jt->predicates;
     this->predicatesCount = queryInfo->predicatesCount;
-    this->cost = 500;
+    this->cost = jt->cost;
 
     // if (n->predicateStr.length() != 1) {
     //     this->lastPredicate = n->lastPredicate;
     //     reorderFilters(atoi(&(n->predicateStr[0])));
     // }
-    // this->lastPredicate = reorderFilters(rel);
+    this->lastPredicate = reorderFilters(rel);
 
-    // uint64_t orderedCount = 0;
-    // std::string str = n->predicateStr;
-    // for (size_t i = 0; i < this->predicatesCount; i++) {
-    //     if (predicates[i].predicateType == JOIN) {
-    //         uint64_t relA = predicates[i].relationA;
-    //         uint64_t relB = predicates[i].relationB;
-    //         size_t f1 = str.find(std::to_string(relA));
-    //         size_t f2 = str.find(std::to_string(relB));
-    //         if ( (f1!=string::npos || f2!=string::npos) && (rel == relA || rel == relB)) {
-    //             Stats newStats = evalJoinStats(relA, predicates[i].columnA, relB, predicates[i].columnB);
-    //             this->cost = newStats.f;
-    //             // reorderJoins(relA, relB);
-    //             swapPredicates(&(this->predicates[i]), &(this->predicates[orderedCount]));
-    //             orderedCount++;
-    //         }
-    //     }
-    // }
+    uint64_t orderedCount = this->lastPredicate;
+    std::string str = jt->predicateStr;
+    for (size_t i = 0; i < this->predicatesCount; i++) {
+        if (predicates[i].predicateType == JOIN) {
+            uint64_t relA = predicates[i].relationA;
+            uint64_t relB = predicates[i].relationB;
+            size_t f1 = str.find(std::to_string(relA));
+            size_t f2 = str.find(std::to_string(relB));
+            if ( (f1!=string::npos || f2!=string::npos) && (rel == relA || rel == relB)) {
+                Stats newStats = evalJoinStats(relA, predicates[i].columnA, relB, predicates[i].columnB);
+                this->cost += newStats.f;
+                // reorderJoins(relA, relB);
+                swapPredicates(&(this->predicates[i]), &(this->predicates[orderedCount]));
+                orderedCount++;
+            }
+        }
+    }
 
 }
 
@@ -64,7 +67,7 @@ uint64_t JoinTree::reorderFilters(uint64_t rel) {
     // Predicate * predicates = this->predicates;
     // uint64_t count = queryInfo->predicatesCount;
 
-    uint64_t orderedCount = 0;
+    uint64_t orderedCount = this->lastPredicate;
     for (size_t i = 0; i < predicatesCount; i++) {
         if (predicates[i].predicateType == FILTER || predicates[i].predicateType == SELFJOIN) {
             if (predicates[i].relationA == rel) {
@@ -73,13 +76,17 @@ uint64_t JoinTree::reorderFilters(uint64_t rel) {
             }
         }
     }
-    this->predicatesCount = orderedCount;
+    this->lastPredicate = orderedCount;
     return orderedCount;
 }
 
 string JoinTree::getPredicateStr() { return predicateStr; }
 
 double JoinTree::getCost() { return cost; }
+
+Predicate * JoinTree::getPredicates() { return predicates; }
+
+uint64_t JoinTree::getPredicatesCount() { return predicatesCount; }
 
 void JoinTree::updateJoinTree(double eval) {
     this->cost = eval;
@@ -253,23 +260,25 @@ void joinEnumeration(QueryInfo* queryInfo) {
                 continue;
             }
             // std::cout << " and " << rel << " are connected" << '\n';
+            std::string curStr = vectorToString(cur);
+            std::cout << "curStr = " << curStr << '\n';
             std::vector<uint64_t> set = makeSet(cur, rel);
             std::string str = vectorToString(set);
             // std::cout << "Set = " << str << '\n';
             JoinTree * best = bestTree[str];
             if (best == NULL) {
-                // std::cout << "No tree for " << str << '\n';
-                JoinTree * jt = new JoinTree(cur, rel, queryInfo);
-                bestTree[str] = jt;
+                std::cout << "No tree for " << str << '\n';
+                // JoinTree * jt = new JoinTree(curTree, rel, queryInfo);
+                // bestTree[str] = jt;
             } else {
-                // std::cout << "Tree for " << str << '\n';
+                std::cout << "Tree for " << str << '\n';
                 // eval cost and check if it's better than the cost of best
             }
         }
     }
 
-    std::cout << "Hash:" << '\n';
-    for (auto x = bestTree.begin(); x!=  bestTree.end(); x++) {
-        std::cout << x->first << ":  " << x->second->getPredicateStr() << ", " << x->second->getCost() << '\n';
-    }
+    // std::cout << "Hash:" << '\n';
+    // for (auto x = bestTree.begin(); x!=  bestTree.end(); x++) {
+    //     std::cout << x->first << ":  " << x->second->getPredicateStr() << ", " << x->second->getCost() << '\n';
+    // }
 }
