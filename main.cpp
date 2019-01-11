@@ -83,6 +83,11 @@ int main(void){
     executeQueries();
 
     // initializeStats();
+
+    // Stats newStats = evalJoinStats(0,2,1,0);
+    // std::cout << "Evaluated = " << newStats.f << '\n';
+
+
     // std::cout << "\n\nBefore\n";
     // printStats(0);
     // std::cout << '\n';
@@ -90,7 +95,7 @@ int main(void){
     // std::cout << '\n';
     // std::cout << '\n';
     // std::cout << "0 JOIN 1" << '\n';
-    // joinStats(0,2,1,0);
+    // updateJoinStats(0,2,1,0);
     // std::cout << "\n\nAfter\n";
     // printStats(0);
     // std::cout << '\n';

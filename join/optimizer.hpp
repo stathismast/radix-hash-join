@@ -1,7 +1,7 @@
 #include <string>
 #include "predicates.hpp"
 
-class PredicateNode {
+class JoinTree {
 private:
     double cost;
     Predicate * predicates;
@@ -9,19 +9,21 @@ private:
     std::string predicateStr;
     uint64_t lastPredicate;
     uint64_t reorderFilters(uint64_t rel);
-    uint64_t reorderJoins();
+    uint64_t reorderJoins(uint64_t relA, uint64_t relB);
 
 public:
-    PredicateNode (std::string a, uint64_t b);
+    JoinTree (std::string a, uint64_t b);
     // constructor for the single relation nodes
-    PredicateNode (uint64_t rel, QueryInfo * queryInfo);
+    JoinTree (uint64_t rel, QueryInfo * queryInfo);
     // constructor for joins
-    PredicateNode (PredicateNode * n, uint64_t rel, QueryInfo * queryInfo);
+    JoinTree (JoinTree * n, uint64_t rel, QueryInfo * queryInfo);
+    // JoinTree (JoinTree * n, QueryInfo * queryInfo);
+    void updateJoinTree(double eval);
     std::string getPredicateStr();
     double getCost();
-    virtual ~PredicateNode ();
+    virtual ~JoinTree ();
 };
 
-
+void swapPredicates(Predicate * A, Predicate * B);
 void createRelationsSet(QueryInfo* queryInfo);
 void joinEnumeration(QueryInfo * queryInfo);

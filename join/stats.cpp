@@ -39,7 +39,7 @@ void initializeStats(){
     }
 }
 
-void equalFilterStats(uint64_t rel, uint64_t col, uint64_t k){
+void updateEqualFilterStats(uint64_t rel, uint64_t col, uint64_t k){
     double l = stats[rel][col].l;
     double u = stats[rel][col].u;
     double f = stats[rel][col].f;
@@ -70,6 +70,7 @@ void equalFilterStats(uint64_t rel, uint64_t col, uint64_t k){
         newStats.d = 1;
     }
 
+    updateStats(rel,col,newStats);
     // Update the stats of every other column of given relation
     for(uint64_t i=0; i<r[rel].cols; i++){
         if(i == col) continue;
@@ -92,11 +93,10 @@ void equalFilterStats(uint64_t rel, uint64_t col, uint64_t k){
             stats[rel][i].f = newStats.f;
         }
     }
-    updateStats(rel,col,newStats);
 }
 
 
-void lessFilterStats(uint64_t rel, uint64_t col, uint64_t k) {
+void updateLessFilterStats(uint64_t rel, uint64_t col, uint64_t k) {
     double l = stats[rel][col].l;
     double u = stats[rel][col].u;
     double f = stats[rel][col].f;
@@ -151,7 +151,7 @@ void lessFilterStats(uint64_t rel, uint64_t col, uint64_t k) {
     }
 }
 
-void greaterFilterStats(uint64_t rel, uint64_t col, uint64_t k) {
+void updateGreaterFilterStats(uint64_t rel, uint64_t col, uint64_t k) {
     double l = stats[rel][col].l;
     double u = stats[rel][col].u;
     double f = stats[rel][col].f;
@@ -206,7 +206,7 @@ void greaterFilterStats(uint64_t rel, uint64_t col, uint64_t k) {
     }
 }
 
-void selfJoinStats(uint64_t rel, uint64_t colA, uint64_t colB) {
+void updateSelfJoinStats(uint64_t rel, uint64_t colA, uint64_t colB) {
 
     if (colA == colB) {
         /* code */
@@ -265,17 +265,7 @@ void selfJoinStats(uint64_t rel, uint64_t colA, uint64_t colB) {
 
 }
 
-void printStats(uint64_t rel) {
-    for (size_t i = 0; i < r[rel].cols; i++) {
-        std::cout << rel << "." << i
-                    << ": l=" << stats[rel][i].l
-                    << "  u=" << stats[rel][i].u
-                    << "  f=" << stats[rel][i].f
-                    << "  d=" << stats[rel][i].d << "\n";
-    }
-}
-
-void joinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB) {
+void updateJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB) {
     Stats newStatsA;
     Stats newStatsB;
     double da = stats[relA][colA].d;
@@ -285,10 +275,10 @@ void joinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB) {
     double newU = min(stats[relA][colA].u, stats[relB][colB].u);
     // Use filter in each column so they will have same lower and upper value
     // and all other stats will be upadated accordingly
-    greaterFilterStats(relA, colA, newL);
-    lessFilterStats(relA, colA, newU);
-    greaterFilterStats(relB, colB, newL);
-    lessFilterStats(relB, colB, newU);
+    updateGreaterFilterStats(relA, colA, newL);
+    updateLessFilterStats(relA, colA, newU);
+    updateGreaterFilterStats(relB, colB, newL);
+    updateLessFilterStats(relB, colB, newU);
 
     newStatsA.l = newStatsB.l = newL;
     newStatsA.u = newStatsB.u = newU;
@@ -341,9 +331,203 @@ void joinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB) {
     }
 }
 
+
+Stats evalEqualFilterStats(uint64_t rel, uint64_t col, uint64_t k){
+    double l = stats[rel][col].l;
+    double u = stats[rel][col].u;
+    double f = stats[rel][col].f;
+    double d = stats[rel][col].d;
+
+    Stats newStats;
+    newStats.l = k;
+    newStats.u = k;
+
+    if(k < l || k > u){
+        // If k is not in the range [l,u]
+        newStats.f = 0;
+        newStats.d = 0;
+    }
+    else if(d == 0){
+        // Check if d is 0 to avoid dividing by 0 in the next block
+        newStats.f = 0;
+        newStats.d = 0;
+    }
+    else if(f == 0){
+        // Check if f is 0 meaning there are not entries
+        newStats.f = 0;
+        newStats.d = 0;
+    }
+    else{
+        // If k is in the range [l,u] and there is atleast one distinct value
+        newStats.f = f/d;
+        newStats.d = 1;
+    }
+
+    return newStats;
+}
+
+
+Stats evalLessFilterStats(uint64_t rel, uint64_t col, uint64_t k) {
+    double l = stats[rel][col].l;
+    double u = stats[rel][col].u;
+    double f = stats[rel][col].f;
+    double d = stats[rel][col].d;
+
+    Stats newStats;
+    // The lowest value after the filter execution will still be the same and
+    // the highest will be k
+    newStats.l = stats[rel][col].l;
+    if (k > u) {
+        k = u;
+    }
+    newStats.u = k;
+    if (k < l) {
+        // if filter value is lower than the lowest value there will be no results
+        newStats.d = 0;
+        newStats.f = 0;
+    }
+    else if (stats[rel][col].l == stats[rel][col].u) {
+        // check if u and l of current collumn are not equal to avoid division
+        // by zero
+        newStats.d = 0;
+        newStats.f = 0;
+    }
+    else {
+        newStats.d = (d*(k-l))/(u-l);
+        newStats.f = (f*(k-l))/(u-l);
+    }
+
+    return newStats;
+}
+
+Stats evalGreaterFilterStats(uint64_t rel, uint64_t col, uint64_t k) {
+    double l = stats[rel][col].l;
+    double u = stats[rel][col].u;
+    double f = stats[rel][col].f;
+    double d = stats[rel][col].d;
+
+    Stats newStats;
+    // The lowest value after the filter execution will still be the same and
+    // the highest will be k
+    if (k < l) {
+        k = l;
+    }
+    newStats.l = k;
+    newStats.u = stats[rel][col].u;
+    if (k > u) {
+        // if filter value is higher than the highest value there will be no results
+        newStats.d = 0;
+        newStats.f = 0;
+    }
+    else if (stats[rel][col].l == stats[rel][col].u) {
+        // check if u and l of current collumn are not equal to avoid division
+        // by zero
+        newStats.d = 0;
+        newStats.f = 0;
+    }
+    else {
+        newStats.d = (d*(u-k))/(u-l);
+        newStats.f = (f*(u-k))/(u-l);
+    }
+
+    return newStats;
+
+}
+
+Stats evalSelfJoinStats(uint64_t rel, uint64_t colA, uint64_t colB) {
+    Stats newStatsA;
+    Stats newStatsB;
+
+    if (colA == colB) {
+        /* code */
+        std::cout << "Corelation" << '\n';
+        // call proper function
+        return newStatsA;
+    }
+    double f = stats[rel][colA].f;
+    double d = stats[rel][colA].d;
+
+
+    if (stats[rel][colA].u < stats[rel][colB].l || stats[rel][colB].u < stats[rel][colA].l) {
+        // if the 2 columns have no common elemnts the result will be empty
+        newStatsA.l = newStatsA.u = newStatsA.d = newStatsA.f = 0;
+        newStatsB.l = newStatsB.u = newStatsB.d = newStatsB.f = 0;
+    }
+    else {
+        newStatsA.l = newStatsB.l = max(stats[rel][colA].l, stats[rel][colB].l);
+        newStatsA.u = newStatsB.u = min(stats[rel][colA].u, stats[rel][colB].u);
+        double n = newStatsA.u - newStatsA.l + 1;
+        if (n == 0) {
+            // avoid divison by zero (not sure if it's correc to set f,d to 0)
+            newStatsA.f = newStatsB.f = 0;
+        }
+        else {
+            newStatsA.f = newStatsB.f = f/n;
+        }
+        newStatsA.d = newStatsB.d = d * (1-pow((1-(newStatsA.f/f)), f/d));
+    }
+
+    return newStatsA;
+}
+
+Stats evalJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB) {
+    Stats newStatsA;
+    Stats newStatsB;
+
+    double newL = max(stats[relA][colA].l, stats[relB][colB].l);
+    double newU = min(stats[relA][colA].u, stats[relB][colB].u);
+    // Use filter in each column so they will have same lower and upper value
+    // and all other stats will be upadated accordingly
+    newStatsA = evalGreaterFilterStats(relA, colA, newL);
+    // evalLessFilterStats(relA, colA, newU);
+    if (newU < newStatsA.l) {
+        newStatsA.d = 0;
+    }
+    else if (newStatsA.l == newStatsA.u) {
+        newStatsA.d = 0;
+    } else {
+        newStatsA.d = (newStatsA.d*(newU - newStatsA.l))/(newStatsA.u - newStatsA.l);
+    }
+
+    newStatsB = evalGreaterFilterStats(relB, colB, newL);
+    // evalLessFilterStats(relB, colB, newU);
+    if (newU < newStatsB.l) {
+        newStatsB.f = 0;
+    }
+    else if (newStatsB.l == newStatsB.u) {
+        newStatsB.f = 0;
+    } else {
+        newStatsB.f = (newStatsB.f*(newU - newStatsB.l))/(newStatsB.u - newStatsB.l);
+    }
+
+    newStatsA.l = newStatsB.l = newL;
+    newStatsA.u = newStatsB.u = newU;
+    double n = newU - newL + 1;
+    // std::cout << "n = " << n << '\n';
+    if (n == 0) {
+        newStatsA.f = 0;
+    }
+    else {
+        newStatsA.f = (newStatsA.f*newStatsB.f)/n;
+    }
+
+    return newStatsA;
+}
+
+
 void updateStats(uint64_t rel, uint64_t col, Stats newStats){
     stats[rel][col].l = newStats.l;
     stats[rel][col].u = newStats.u;
     stats[rel][col].f = newStats.f;
     stats[rel][col].d = newStats.d;
+}
+
+void printStats(uint64_t rel) {
+    for (size_t i = 0; i < r[rel].cols; i++) {
+        std::cout << rel << "." << i
+                    << ": l=" << stats[rel][i].l
+                    << "  u=" << stats[rel][i].u
+                    << "  f=" << stats[rel][i].f
+                    << "  d=" << stats[rel][i].d << "\n";
+    }
 }
