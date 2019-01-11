@@ -3,6 +3,9 @@
 
 #include "memmap.hpp"
 
+#ifndef STATS_HPP
+#define STATS_HPP
+
 typedef struct Stats{
     double l;
     double u;
@@ -28,3 +31,5 @@ Stats evalLessFilterStats(uint64_t rel, uint64_t col, uint64_t k);
 Stats evalGreaterFilterStats(uint64_t rel, uint64_t col, uint64_t k);
 Stats evalelfJoinStats(uint64_t rel, uint64_t colA, uint64_t colB);
 Stats evalJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB);
+
+#endif

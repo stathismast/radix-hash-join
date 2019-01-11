@@ -96,6 +96,7 @@ int main(void){
     // std::cout << '\n';
     // std::cout << "0 JOIN 1" << '\n';
     // updateJoinStats(0,2,1,0);
+    // updateGreaterFilterStats(0,1,2500);
     // std::cout << "\n\nAfter\n";
     // printStats(0);
     // std::cout << '\n';
