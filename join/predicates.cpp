@@ -454,10 +454,10 @@ void deleteQueryInfo(QueryInfo * queryInfo) {
     delete queryInfo;
 }
 
-void copyPredicates(Predicate ** target, QueryInfo * queryInfo) {
-    uint64_t count = queryInfo->predicatesCount;
+void copyPredicates(Predicate ** target, Predicate * source, uint64_t count) {
+    // uint64_t count = queryInfo->predicatesCount;
     *target = new Predicate[count];
     for (size_t i = 0; i < count; i++) {
-        (*target)[i] = queryInfo->predicates[i];
+        (*target)[i] = source[i];
     }
 }

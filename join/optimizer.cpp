@@ -17,8 +17,8 @@ JoinTree::JoinTree (uint64_t rel, QueryInfo * queryInfo) {
 
     this->relations = queryInfo->relations;
     this->relationsCount = queryInfo->relationsCount;
-    copyPredicates(&this->predicates, queryInfo);
     this->predicatesCount = queryInfo->predicatesCount;
+    copyPredicates(&this->predicates, queryInfo->predicates, this->predicatesCount);
 
     this->predicateStr = std::to_string(rel);
     this->set = {rel};
@@ -36,30 +36,44 @@ JoinTree::JoinTree (uint64_t rel, QueryInfo * queryInfo) {
 
 // Constructor for joins when there is no tree for the v set
 JoinTree::JoinTree (std::vector<uint64_t> v, uint64_t rel, QueryInfo * queryInfo) {
-    this->predicates = queryInfo->predicates;
+    this->cost = 0;
+
+    this->relations = queryInfo->relations;
+    this->relationsCount = queryInfo->relationsCount;
     this->predicatesCount = queryInfo->predicatesCount;
+    copyPredicates(&this->predicates, queryInfo->predicates, this->predicatesCount);
+
+    this->set = makeSet(v, rel);
+    this->predicateStr = vectorToString(this->set);
+
     this->lastPredicate = 0;
 
-    std::string str = vectorToString(makeSet(v, rel));
-    this->predicateStr = str;
-    this->lastPredicate = reorderFilters(rel);
+    uint64_t orderedCount = this->lastPredicate;
+    for (size_t i = 0; i < this->predicatesCount; i++) {
+        // Find which relatios are joind and bring them first, also calculate stats
+        if (predicates[i].predicateType == JOIN) {
+            uint64_t relA = relations[predicates[i].relationA];
+            uint64_t relB = relations[predicates[i].relationB];
 
-    // uint64_t orderedCount = this->lastPredicate;
-    // for (size_t i = 0; i < this->predicatesCount; i++) {
-    //     if (predicates[i].predicateType == JOIN) {
-    //         uint64_t relA = predicates[i].relationA;
-    //         uint64_t relB = predicates[i].relationB;
-    //         size_t f1 = str.find(std::to_string(relA));
-    //         size_t f2 = str.find(std::to_string(relB));
-    //         if ( (f1!=string::npos || f2!=string::npos) && (rel == relA || rel == relB)) {
-    //             Stats newStats = evalJoinStats(relA, predicates[i].columnA, relB, predicates[i].columnB);
-    //             this->cost += newStats.f;
-    //             swapPredicates(&(this->predicates[i]), &(this->predicates[orderedCount]));
-    //             orderedCount++;
-    //         }
-    //     }
-    // }
-    // this->lastPredicate = orderedCount;
+            bool f1 = isInVector(v, relA);
+            bool f2 = isInVector(v, relB);
+
+            if ( (f1 || f2) && (rel == relA || rel == relB)) {
+                // reorder the filters for the one of them
+                orderedCount = reorderFilters(relA);
+                orderedCount = reorderFilters(relB);
+
+                // Stats newStats = evalJoinStats(relA, predicates[i].columnA, relB, predicates[i].columnB);
+                // this->cost += newStats.f;
+                this->cost += 51;
+                swapPredicates(&(this->predicates[i]), &(this->predicates[orderedCount]));
+                orderedCount++;
+            }
+        }
+    }
+    this->lastPredicate = orderedCount;
+
+    // std::cout << "For " << predicateStr << '\n';
     // for (size_t i = 0; i < this->predicatesCount; i++) {
     //     printPredicate(&(this->predicates[i]));
     // }
@@ -68,35 +82,46 @@ JoinTree::JoinTree (std::vector<uint64_t> v, uint64_t rel, QueryInfo * queryInfo
 
 // Constructor for joins
 JoinTree::JoinTree (JoinTree * jt, uint64_t rel, QueryInfo * queryInfo) {
-    this->predicateStr = jt->getPredicateStr() + std::to_string(rel);
-    this->predicates = jt->predicates;
-    this->predicatesCount = queryInfo->predicatesCount;
-    this->cost = jt->cost;
+    this->cost = 0;
 
-    // if (n->predicateStr.length() != 1) {
-    //     this->lastPredicate = n->lastPredicate;
-    //     reorderFilters(atoi(&(n->predicateStr[0])));
-    // }
+    this->relations = queryInfo->relations;
+    this->relationsCount = queryInfo->relationsCount;
+    this->predicatesCount = queryInfo->predicatesCount;
+    copyPredicates(&this->predicates, jt->predicates, this->predicatesCount);
+
+    this->lastPredicate = jt->lastPredicate;
     this->lastPredicate = reorderFilters(rel);
 
-    // uint64_t orderedCount = this->lastPredicate;
-    // std::string str = jt->predicateStr;
     // for (size_t i = 0; i < this->predicatesCount; i++) {
-    //     if (predicates[i].predicateType == JOIN) {
-    //         uint64_t relA = predicates[i].relationA;
-    //         uint64_t relB = predicates[i].relationB;
-    //         size_t f1 = str.find(std::to_string(relA));
-    //         size_t f2 = str.find(std::to_string(relB));
-    //         if ( (f1!=string::npos || f2!=string::npos) && (rel == relA || rel == relB)) {
-    //             Stats newStats = evalJoinStats(relA, predicates[i].columnA, relB, predicates[i].columnB);
-    //             this->cost += newStats.f;
-    //             // reorderJoins(relA, relB);
-    //             swapPredicates(&(this->predicates[i]), &(this->predicates[orderedCount]));
-    //             orderedCount++;
-    //         }
-    //     }
+    //     std::cout << "\t";
+    //     printPredicate(&(this->predicates[i]));
     // }
 
+
+    uint64_t orderedCount = this->lastPredicate;
+    for (size_t i = orderedCount; i < this->predicatesCount; i++) {
+        // Find which relatios are joind and bring them first, also calculate stats
+        if (predicates[i].predicateType == JOIN) {
+            uint64_t relA = relations[predicates[i].relationA];
+            uint64_t relB = relations[predicates[i].relationB];
+
+            bool f1 = isInVector(jt->set, relA);
+            bool f2 = isInVector(jt->set, relB);
+            if ( (f1 || f2) && (rel == relA || rel == relB)) {
+                swapPredicates(&(this->predicates[i]), &(this->predicates[orderedCount]));
+                orderedCount++;
+            }
+        }
+    }
+    this->lastPredicate = orderedCount;
+
+    this->set = makeSet(jt->set, rel);
+    this->predicateStr = vectorToString(this->set);
+
+    // std::cout << "For " << predicateStr << '\n';
+    // for (size_t i = 0; i < this->predicatesCount; i++) {
+    //     printPredicate(&(this->predicates[i]));
+    // }
 }
 
 uint64_t JoinTree::reorderFilters(uint64_t rel) {
@@ -285,7 +310,6 @@ void joinEnumeration(QueryInfo* queryInfo) {
         bestTree[relStr] = jt;
     }
 
-
     string str = "";
     // uint64_t start = 0;
     // uint64_t end = count;
@@ -308,20 +332,31 @@ void joinEnumeration(QueryInfo* queryInfo) {
             JoinTree * curTree = bestTree[curStr];
             // std::cout << curStr << " and " << rel << " are connected, so set = " << str << '\n';
             if (curTree == NULL) {
-                // std::cout << "  No tree for curTree (" << curStr << ")" << '\n';
+                // std::cout << "--No tree for curTree (" << curStr << ")" << '\n';
                 JoinTree * jt = new JoinTree(cur, rel, queryInfo);
                 bestTree[curStr] = jt;
             } else {
                 JoinTree * best = bestTree[str];
-                // std::cout << "  Tree for curTree (" << curStr << ")" << '\n';
+                // std::cout << "--Tree for curTree (" << curStr << ")" << '\n';
                 if (best == NULL) {
                     // std::cout << "\tNo tree for " << str << '\n';
-                    // JoinTree * jt = new JoinTree(curTree, rel, queryInfo);
-                    bestTree[str] = bestTree["0"];
+                    JoinTree * jt = new JoinTree(curTree, rel, queryInfo);
+                    bestTree[str] = jt;
                 } else {
                     // std::cout << "\tTree for " << str << '\n';
-                    bestTree[str] = bestTree["0"];
+
+                    // In case we have a tree with a set of 2 relations it means
+                    // we just check for the reverse set. For example if we
+                    // have 01 the, second time we check for 10. We don't need
+                    // to do anything in this case
+                    if (str.length() == 2) {
+                        // std::cout << "Lenght 2, not doing anything" << '\n';
+                        continue;
+                    }
                     // eval cost and check if it's better than the cost of best
+                    // JoinTree * jt = new JoinTree(curTree, rel, queryInfo);
+                    // bestTree[str] = jt;
+
                 }
             }
         }
