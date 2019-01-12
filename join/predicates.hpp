@@ -64,4 +64,6 @@ void printSelfjoin(Predicate * predicate);
 
 void calculateSums(QueryInfo * queryInfo, Intermediate * IR);
 
+void copyPredicates(Predicate ** target, QueryInfo * queryInfo);
+
 #endif

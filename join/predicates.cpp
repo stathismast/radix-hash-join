@@ -19,7 +19,7 @@ bool compare(uint64_t x, uint64_t y, char op) {
 }
 
 unsigned long long currentTime() {
-    struct timeval te; 
+    struct timeval te;
     gettimeofday(&te, 0);
     return te.tv_sec*1000000 + te.tv_usec;
 }
@@ -112,10 +112,10 @@ void executeJoin(Predicate * predicate, uint64_t * queryRelations, Intermediate 
         selfJoinUpdateIR(res, IR);
 
         std::cout << "Secondary Self Join: " << relA << "." << colA << " = "
-                  << relB << "." << colB 
+                  << relB << "." << colB
         << " (" << ((double)(currentTime() - startTime))/1000000
         << " seconds, " << IR->length << " entries)" << '\n';
-        
+
         deleteResult(res);
 
         return;
@@ -145,9 +145,9 @@ void executeJoin(Predicate * predicate, uint64_t * queryRelations, Intermediate 
     }
 
 
-    std::cout << "Constructs: " 
+    std::cout << "Constructs: "
     << " (" << ((double)(currentTime() - startTime))/1000000
-    << " seconds, " << fromIntermediate->size 
+    << " seconds, " << fromIntermediate->size
     << "/" << fromMappedData->size << " entries)" << '\n';
 
     startTime = currentTime();
@@ -192,7 +192,7 @@ void joinUpdateIR(Result ** res, uint64_t newRel, Intermediate * IR){
 
     startTime = currentTime();
     uint64_t * fromMappedData = fastResultToArray(res[1]);
-    std::cout << "Conversion from mapped data to array" 
+    std::cout << "Conversion from mapped data to array"
     << " (" << ((double)(currentTime() - startTime))/1000000
     << " seconds, " << newLength << " entries)" << '\n';
 
@@ -211,7 +211,7 @@ void joinUpdateIR(Result ** res, uint64_t newRel, Intermediate * IR){
     }
     delete[] fromIntermediate;
 
-    std::cout << "IR replacement: " 
+    std::cout << "IR replacement: "
     << " (" << ((double)(currentTime() - startTime))/1000000
     << " seconds, " << newLength << " entries)" << '\n';
 
@@ -235,9 +235,9 @@ void executeNoFilterJoin(Predicate * predicate, uint64_t * queryRelations, Inter
     constructedB = constructMappedData(relB,colB,queryRelations);
 
 
-    std::cout << "No Filter Constructs: " 
+    std::cout << "No Filter Constructs: "
     << " (" << ((double)(currentTime() - startTime))/1000000
-    << " seconds, " << constructedA->size 
+    << " seconds, " << constructedA->size
     << "/" << constructedA->size << " entries)" << '\n';
 
     startTime = currentTime();
@@ -388,7 +388,7 @@ void calculateSums(QueryInfo * qi, Intermediate *IR){
             sum += r[relIndex].data[relColumn][relRowID];
         }
 
-        std::cout << "Sum " << qi->sums[j].relation << "." 
+        std::cout << "Sum " << qi->sums[j].relation << "."
         << qi->sums[j].column << ": " << sum
     << " (" << ((double)(currentTime() - startTime))/1000000
     << " seconds, " << IR->length << " entries)" << '\n';
@@ -452,4 +452,12 @@ void deleteQueryInfo(QueryInfo * queryInfo) {
     delete[] queryInfo->predicates;
     delete[] queryInfo->sums;
     delete queryInfo;
+}
+
+void copyPredicates(Predicate ** target, QueryInfo * queryInfo) {
+    uint64_t count = queryInfo->predicatesCount;
+    *target = new Predicate[count];
+    for (size_t i = 0; i < count; i++) {
+        (*target)[i] = queryInfo->predicates[i];
+    }
 }

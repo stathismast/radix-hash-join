@@ -531,3 +531,7 @@ void printStats(uint64_t rel) {
                     << "  d=" << stats[rel][i].d << "\n";
     }
 }
+
+// void copyStast(Stat ** target, Stat ** source, QueryInfo * queryInfo) {
+//
+// }

@@ -46,6 +46,7 @@ void executeQueries() {
         IR->length = 0;
 
         for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
+            printPredicate(&queryInfo->predicates[i]);
             execute(&queryInfo->predicates[i], queryInfo->relations, IR);
         }
 
