@@ -13,7 +13,7 @@ private:
     std::string predicateStr;
     std::vector<uint64_t> set;
     uint64_t lastPredicate;
-    // Stats ** myStats;
+    Stats ** myStats;
 
     uint64_t reorderFilters(uint64_t rel);
     uint64_t reorderJoins(uint64_t relA, uint64_t relB);
@@ -25,11 +25,13 @@ public:
     JoinTree (std::vector<uint64_t> v, uint64_t rel, QueryInfo * queryInfo);
     // constructor for joins
     JoinTree (JoinTree * jt, uint64_t rel, QueryInfo * queryInfo);
+    void updateJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB);
     void updateJoinTree(double eval);
     std::string getPredicateStr();
     double getCost();
     Predicate * getPredicates();
     uint64_t getPredicatesCount();
+    void printStats();
     virtual ~JoinTree ();
 };
 

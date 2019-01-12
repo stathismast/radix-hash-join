@@ -13,11 +13,12 @@ double min(double a, double b) {
     return a < b ? a : b;
 }
 
-void createStats(){
-    stats = new Stats*[relationsSize];
+Stats ** createStats(){
+    Stats** stats = new Stats*[relationsSize];
     for(uint64_t i=0; i<relationsSize; i++){
         stats[i] = new Stats[r[i].cols];
     }
+    return stats;
 }
 
 void deleteStats(){
@@ -532,6 +533,15 @@ void printStats(uint64_t rel) {
     }
 }
 
-// void copyStast(Stat ** target, Stat ** source, QueryInfo * queryInfo) {
-//
-// }
+Stats ** copyStats(Stats ** target, Stats ** source, QueryInfo * queryInfo) {
+    target = createStats();
+    for(uint64_t i=0; i<relationsSize; i++){
+        for(uint64_t j=0; j<r[i].cols; j++){
+            (target[i][j]).l = source[i][j].l;
+            (target[i][j]).u = source[i][j].u;
+            (target[i][j]).f = source[i][j].f;
+            (target[i][j]).d = source[i][j].d;
+        }
+    }
+    return target;
+}

@@ -65,7 +65,7 @@ void executeQueries() {
 
 int main(void){
     mapAllData(&r, &relationsSize);
-    createStats();
+    stats = createStats();
 
     if( r == NULL ){ //no file found
         std::cout << "No file found. Please try again. Bye!" << '\n';

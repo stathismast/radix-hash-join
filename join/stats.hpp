@@ -1,5 +1,6 @@
 #include <stdint.h>     // for uint64_t
 #include <math.h>
+#include "predicates.hpp"
 
 #include "memmap.hpp"
 
@@ -13,9 +14,12 @@ typedef struct Stats{
     double d;
 } Stats;
 
+double max(double a, double b);
+double min(double a, double b);
+
 void printStats(uint64_t rel);
 
-void createStats();
+Stats ** createStats();
 void deleteStats();
 void initializeStats();
 
@@ -31,5 +35,8 @@ Stats evalLessFilterStats(uint64_t rel, uint64_t col, uint64_t k);
 Stats evalGreaterFilterStats(uint64_t rel, uint64_t col, uint64_t k);
 Stats evalelfJoinStats(uint64_t rel, uint64_t colA, uint64_t colB);
 Stats evalJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB);
+
+Stats ** copyStats(Stats ** target, Stats ** source, QueryInfo * queryInfo);
+
 
 #endif

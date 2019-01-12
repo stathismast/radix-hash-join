@@ -9,6 +9,8 @@
 
 using std::string;
 
+extern Relation * r;
+extern uint64_t relationsSize;
 extern Stats ** stats;
 
 // constructor for the single relation nodes
@@ -26,11 +28,16 @@ JoinTree::JoinTree (uint64_t rel, QueryInfo * queryInfo) {
     this->lastPredicate = 0;
     this->lastPredicate = reorderFilters(rel);
 
-    // for (size_t i = 0; i < this->predicatesCount; i++) {
-    //     printPredicate(&this->predicates[i]);
-    // }
+    this->myStats = copyStats(this->myStats, stats, queryInfo);
+    // std::cout << predicateStr << ":" << '\n';
+    // printStats();
     // std::cout << '\n';
-    // std::cout << "las = " << this->lastPredicate << '\n';
+    // std::cout << '\n';
+
+    // std::cout << "For " << predicateStr << '\n';
+    // for (size_t i = 0; i < this->predicatesCount; i++) {
+    //     printPredicate(&(this->predicates[i]));
+    // }
 }
 
 
@@ -48,9 +55,15 @@ JoinTree::JoinTree (std::vector<uint64_t> v, uint64_t rel, QueryInfo * queryInfo
 
     this->lastPredicate = 0;
 
+    this->myStats = copyStats(this->myStats, stats, queryInfo);
+    // std::cout << predicateStr << ":" << '\n';
+    // printStats();
+    // std::cout << '\n';
+    // std::cout << '\n';
+
     uint64_t orderedCount = this->lastPredicate;
     for (size_t i = 0; i < this->predicatesCount; i++) {
-        // Find which relatios are joind and bring them first, also calculate stats
+        // Find which relations are joind and bring them first, also calculate stats
         if (predicates[i].predicateType == JOIN) {
             uint64_t relA = relations[predicates[i].relationA];
             uint64_t relB = relations[predicates[i].relationB];
@@ -89,6 +102,13 @@ JoinTree::JoinTree (JoinTree * jt, uint64_t rel, QueryInfo * queryInfo) {
     this->predicatesCount = queryInfo->predicatesCount;
     copyPredicates(&this->predicates, jt->predicates, this->predicatesCount);
 
+    // copyStats(this->myStats, jt->myStats, queryInfo);
+    this->myStats = copyStats(this->myStats, jt->myStats, queryInfo);
+    // std::cout << predicateStr << ":" << '\n';
+    printStats();
+    std::cout << '\n';
+    std::cout << '\n';
+
     this->lastPredicate = jt->lastPredicate;
     this->lastPredicate = reorderFilters(rel);
 
@@ -100,14 +120,18 @@ JoinTree::JoinTree (JoinTree * jt, uint64_t rel, QueryInfo * queryInfo) {
 
     uint64_t orderedCount = this->lastPredicate;
     for (size_t i = orderedCount; i < this->predicatesCount; i++) {
-        // Find which relatios are joind and bring them first, also calculate stats
+        // Find which relations are joind and bring them first, also calculate stats
         if (predicates[i].predicateType == JOIN) {
             uint64_t relA = relations[predicates[i].relationA];
             uint64_t relB = relations[predicates[i].relationB];
+            uint64_t colA = relations[predicates[i].columnA];
+            uint64_t colB = relations[predicates[i].columnB];
 
             bool f1 = isInVector(jt->set, relA);
             bool f2 = isInVector(jt->set, relB);
             if ( (f1 || f2) && (rel == relA || rel == relB)) {
+                std::cout << relA << "." << colA << " = " << relB << "." << colB << '\n';
+                updateJoinStats(relA, colA, relB, colB);
                 swapPredicates(&(this->predicates[i]), &(this->predicates[orderedCount]));
                 orderedCount++;
             }
@@ -123,6 +147,76 @@ JoinTree::JoinTree (JoinTree * jt, uint64_t rel, QueryInfo * queryInfo) {
     //     printPredicate(&(this->predicates[i]));
     // }
 }
+
+void JoinTree::updateJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB) {
+    Stats newStatsA;
+    Stats newStatsB;
+    double da = myStats[relA][colA].d;
+    double db = myStats[relB][colB].d;
+
+    double newL = max(myStats[relA][colA].l, myStats[relB][colB].l);
+    double newU = min(myStats[relA][colA].u, myStats[relB][colB].u);
+    // Use filter in each column so they will have same lower and upper value
+    // and all other stats will be upadated accordingly
+    // updateGreaterFilterStats(relA, colA, newL);
+    // updateLessFilterStats(relA, colA, newU);
+    // updateGreaterFilterStats(relB, colB, newL);
+    // updateLessFilterStats(relB, colB, newU);
+
+    newStatsA.l = newStatsB.l = newL;
+    newStatsA.u = newStatsB.u = newU;
+    double n = newU - newL + 1;
+    // std::cout << "n = " << n << '\n';
+    if (n == 0) {
+        newStatsA.f = newStatsA.d = newStatsB.f = newStatsB.d = 0;
+    }
+    else {
+        newStatsA.f = newStatsB.f = (myStats[relA][colA].f*myStats[relB][colB].f)/n;
+        newStatsA.d = newStatsB.d = (myStats[relA][colA].d*myStats[relB][colB].d)/n;
+    }
+
+    // updateStats(relA,colA,newStatsA);
+    // updateStats(relB,colB,newStatsB);
+    // Update the stats of every other column of the first relation
+    // for (auto it = this->set.begin();  ) {
+    //     /* code */
+    // }
+    // for(uint64_t i=0; i<r[relA].cols; i++){
+    //     if(i == colA) continue;
+    //
+    //     double dc = myStats[relA][i].d;
+    //     double fc = myStats[relA][i].f;
+    //     // Check if dc or f are equal to 0 and act accoridingly
+    //     // This way we can avoid dividing by 0
+    //     if(dc == 0){
+    //         myStats[relA][i].d = 0;
+    //         myStats[relA][i].f = 0;
+    //     } else {
+    //         // std::cout << fc/dc << std::endl;
+    //         myStats[relA][i].d = dc * (1-pow((1-(newStatsA.d/da)), fc/dc));
+    //         myStats[relA][i].f = newStatsA.f;
+    //     }
+    // }
+    //
+    // // Update the stast of every other column of the second relation
+    // for(uint64_t i=0; i<r[relB].cols; i++){
+    //     if(i == colB) continue;
+    //
+    //     double dc = myStats[relB][i].d;
+    //     double fc = myStats[relB][i].f;
+    //     // Check if dc or f are equal to 0 and act accoridingly
+    //     // This way we can avoid dividing by 0
+    //     if(dc == 0){
+    //         myStats[relB][i].d = 0;
+    //         myStats[relB][i].f = 0;
+    //     } else {
+    //         // std::cout << fc/dc << std::endl;
+    //         myStats[relB][i].d = dc * (1-pow((1-(newStatsB.d/db)), fc/dc));
+    //         myStats[relB][i].f = newStatsB.f;
+    //     }
+    // }
+}
+
 
 uint64_t JoinTree::reorderFilters(uint64_t rel) {
     uint64_t orderedCount = this->lastPredicate;
@@ -149,6 +243,21 @@ uint64_t JoinTree::getPredicatesCount() { return predicatesCount; }
 
 void JoinTree::updateJoinTree(double eval) {
     this->cost = eval;
+}
+
+void JoinTree::printStats() {
+    for (size_t j = 0; j < relationsCount; j++) {
+        uint64_t rel = relations[j];
+        for (size_t i = 0; i < r[rel].cols; i++) {
+            std::cout << rel << "." << i;
+            fflush(stdout);
+            std::cout << ": l=" << myStats[rel][i].l
+            << "  u=" << myStats[rel][i].u
+            << "  f=" << myStats[rel][i].f
+            << "  d=" << myStats[rel][i].d << "\n";
+        }
+        std::cout << '\n';
+    }
 }
 
 JoinTree::~JoinTree () {}
@@ -337,9 +446,9 @@ void joinEnumeration(QueryInfo* queryInfo) {
                 bestTree[curStr] = jt;
             } else {
                 JoinTree * best = bestTree[str];
-                // std::cout << "--Tree for curTree (" << curStr << ")" << '\n';
+                std::cout << "--Tree for curTree (" << curStr << ")" << '\n';
                 if (best == NULL) {
-                    // std::cout << "\tNo tree for " << str << '\n';
+                    std::cout << "\tNo tree for " << str << '\n';
                     JoinTree * jt = new JoinTree(curTree, rel, queryInfo);
                     bestTree[str] = jt;
                 } else {
