@@ -54,9 +54,9 @@ JoinTree::JoinTree (std::vector<uint64_t> v, uint64_t rel, QueryInfo * queryInfo
     copyPredicates(&this->predicates, queryInfo->predicates, this->predicatesCount);
 
     this->set = makeSet(v, rel);
-    for (auto it = this->set.begin(); it != this->set.begin(); ++it) {
-        std::cout << "it = " << *it << '\n';
-    }
+    // for (auto it = this->set.begin(); it != this->set.begin(); ++it) {
+    //     std::cout << "it = " << *it << '\n';
+    // }
     this->predicateStr = vectorToString(this->set);
 
     this->lastPredicate = 0;
@@ -115,7 +115,7 @@ JoinTree::JoinTree (JoinTree * jt, uint64_t rel, QueryInfo * queryInfo) {
     this->predicateStr = vectorToString(this->set);
 
     this->myStats = copyStats(this->myStats, jt->myStats, queryInfo);
-    // std::cout << predicateStr << ":" << '\n';
+    std::cout << predicateStr << ":" << '\n';
     // printStats();
     // std::cout << '\n';
     // std::cout << '\n';
@@ -127,6 +127,7 @@ JoinTree::JoinTree (JoinTree * jt, uint64_t rel, QueryInfo * queryInfo) {
     //     std::cout << "\t";
     //     printPredicate(&(this->predicates[i]));
     // }
+    std::cout << "jt->set = " << vectorToString(jt->set) << '\n';
 
 
     uint64_t orderedCount = this->lastPredicate;
@@ -143,7 +144,15 @@ JoinTree::JoinTree (JoinTree * jt, uint64_t rel, QueryInfo * queryInfo) {
             if ( (f1 || f2) && (rel == relA || rel == relB)) {
                 // std::cout << relA << "." << colA << " = ";
                 // std::cout << relB << "." << colB << '\n';
-                updateJoinStats(relA, colA, relB, colB);
+                // the first relation will be the one on jt->set
+                if (f1 == true) {
+                    std::cout << "A:" << relA << " on set" << '\n';
+                    updateJoinStats(relA, colA, relB, colB);
+                } else if (f2 == true) {
+                    updateJoinStats(relB, colB, relA, colA);
+                    std::cout << "A:" << relB << " on set" << '\n';
+                }
+                // updateJoinStats(relA, colA, relB, colB);
                 swapPredicates(&(this->predicates[i]), &(this->predicates[orderedCount]));
                 orderedCount++;
             }
@@ -151,7 +160,7 @@ JoinTree::JoinTree (JoinTree * jt, uint64_t rel, QueryInfo * queryInfo) {
     }
     this->lastPredicate = orderedCount;
 
-    std::cout << predicateStr << ":" << '\n';
+    // std::cout << predicateStr << ":" << '\n';
     printStats();
     std::cout << '\n';
     std::cout << '\n';
@@ -405,33 +414,34 @@ void JoinTree::updateJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint
         }
     }
 
+    std::cout << "relB = " << relB << '\n';
     // Update the stats of every other column that would be in the intermediate
-    // for (uint64_t j = 0; j < set.size(); j++) {
-        // std::cout << "it = " << set[i] << '\n';
-        // uint64_t setRel = set[j];
-        // if (setRel != relA && setRel != relB ) {
-        //     for(uint64_t i=0; i<r[setRel].cols; i++){
-        //
-        //         double dc = myStats[setRel][i].d;
-        //         double fc = myStats[setRel][i].f;
-        //         // Check if dc or f are equal to 0 and act accoridingly
-        //         // This way we can avoid dividing by 0
-        //         if(dc == 0){
-        //             myStats[setRel][i].d = 0;
-        //             myStats[setRel][i].f = 0;
-        //         }
-        //         else if(newStatsA.f == 0){
-        //             myStats[setRel][i].d = 0;
-        //             myStats[setRel][i].f = 0;
-        //         } else {
-        //             // std::cout << fc/dc << std::endl;
-        //             // std::cout << 1-(newStats.f/f) << std::endl;
-        //             myStats[setRel][i].d = dc * (1-pow((1-(newStatsA.f/f)), fc/dc));
-        //             myStats[setRel][i].f = newStatsA.f;
-        //         }
-        //     }
-        // }
-    // }
+    for (uint64_t j = 0; j < set.size(); j++) {
+        std::cout << "it = " << set[j] << '\n';
+        uint64_t setRel = set[j];
+        if (setRel != relB && setRel != relA) {
+            for(uint64_t i=0; i<r[setRel].cols; i++){
+
+                double dc = myStats[setRel][i].d;
+                double fc = myStats[setRel][i].f;
+                // Check if dc or f are equal to 0 and act accoridingly
+                // This way we can avoid dividing by 0
+                if(dc == 0){
+                    myStats[setRel][i].d = 0;
+                    myStats[setRel][i].f = 0;
+                }
+                else if(newStatsA.f == 0){
+                    myStats[setRel][i].d = 0;
+                    myStats[setRel][i].f = 0;
+                } else {
+                    // std::cout << fc/dc << std::endl;
+                    // std::cout << 1-(newStats.f/f) << std::endl;
+                    myStats[setRel][i].d = dc * (1-pow((1-(newStatsA.d/da)), fc/dc));
+                    myStats[setRel][i].f = newStatsA.f;
+                }
+            }
+        }
+    }
     std::cout << '\n';
 }
 
