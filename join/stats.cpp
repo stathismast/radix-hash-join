@@ -271,6 +271,8 @@ void updateJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB)
     Stats newStatsB;
     double da = stats[relA][colA].d;
     double db = stats[relB][colB].d;
+    // std::cout << "relA = " << relA << ", relB = " << relB << '\n';
+    // std::cout << "colA = " << colA << ", colB = " << colB << '\n';
 
     double newL = max(stats[relA][colA].l, stats[relB][colB].l);
     double newU = min(stats[relA][colA].u, stats[relB][colB].u);
@@ -432,7 +434,6 @@ Stats evalGreaterFilterStats(uint64_t rel, uint64_t col, uint64_t k) {
     }
 
     return newStats;
-
 }
 
 Stats evalSelfJoinStats(uint64_t rel, uint64_t colA, uint64_t colB) {

@@ -28,7 +28,13 @@ public:
     void updateStats(uint64_t rel, uint64_t col, Stats newStats);
     void updateLessFilterStats(uint64_t rel, uint64_t col, uint64_t k);
     void updateGreaterFilterStats(uint64_t rel, uint64_t col, uint64_t k);
+    void updateLessFilterStatsIR(uint64_t rel, uint64_t col, uint64_t k);
+    void updateGreaterFilterStatsIR(uint64_t rel, uint64_t col, uint64_t k);
     void updateJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB);
+    double evalCost(uint64_t rel);
+    Stats evalLessFilterStats(uint64_t rel, uint64_t col, uint64_t k);
+    Stats evalGreaterFilterStats(uint64_t rel, uint64_t col, uint64_t k);
+    Stats evalJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB);
     void updateJoinTree(double eval);
     std::string getPredicateStr();
     double getCost();

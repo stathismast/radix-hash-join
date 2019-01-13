@@ -142,7 +142,12 @@ QueryInfo * parseInput(char * query) {
 
 
     // reOrderPredicates(queryInfo);
-    joinEnumeration(queryInfo);
+    for (size_t i = 0; i < queryInfo->predicatesCount; i++) {
+        if (queryInfo->predicates[i].predicateType == JOIN) {
+            joinEnumeration(queryInfo);
+            break;
+        }
+    }
     return queryInfo;
 }
 

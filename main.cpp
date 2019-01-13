@@ -48,12 +48,12 @@ void executeQueries() {
         // for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
         //     execute(&queryInfo->predicates[i], queryInfo->relations, IR);
         // }
-        //
+
         // calculateSums(queryInfo, IR);
-        //
-        // // std::cout << "Intermediate Results after query execution:" << '\n';
-        // // printResult(IR->results, IR->relCount);
-        //
+
+        // std::cout << "Intermediate Results after query execution:" << '\n';
+        // printResult(IR->results, IR->relCount);
+
         // deleteIntermediate(IR);
         //
         // deleteQueryInfo(queryInfo);
@@ -87,7 +87,6 @@ int main(void){
     // Stats newStats = evalJoinStats(0,2,1,0);
     // std::cout << "Evaluated = " << newStats.f << '\n';
 
-
     // std::cout << "\n\nBefore\n";
     // printStats(0);
     // std::cout << '\n';
@@ -102,6 +101,17 @@ int main(void){
     // std::cout << '\n';
     // printStats(1);
 
+    // updateGreaterFilterStats(1,2,5000);
+    // updateJoinStats(1,1,4,1);
+    // std::cout << "\n\nefore\n";
+    // printStats(1);
+    // updateJoinStats(0,1,1,1);
+    // std::cout << "\n\nAfter\n";
+    // printStats(0);
+    // std::cout << '\n';
+    // printStats(1);
+    // std::cout << '\n';
+    // printStats(4);
 
     // if (stats[1][0].f == 0) {
     //     std::cout << "uwu" << '\n';
