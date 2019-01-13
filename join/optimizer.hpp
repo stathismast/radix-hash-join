@@ -10,38 +10,53 @@ private:
     uint64_t relationsCount;
     Predicate * predicates;
     uint64_t predicatesCount;
-    std::string predicateStr;
-    std::vector<uint64_t> set;
+    // After reordering the predicates keep the position of the last ordered
+    // predicate
     uint64_t lastPredicate;
+    std::string predicateStr;
+    // A set of relations that would represent all our relations in our current
+    // intermediate result
+    std::vector<uint64_t> irSet;
+
     Stats ** myStats;
 
+    uint64_t reorderFilters();
     uint64_t reorderFilters(uint64_t rel);
     uint64_t reorderJoins(uint64_t relA, uint64_t relB);
 
 public:
     // constructor for the single relation nodes
     JoinTree (uint64_t rel, QueryInfo * queryInfo);
-    // constructor for joins when there is no tree for the v set
-    JoinTree (std::vector<uint64_t> v, uint64_t rel, QueryInfo * queryInfo);
     // constructor for joins
     JoinTree (JoinTree * jt, uint64_t rel, QueryInfo * queryInfo);
-    void updateStats(uint64_t rel, uint64_t col, Stats newStats);
-    void updateLessFilterStats(uint64_t rel, uint64_t col, uint64_t k);
     void updateGreaterFilterStats(uint64_t rel, uint64_t col, uint64_t k);
+
+    // The set of updateIr functions update the stats for a given relation, and
+    // then if that relation was in the intermediate they update the stats for
+    // the rest of the relations in the intermediate since the intermediate acts
+    // as a whole relation
     void updateLessFilterStatsIR(uint64_t rel, uint64_t col, uint64_t k);
     void updateGreaterFilterStatsIR(uint64_t rel, uint64_t col, uint64_t k);
+
+    void updateStats(uint64_t rel, uint64_t col, Stats newStats);
+    void updateLessFilterStats(uint64_t rel, uint64_t col, uint64_t k);
     void updateJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB);
-    double evalCost(uint64_t rel);
+
     Stats evalLessFilterStats(uint64_t rel, uint64_t col, uint64_t k);
     Stats evalGreaterFilterStats(uint64_t rel, uint64_t col, uint64_t k);
     Stats evalJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB);
-    void updateJoinTree(double eval);
+
     std::string getPredicateStr();
     double getCost();
     Predicate * getPredicates();
     uint64_t getPredicatesCount();
     void printStats();
+
     virtual ~JoinTree ();
+
+    // deprecated and removed from the final version
+    double evalCost(uint64_t rel);
+    void updateJoinTree(double eval);
 };
 
 void swapPredicates(Predicate * A, Predicate * B);

@@ -142,6 +142,7 @@ QueryInfo * parseInput(char * query) {
 
 
     // reOrderPredicates(queryInfo);
+    // reorder predicates only if a join exists
     for (size_t i = 0; i < queryInfo->predicatesCount; i++) {
         if (queryInfo->predicates[i].predicateType == JOIN) {
             joinEnumeration(queryInfo);
