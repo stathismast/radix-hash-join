@@ -24,6 +24,9 @@ JoinTree::JoinTree (uint64_t rel, QueryInfo * queryInfo) {
 
     this->predicateStr = std::to_string(rel);
     this->set = {rel};
+    // for (uint64_t i = 0; i < set.size(); i++) {
+    //     std::cout << "it = " << set[i] << '\n';
+    // }
 
     this->lastPredicate = 0;
     this->lastPredicate = reorderFilters(rel);
@@ -51,6 +54,9 @@ JoinTree::JoinTree (std::vector<uint64_t> v, uint64_t rel, QueryInfo * queryInfo
     copyPredicates(&this->predicates, queryInfo->predicates, this->predicatesCount);
 
     this->set = makeSet(v, rel);
+    for (auto it = this->set.begin(); it != this->set.begin(); ++it) {
+        std::cout << "it = " << *it << '\n';
+    }
     this->predicateStr = vectorToString(this->set);
 
     this->lastPredicate = 0;
@@ -102,12 +108,17 @@ JoinTree::JoinTree (JoinTree * jt, uint64_t rel, QueryInfo * queryInfo) {
     this->predicatesCount = queryInfo->predicatesCount;
     copyPredicates(&this->predicates, jt->predicates, this->predicatesCount);
 
-    // copyStats(this->myStats, jt->myStats, queryInfo);
+    // for (auto it = jt->set.begin(); it != jt->set.begin(); ++it) {
+    //     std::cout << "it = " << *it << '\n';
+    // }
+    this->set = makeSet(jt->set, rel);
+    this->predicateStr = vectorToString(this->set);
+
     this->myStats = copyStats(this->myStats, jt->myStats, queryInfo);
     // std::cout << predicateStr << ":" << '\n';
-    printStats();
-    std::cout << '\n';
-    std::cout << '\n';
+    // printStats();
+    // std::cout << '\n';
+    // std::cout << '\n';
 
     this->lastPredicate = jt->lastPredicate;
     this->lastPredicate = reorderFilters(rel);
@@ -130,7 +141,8 @@ JoinTree::JoinTree (JoinTree * jt, uint64_t rel, QueryInfo * queryInfo) {
             bool f1 = isInVector(jt->set, relA);
             bool f2 = isInVector(jt->set, relB);
             if ( (f1 || f2) && (rel == relA || rel == relB)) {
-                std::cout << relA << "." << colA << " = " << relB << "." << colB << '\n';
+                // std::cout << relA << "." << colA << " = ";
+                // std::cout << relB << "." << colB << '\n';
                 updateJoinStats(relA, colA, relB, colB);
                 swapPredicates(&(this->predicates[i]), &(this->predicates[orderedCount]));
                 orderedCount++;
@@ -139,13 +151,190 @@ JoinTree::JoinTree (JoinTree * jt, uint64_t rel, QueryInfo * queryInfo) {
     }
     this->lastPredicate = orderedCount;
 
-    this->set = makeSet(jt->set, rel);
-    this->predicateStr = vectorToString(this->set);
+    std::cout << predicateStr << ":" << '\n';
+    printStats();
+    std::cout << '\n';
+    std::cout << '\n';
 
     // std::cout << "For " << predicateStr << '\n';
     // for (size_t i = 0; i < this->predicatesCount; i++) {
     //     printPredicate(&(this->predicates[i]));
     // }
+}
+
+void JoinTree::updateStats(uint64_t rel, uint64_t col, Stats newStats){
+    myStats[rel][col].l = newStats.l;
+    myStats[rel][col].u = newStats.u;
+    myStats[rel][col].f = newStats.f;
+    myStats[rel][col].d = newStats.d;
+}
+
+void JoinTree::updateLessFilterStats(uint64_t rel, uint64_t col, uint64_t k) {
+    double l = myStats[rel][col].l;
+    double u = myStats[rel][col].u;
+    double f = myStats[rel][col].f;
+    double d = myStats[rel][col].d;
+
+    Stats newStats;
+    // The lowest value after the filter execution will still be the same and
+    // the highest will be k
+    newStats.l = myStats[rel][col].l;
+    if (k > u) {
+        k = u;
+    }
+    newStats.u = k;
+    if (k < l) {
+        // if filter value is lower than the lowest value there will be no results
+        newStats.d = 0;
+        newStats.f = 0;
+    }
+    else if (myStats[rel][col].l == myStats[rel][col].u) {
+        // check if u and l of current collumn are not equal to avoid division
+        // by zero
+        newStats.d = 0;
+        newStats.f = 0;
+    }
+    else {
+        newStats.d = (d*(k-l))/(u-l);
+        newStats.f = (f*(k-l))/(u-l);
+    }
+
+    updateStats(rel,col,newStats);
+    // Update the stats of every other column of given relation
+    for(uint64_t i=0; i<r[rel].cols; i++){
+        if(i == col) continue;
+
+        double dc = myStats[rel][i].d;
+        double fc = myStats[rel][i].f;
+        // Check if dc or f are equal to 0 and act accoridingly
+        // This way we can avoid dividing by 0
+        if(dc == 0){
+            myStats[rel][i].d = 0;
+            myStats[rel][i].f = 0;
+        }
+        else if(f == 0){
+            myStats[rel][i].d = 0;
+            myStats[rel][i].f = 0;
+        } else {
+            // std::cout << fc/dc << std::endl;
+            // std::cout << 1-(newStats.f/f) << std::endl;
+            myStats[rel][i].d = dc * (1-pow((1-(newStats.f/f)), fc/dc));
+            myStats[rel][i].f = newStats.f;
+        }
+    }
+
+    // Update the stats of every other column that would be in the intermediate
+    for (uint64_t j = 0; j < set.size(); j++) {
+        // std::cout << "it = " << set[i] << '\n';
+        uint64_t setRel = set[j];
+        if (setRel != rel ) {
+            for(uint64_t i=0; i<r[setRel].cols; i++){
+
+                double dc = myStats[setRel][i].d;
+                double fc = myStats[setRel][i].f;
+                // Check if dc or f are equal to 0 and act accoridingly
+                // This way we can avoid dividing by 0
+                if(dc == 0){
+                    myStats[setRel][i].d = 0;
+                    myStats[setRel][i].f = 0;
+                }
+                else if(f == 0){
+                    myStats[setRel][i].d = 0;
+                    myStats[setRel][i].f = 0;
+                } else {
+                    // std::cout << fc/dc << std::endl;
+                    // std::cout << 1-(newStats.f/f) << std::endl;
+                    myStats[setRel][i].d = dc * (1-pow((1-(newStats.f/f)), fc/dc));
+                    myStats[setRel][i].f = newStats.f;
+                }
+            }
+        }
+    }
+    std::cout << '\n';
+}
+
+void JoinTree::updateGreaterFilterStats(uint64_t rel, uint64_t col, uint64_t k) {
+    double l = myStats[rel][col].l;
+    double u = myStats[rel][col].u;
+    double f = myStats[rel][col].f;
+    double d = myStats[rel][col].d;
+
+    Stats newStats;
+    // The lowest value after the filter execution will still be the same and
+    // the highest will be k
+    if (k < l) {
+        k = l;
+    }
+    newStats.l = k;
+    newStats.u = myStats[rel][col].u;
+    if (k > u) {
+        // if filter value is higher than the highest value there will be no results
+        newStats.d = 0;
+        newStats.f = 0;
+    }
+    else if (myStats[rel][col].l == myStats[rel][col].u) {
+        // check if u and l of current collumn are not equal to avoid division
+        // by zero
+        newStats.d = 0;
+        newStats.f = 0;
+    }
+    else {
+        newStats.d = (d*(u-k))/(u-l);
+        newStats.f = (f*(u-k))/(u-l);
+    }
+
+    updateStats(rel,col,newStats);
+    // Update the stats of every other column of given relation
+    for(uint64_t i=0; i<r[rel].cols; i++){
+        if(i == col) continue;
+
+        double dc = myStats[rel][i].d;
+        double fc = myStats[rel][i].f;
+        // Check if dc or f are equal to 0 and act accoridingly
+        // This way we can avoid dividing by 0
+        if(dc == 0){
+            myStats[rel][i].d = 0;
+            myStats[rel][i].f = 0;
+        }
+        else if(f == 0){
+            myStats[rel][i].d = 0;
+            myStats[rel][i].f = 0;
+        } else {
+            // std::cout << fc/dc << std::endl;
+            // std::cout << 1-(newStats.f/f) << std::endl;
+            myStats[rel][i].d = dc * (1-pow((1-(newStats.f/f)), fc/dc));
+            myStats[rel][i].f = newStats.f;
+        }
+    }
+
+    // Update the stats of every other column that would be in the intermediate
+    for (uint64_t j = 0; j < set.size(); j++) {
+        // std::cout << "it = " << set[i] << '\n';
+        uint64_t setRel = set[j];
+        if (setRel != rel ) {
+            for(uint64_t i=0; i<r[setRel].cols; i++){
+
+                double dc = myStats[setRel][i].d;
+                double fc = myStats[setRel][i].f;
+                // Check if dc or f are equal to 0 and act accoridingly
+                // This way we can avoid dividing by 0
+                if(dc == 0){
+                    myStats[setRel][i].d = 0;
+                    myStats[setRel][i].f = 0;
+                }
+                else if(f == 0){
+                    myStats[setRel][i].d = 0;
+                    myStats[setRel][i].f = 0;
+                } else {
+                    // std::cout << fc/dc << std::endl;
+                    // std::cout << 1-(newStats.f/f) << std::endl;
+                    myStats[setRel][i].d = dc * (1-pow((1-(newStats.f/f)), fc/dc));
+                    myStats[setRel][i].f = newStats.f;
+                }
+            }
+        }
+    }
+    std::cout << '\n';
 }
 
 void JoinTree::updateJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB) {
@@ -158,10 +347,10 @@ void JoinTree::updateJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint
     double newU = min(myStats[relA][colA].u, myStats[relB][colB].u);
     // Use filter in each column so they will have same lower and upper value
     // and all other stats will be upadated accordingly
-    // updateGreaterFilterStats(relA, colA, newL);
-    // updateLessFilterStats(relA, colA, newU);
-    // updateGreaterFilterStats(relB, colB, newL);
-    // updateLessFilterStats(relB, colB, newU);
+    updateGreaterFilterStats(relA, colA, newL);
+    updateLessFilterStats(relA, colA, newU);
+    updateGreaterFilterStats(relB, colB, newL);
+    updateLessFilterStats(relB, colB, newU);
 
     newStatsA.l = newStatsB.l = newL;
     newStatsA.u = newStatsB.u = newU;
@@ -175,46 +364,75 @@ void JoinTree::updateJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint
         newStatsA.d = newStatsB.d = (myStats[relA][colA].d*myStats[relB][colB].d)/n;
     }
 
-    // updateStats(relA,colA,newStatsA);
-    // updateStats(relB,colB,newStatsB);
+    updateStats(relA,colA,newStatsA);
+    updateStats(relB,colB,newStatsB);
     // Update the stats of every other column of the first relation
     // for (auto it = this->set.begin();  ) {
     //     /* code */
     // }
-    // for(uint64_t i=0; i<r[relA].cols; i++){
-    //     if(i == colA) continue;
-    //
-    //     double dc = myStats[relA][i].d;
-    //     double fc = myStats[relA][i].f;
-    //     // Check if dc or f are equal to 0 and act accoridingly
-    //     // This way we can avoid dividing by 0
-    //     if(dc == 0){
-    //         myStats[relA][i].d = 0;
-    //         myStats[relA][i].f = 0;
-    //     } else {
-    //         // std::cout << fc/dc << std::endl;
-    //         myStats[relA][i].d = dc * (1-pow((1-(newStatsA.d/da)), fc/dc));
-    //         myStats[relA][i].f = newStatsA.f;
-    //     }
+    for(uint64_t i=0; i<r[relA].cols; i++){
+        if(i == colA) continue;
+
+        double dc = myStats[relA][i].d;
+        double fc = myStats[relA][i].f;
+        // Check if dc or f are equal to 0 and act accoridingly
+        // This way we can avoid dividing by 0
+        if(dc == 0){
+            myStats[relA][i].d = 0;
+            myStats[relA][i].f = 0;
+        } else {
+            // std::cout << fc/dc << std::endl;
+            myStats[relA][i].d = dc * (1-pow((1-(newStatsA.d/da)), fc/dc));
+            myStats[relA][i].f = newStatsA.f;
+        }
+    }
+
+    // Update the stast of every other column of the second relation
+    for(uint64_t i=0; i<r[relB].cols; i++){
+        if(i == colB) continue;
+
+        double dc = myStats[relB][i].d;
+        double fc = myStats[relB][i].f;
+        // Check if dc or f are equal to 0 and act accoridingly
+        // This way we can avoid dividing by 0
+        if(dc == 0){
+            myStats[relB][i].d = 0;
+            myStats[relB][i].f = 0;
+        } else {
+            // std::cout << fc/dc << std::endl;
+            myStats[relB][i].d = dc * (1-pow((1-(newStatsB.d/db)), fc/dc));
+            myStats[relB][i].f = newStatsB.f;
+        }
+    }
+
+    // Update the stats of every other column that would be in the intermediate
+    // for (uint64_t j = 0; j < set.size(); j++) {
+        // std::cout << "it = " << set[i] << '\n';
+        // uint64_t setRel = set[j];
+        // if (setRel != relA && setRel != relB ) {
+        //     for(uint64_t i=0; i<r[setRel].cols; i++){
+        //
+        //         double dc = myStats[setRel][i].d;
+        //         double fc = myStats[setRel][i].f;
+        //         // Check if dc or f are equal to 0 and act accoridingly
+        //         // This way we can avoid dividing by 0
+        //         if(dc == 0){
+        //             myStats[setRel][i].d = 0;
+        //             myStats[setRel][i].f = 0;
+        //         }
+        //         else if(newStatsA.f == 0){
+        //             myStats[setRel][i].d = 0;
+        //             myStats[setRel][i].f = 0;
+        //         } else {
+        //             // std::cout << fc/dc << std::endl;
+        //             // std::cout << 1-(newStats.f/f) << std::endl;
+        //             myStats[setRel][i].d = dc * (1-pow((1-(newStatsA.f/f)), fc/dc));
+        //             myStats[setRel][i].f = newStatsA.f;
+        //         }
+        //     }
+        // }
     // }
-    //
-    // // Update the stast of every other column of the second relation
-    // for(uint64_t i=0; i<r[relB].cols; i++){
-    //     if(i == colB) continue;
-    //
-    //     double dc = myStats[relB][i].d;
-    //     double fc = myStats[relB][i].f;
-    //     // Check if dc or f are equal to 0 and act accoridingly
-    //     // This way we can avoid dividing by 0
-    //     if(dc == 0){
-    //         myStats[relB][i].d = 0;
-    //         myStats[relB][i].f = 0;
-    //     } else {
-    //         // std::cout << fc/dc << std::endl;
-    //         myStats[relB][i].d = dc * (1-pow((1-(newStatsB.d/db)), fc/dc));
-    //         myStats[relB][i].f = newStatsB.f;
-    //     }
-    // }
+    std::cout << '\n';
 }
 
 
@@ -446,9 +664,9 @@ void joinEnumeration(QueryInfo* queryInfo) {
                 bestTree[curStr] = jt;
             } else {
                 JoinTree * best = bestTree[str];
-                std::cout << "--Tree for curTree (" << curStr << ")" << '\n';
+                // std::cout << "--Tree for curTree (" << curStr << ")" << '\n';
                 if (best == NULL) {
-                    std::cout << "\tNo tree for " << str << '\n';
+                    // std::cout << "\tNo tree for " << str << '\n';
                     JoinTree * jt = new JoinTree(curTree, rel, queryInfo);
                     bestTree[str] = jt;
                 } else {
