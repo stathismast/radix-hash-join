@@ -60,7 +60,7 @@ JoinTree::JoinTree (JoinTree * jt, uint64_t rel, QueryInfo * queryInfo) {
     this->lastPredicate = jt->lastPredicate;
     // Just put the one filter we will have first. Does not work with multiple
     // filters but our imolementation does not support this yet
-    this->lastPredicate = reorderFilters();
+    // this->lastPredicate = reorderFilters();
     // this->lastPredicate = reorderFilters(rel);
     // std::cout << "Joining " << jt->predicateStr << " and " << rel << '\n';
 
@@ -102,6 +102,7 @@ JoinTree::JoinTree (JoinTree * jt, uint64_t rel, QueryInfo * queryInfo) {
     // contained
     this->irSet = makeSet(jt->irSet, rel);
     this->predicateStr = vectorToString(this->irSet);
+    this->lastPredicate = reorderFilters(rel);
 
     // std::cout << "Made " << predicateStr << '\n';
     // for (size_t i = 0; i < predicatesCount; i++) {
