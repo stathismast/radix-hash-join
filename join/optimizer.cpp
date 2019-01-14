@@ -37,6 +37,7 @@ JoinTree::JoinTree (uint64_t rel, QueryInfo * queryInfo) {
 
     this->myStats = copyStats(this->myStats, stats, queryInfo);
     // std::cout << "Made " << predicateStr << '\n';
+    // std::cout << "lastPredicate = " << lastPredicate << '\n';
     // for (size_t i = 0; i < predicatesCount; i++) {
     //     printPredicate(&predicates[i]);
     // }
@@ -64,6 +65,7 @@ JoinTree::JoinTree (JoinTree * jt, uint64_t rel, QueryInfo * queryInfo) {
     // filters but our imolementation does not support this yet
     // this->lastPredicate = reorderFilters();
     // this->lastPredicate = reorderFilters(rel);
+    // this->cost += myStats[relations[rel]][0].f;
     // std::cout << "Joining " << jt->predicateStr << " and " << rel << '\n';
 
     // Assing jt set to our set temporarily so in the calculation of the stats
@@ -71,6 +73,8 @@ JoinTree::JoinTree (JoinTree * jt, uint64_t rel, QueryInfo * queryInfo) {
     this->irSet = jt->irSet;
     // We start with the stast of jt since some joins and filters have been done
     this->myStats = copyStats(this->myStats, jt->myStats, queryInfo);
+    // this->lastPredicate = reorderFilters(rel);
+    // this->cost += myStats[relations[rel]][0].f;
 
     uint64_t orderedCount = this->lastPredicate;
     // Find which relations are joind and bring them first, also calculate stats
@@ -100,16 +104,18 @@ JoinTree::JoinTree (JoinTree * jt, uint64_t rel, QueryInfo * queryInfo) {
         }
     }
     this->lastPredicate = orderedCount;
-    this->cost += myStats[rel][0].f;        // update the cost
+    // this->cost += myStats[rel][0].f;        // update the cost
+    this->cost += myStats[relations[rel]][0].f;        // update the cost
 
     // Now make the final irSet where all relations of jt plus rel will be
     // contained
     this->irSet = makeSet(jt->irSet, rel);
     this->predicateStr = vectorToString(this->irSet);
-    this->lastPredicate = reorderFilters(rel);
+    // this->lastPredicate = reorderFilters(rel);
 
     // std::cout << "Made " << predicateStr << '\n';
-    // std::cout << "Cost for " << predicateStr << " = " << cost << '\n';
+    // std::cout << "Connected " << jt->predicateStr << " and " << rel << '\n';
+    // std::cout << "Cost for " << predicateStr << " = " << jt->cost << " + " << myStats[relations[rel]][0].f << '\n';
     // for (size_t i = 0; i < predicatesCount; i++) {
     //     printPredicate(&predicates[i]);
     // }
@@ -708,7 +714,7 @@ std::vector<uint64_t> makeSet(std::vector<uint64_t> cur, uint64_t rel) {
 bool isConnected(std::vector<uint64_t> v, uint64_t relPos, QueryInfo* queryInfo) {
     Predicate * predicates = queryInfo->predicates;
     uint64_t count = queryInfo->predicatesCount;
-    uint64_t * relations = queryInfo->relations;
+    // uint64_t * relations = queryInfo->relations;
 
     // uint64_t rel = relations[relPos];
     // std::cout << "Checking if realtion " << relPos << " is connectd with " << vectorToString(v) << '\n';
@@ -737,49 +743,10 @@ bool isConnected(std::vector<uint64_t> v, uint64_t relPos, QueryInfo* queryInfo)
 }
 
 
-void swapSort(uint64_t * a, uint64_t * b) {
-    int t = *a;
-    *a = *b;
-    *b = t;
-}
-
-uint64_t partition (uint64_t arr[], uint64_t low, uint64_t high) {
-    uint64_t pivot = arr[high];    // pivot
-    uint64_t i = (low - 1);  // Index of smaller element
-
-    for (uint64_t j = low; j <= high - 1; j++) {
-        // If current element is smaller than or
-        // equal to pivot
-        if (arr[j] <= pivot) {
-            i++;    // increment index of smaller element
-            swapSort(&arr[i], &arr[j]);
-        }
-    }
-    swapSort(&arr[i + 1], &arr[high]);
-    return (i + 1);
-}
-
-/* The main function that implements QuickSort
- arr[] --> Array to be sorted,
-  low  --> Starting index,
-  high  --> Ending index */
-void quickSort(uint64_t arr[], uint64_t low, uint64_t high) {
-    if (low < high) {
-        /* pi is partitioning index, arr[p] is now
-           at right place */
-        uint64_t pi = partition(arr, low, high);
-
-        // Separately sort elements before
-        // partition and after partition
-        quickSort(arr, low, pi - 1);
-        quickSort(arr, pi + 1, high);
-    }
-}
-
 /*
 Creates a vector that contains all the posible combinations of the relations
 */
-std::vector<std::vector<uint64_t>> makeRelationsSet(QueryInfo * queryInfo) {
+std::vector<std::vector<uint64_t>> makeRelationsSet(QueryInfo * queryInfo, uint64_t filterRelPos) {
     uint64_t count = queryInfo->relationsCount;
     uint64_t * relations = new uint64_t[count];
     for (size_t i = 0; i < count; i++) {
@@ -852,8 +819,15 @@ std::vector<std::vector<uint64_t>> makeRelationsSet(QueryInfo * queryInfo) {
         end = relationsSet.size();
     }
     // std::cout << "\n" << '\n';
-    // sort(relationsSet.begin(), relationsSet.end());
-    return relationsSet;
+    std::vector<std::vector<uint64_t>> finalRelationsSet;
+    if (filterRelPos != (uint64_t) -1) {
+        for (auto it: relationsSet) {
+            if (isInVector(it, filterRelPos)) {
+                finalRelationsSet.push_back(it);
+            }
+        }
+    }
+    return finalRelationsSet;
 }
 
 /*
@@ -864,8 +838,6 @@ void joinEnumeration(QueryInfo* queryInfo) {
     uint64_t predicatesCount = queryInfo->predicatesCount;
     uint64_t * relations = queryInfo->relations;
     uint64_t count = queryInfo->relationsCount;
-
-    std::vector<std::vector<uint64_t>> relationsSet = makeRelationsSet(queryInfo);
 
     // calculate stats for filters and self joins
     for (size_t i = 0; i < predicatesCount; i++) {
@@ -888,6 +860,26 @@ void joinEnumeration(QueryInfo* queryInfo) {
         }
     }
 
+    // Put the filter alwasy first
+    uint64_t filterRelPos = (uint64_t) -1;
+    for (size_t i = 0; i < predicatesCount; i++) {
+        if (predicates[i].predicateType == FILTER) {
+            filterRelPos = predicates[i].relationA;
+            swapPredicates(&predicates[0], &predicates[i]);
+        }
+    }
+    // if (filterRelPos != (uint64_t) -1) {
+    //     std::cout << "Filter exists for " << filterRelPos << '\n';
+    //     std::string relStr = std::to_string(filterRelPos);
+    //     std::vector<uint64_t> v = { filterRelPos };
+    //     JoinTree * jt = new JoinTree(filterRelPos, queryInfo);
+    //     bestTree[relStr] = jt;
+    // }
+    std::vector<std::vector<uint64_t>> relationsSet = makeRelationsSet(queryInfo, filterRelPos);
+    // for (auto cur: relationsSet) {
+    //     // std::cout << "set = " << vectorToString(cur) << '\n';
+    // }
+
     std::unordered_map<std::string, JoinTree *> bestTree;
 
     // Add to the hash table the costs for the single relations
@@ -899,9 +891,6 @@ void joinEnumeration(QueryInfo* queryInfo) {
         bestTree[relStr] = jt;
     }
 
-    for (auto cur: relationsSet) {
-        // std::cout << "set = " << vectorToString(cur) << '\n';
-    }
 
     string str = "";
     // Add to the hash table the costs for all the other combinations
@@ -964,8 +953,8 @@ void joinEnumeration(QueryInfo* queryInfo) {
     str = vectorToString(relationsSet.back());
     JoinTree * jt = bestTree[str];
     copyPredicates(&queryInfo->predicates, jt->getPredicates(), queryInfo->predicatesCount);
-    Predicate * predicates2 = jt->getPredicates();
-    for (size_t i = 0; i < queryInfo->predicatesCount; i++) {
-        printPredicate(&predicates2[i]);
-    }
+    // Predicate * predicates2 = jt->getPredicates();
+    // for (size_t i = 0; i < queryInfo->predicatesCount; i++) {
+    //     printPredicate(&predicates2[i]);
+    // }
 }
