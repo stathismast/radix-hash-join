@@ -62,7 +62,7 @@ void calculateStats(Relation * rel){
                 rel->d[i]++;
             }
         }
-
+        //
         // std::cout << i << ": l=" << rel->l[i]
         //                << "  u=" << rel->u[i]
         //                << "  f=" << rel->f[i]

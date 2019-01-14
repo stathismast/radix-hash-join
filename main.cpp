@@ -82,8 +82,6 @@ int main(void){
     //execute queries etc
     executeQueries();
 
-    // initializeStats();
-
     // Stats newStats = evalJoinStats(0,2,1,0);
     // std::cout << "Evaluated = " << newStats.f << '\n';
 
@@ -101,13 +99,16 @@ int main(void){
     // std::cout << '\n';
     // printStats(1);
 
-    // updateGreaterFilterStats(1,2,5000);
-    // updateJoinStats(1,1,4,1);
-    // std::cout << "\n\nefore\n";
-    // printStats(1);
+    // initializeStats();
+    // std::cout << "\n\nBefore\n";
+    // printStats(9);
+    // updateGreaterFilterStats(9,3,3991);
+    // updateJoinStats(9,2,1,0);
     // updateJoinStats(0,1,1,1);
     // std::cout << "\n\nAfter\n";
-    // printStats(0);
+    // printStats(1);
+    // std::cout << '\n';
+    // printStats(9);
     // std::cout << '\n';
     // printStats(1);
     // std::cout << '\n';
@@ -117,7 +118,7 @@ int main(void){
     //     std::cout << "uwu" << '\n';
     // }
 
-    // deleteStats();   
+    // deleteStats();
     unMapAllData(r, relationsSize);
 
     myJobScheduler->Stop();
