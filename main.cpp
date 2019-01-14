@@ -123,6 +123,7 @@ int main(void){
 
     myJobScheduler->Stop();
     myJobScheduler->Destroy();
+    deleteStats();
     delete myJobScheduler;
 
     return 0;

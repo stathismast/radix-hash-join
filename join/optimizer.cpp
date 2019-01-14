@@ -666,6 +666,12 @@ void JoinTree::printStats() {
 
 JoinTree::~JoinTree () {
     // TO IMPLEMENT THIS EVENTUALY
+    // delete[] relations;
+    delete[] predicates;
+    for(uint64_t i=0; i<relationsSize; i++){
+        delete[] myStats[i];
+    }
+    delete[] myStats;
 }
 
 void swapPredicates(Predicate * A, Predicate * B){
@@ -827,6 +833,7 @@ std::vector<std::vector<uint64_t>> makeRelationsSet(QueryInfo * queryInfo, uint6
             }
         }
     }
+    delete [] relations;
     return finalRelationsSet;
 }
 
@@ -943,7 +950,10 @@ void joinEnumeration(QueryInfo* queryInfo) {
                 // Replace the old one if the new cost is better
                 if (eval < best->getCost()) {
                     // std::cout << eval << " < " << best->getCost() << '\n';
+                    delete best;
                     bestTree[str] = jt;
+                } else {
+                    delete jt;
                 }
             }
         }
@@ -952,7 +962,12 @@ void joinEnumeration(QueryInfo* queryInfo) {
     // Copy the best order for the predicates in query info
     str = vectorToString(relationsSet.back());
     JoinTree * jt = bestTree[str];
+    delete[] queryInfo->predicates;
     copyPredicates(&queryInfo->predicates, jt->getPredicates(), queryInfo->predicatesCount);
+    for (auto it: bestTree ) {
+        delete it.second;
+        // std::cout << it.second->getCost() << '\n';
+    }
     // Predicate * predicates2 = jt->getPredicates();
     // for (size_t i = 0; i < queryInfo->predicatesCount; i++) {
     //     printPredicate(&predicates2[i]);
