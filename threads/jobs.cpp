@@ -53,9 +53,9 @@ Column * bucketifyThread(Column * rel,
     //last thread may take extra length
     myJobScheduler->Schedule(new HistogramJob(startA,length+lastExtra,&histograms[i]));
 
-    //std::cout << "Before barrier 1" << '\n';
+    //std::cerr << "Before barrier 1" << '\n';
     myJobScheduler->Barrier(4);
-    //std::cout << "After barrier 1" << '\n';
+    //std::cerr << "After barrier 1" << '\n';
 
     //construct the whole histogram
     uint64_t * wholeHistogram = new uint64_t[numberOfBuckets];
@@ -102,9 +102,9 @@ Column * bucketifyThread(Column * rel,
     myJobScheduler->Schedule(new PartitionJob(rel,start,length+lastExtra,psums[i],
                                     numberOfBuckets,threadOrdered));
 
-    //std::cout << "Before barrier 2" << '\n';
+    //std::cerr << "Before barrier 2" << '\n';
     myJobScheduler->Barrier(4);
-    //std::cout << "After barrier 2" << '\n';
+    //std::cerr << "After barrier 2" << '\n';
 
     delete[] histograms[0];
     for (uint64_t i = 1; i < 4; i++) {
@@ -191,15 +191,15 @@ HistogramJob::HistogramJob( uint64_t * curStart, uint64_t curLength,
                             uint64_t ** curGlobalPos)
 :start(curStart),length(curLength),myHistogram(curGlobalPos)
 {
-    //std::cout << "A HistogramJob is created!" << '\n';
+    //std::cerr << "A HistogramJob is created!" << '\n';
 }
 
 HistogramJob::~HistogramJob(){
-    //std::cout << "A HistogramJob is destroyed!" << '\n';
+    //std::cerr << "A HistogramJob is destroyed!" << '\n';
 }
 
 uint64_t HistogramJob::Run(){
-    //std::cout << "A HistogramJob is running!" << '\n';
+    //std::cerr << "A HistogramJob is running!" << '\n';
 
     calculateThreadHistogram(start,length,*myHistogram);
 
@@ -214,7 +214,7 @@ PartitionJob::PartitionJob( Column * curOriginal,
 }
 
 PartitionJob::~PartitionJob(){
-    //std::cout << "A PartitionJob is destroyed!" << '\n';
+    //std::cerr << "A PartitionJob is destroyed!" << '\n';
 }
 
 uint64_t PartitionJob::Run(){
@@ -243,7 +243,7 @@ uint64_t PartitionJob::Run(){
 JoinJob::JoinJob(uint64_t bucketNumber)
 {
     this->bucketNumber = bucketNumber;
-    //std::cout << "A JoinJob is created!" << '\n';
+    //std::cerr << "A JoinJob is created!" << '\n';
 }
 
 JoinJob::~JoinJob(){

@@ -63,7 +63,7 @@ void calculateStats(Relation * rel){
             }
         }
         //
-        // std::cout << i << ": l=" << rel->l[i]
+        // std::cerr << i << ": l=" << rel->l[i]
         //                << "  u=" << rel->u[i]
         //                << "  f=" << rel->f[i]
         //                << "  d=" << rel->d[i] << "\n";
@@ -71,7 +71,7 @@ void calculateStats(Relation * rel){
         delete[] tempArray;
     }
 
-    // std::cout << "\n";
+    // std::cerr << "\n";
 }
 
 // Given a file name, this function will create a return a Relation struct
@@ -111,9 +111,9 @@ void unmapData(Relation rel){
 void printData(Relation rel){
     for(uint64_t i=0; i<rel.rows; i++){
         for(uint64_t j=0; j<rel.cols; j++){
-            std::cout << rel.data[j][i] << "|";
+            std::cerr << rel.data[j][i] << "|";
         }
-        std::cout << std::endl;
+        std::cerr << std::endl;
     }
 }
 
@@ -135,7 +135,7 @@ void mapAllData(Relation ** r, uint64_t * relationsSize){
 
     // Deallocate memory used for file paths
     for(uint64_t i=0; i<*relationsSize; i++){
-        // std::cout << inputFiles[i] << std::endl;
+        // std::cerr << inputFiles[i] << std::endl;
         delete[] inputFiles[i];
     }
     delete[] inputFiles;

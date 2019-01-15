@@ -63,7 +63,7 @@ void printFiles(StringList * list){
     SLNode * current;
     current = list->first;
     while(current != NULL){
-        std::cout << current->filePath << '\n';
+        std::cerr << current->filePath << '\n';
         current = current->next;
     }
 }

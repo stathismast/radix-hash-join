@@ -9,7 +9,7 @@ Description : Implementation of methods of structs Node and Result,
 #define CHECK_OR_EXIT(value)                                        \
 {                                                                   \
     if (value == NULL) {                                            \
-        std::cout << "Error at memory allocation." << std::endl;    \
+        std::cerr << "Error at memory allocation." << std::endl;    \
         exit(EXIT_FAILURE);                                         \
     }                                                               \
 }
@@ -139,23 +139,23 @@ void insertSingleToNode(Node * node, uint64_t rowid){
 
 void printNodeDoubleResult(Node * node){
     uint64_t rowidA,rowidB,offset=0;
-    // std::cout << "count:" << node->count << '\n';
+    // std::cerr << "count:" << node->count << '\n';
     for (uint64_t i = 0; i < node->count; i++) {
         memcpy(&rowidA,node->buffer + offset,sizeof(uint64_t));
         offset++;
         memcpy(&rowidB,node->buffer + offset,sizeof(uint64_t));
         offset++;
-        std::cout << "rowidA:" << rowidA << " | rowidB:" << rowidB << '\n';
+        std::cerr << "rowidA:" << rowidA << " | rowidB:" << rowidB << '\n';
     }
 }
 
 void printNodeSingleResult(Node * node){
     uint64_t rowid,offset=0;
-    // std::cout << "count:" << node->count << '\n';
+    // std::cerr << "count:" << node->count << '\n';
     for (uint64_t i = 0; i < node->count; i++) {
         memcpy(&rowid,node->buffer + offset,sizeof(uint64_t));
         offset++;
-        std::cout << "rowid:" << rowid << '\n';
+        std::cerr << "rowid:" << rowid << '\n';
     }
 }
 
@@ -196,13 +196,13 @@ void insertToNode(Node * node, uint64_t * entries, uint64_t entryCount){
 
 void printNodeResult(Node * node, uint64_t entryCount){
     uint64_t entry;
-    // std::cout << "count:" << node->count << '\n';
+    // std::cerr << "count:" << node->count << '\n';
     for (uint64_t i=0; i<node->count; i++) {
         for(uint64_t j=0; j<entryCount; j++){
             memcpy(&entry,node->buffer + entryCount*i + j, sizeof(uint64_t));
-            std::cout << entry << '|';
+            std::cerr << entry << '|';
         }
-        std::cout << std::endl;
+        std::cerr << std::endl;
     }
 }
 

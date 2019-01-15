@@ -10,7 +10,7 @@
 #define CHECK_OR_EXIT(value)                                        \
 {                                                                   \
     if (value == NULL) {                                            \
-        std::cout << "Error at memory allocation." << std::endl;    \
+        std::cerr << "Error at memory allocation." << std::endl;    \
         exit(EXIT_FAILURE);                                         \
     }                                                               \
 }

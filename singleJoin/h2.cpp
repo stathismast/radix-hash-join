@@ -6,9 +6,9 @@ uint64_t h2(uint64_t value, uint64_t prime){
 }
 
 void testNextPrime(uint64_t upTo){
-    std::cout << "Testing nextPrime up to " << upTo << std::endl;
+    std::cerr << "Testing nextPrime up to " << upTo << std::endl;
     for(uint64_t i=0; i<upTo; i++){
-        std::cout << i << ". " << nextPrime(i) << std::endl;
+        std::cerr << i << ". " << nextPrime(i) << std::endl;
     }
 }
 
@@ -99,23 +99,23 @@ void bucketify2(Column * rel,
     }
 
     // Debugging prints
-    // std::cout << "Ordered bucket:" << std::endl;
+    // std::cerr << "Ordered bucket:" << std::endl;
     // for (uint64_t i = startingPos; i < bucketSize + startingPos; i++) {
-    //     std::cout << "\t"<<  i - startingPos  << ": "
+    //     std::cerr << "\t"<<  i - startingPos  << ": "
     //     << rel->value[i] << ": "
     //     << h2(rel->value[i], prime) << ": "
     //     << prime << std::endl;
     // }
-    // std::cout << std::endl;
+    // std::cerr << std::endl;
 
-    // std::cout << "bucketArray:" << std::endl;
+    // std::cerr << "bucketArray:" << std::endl;
     // for (uint64_t i = 0; i < prime; i++) {
-    //     std::cout << "\t" << i << ": " << (*bucketArray)[i] << std::endl;
+    //     std::cerr << "\t" << i << ": " << (*bucketArray)[i] << std::endl;
     // }
-    // std::cout << std::endl;
+    // std::cerr << std::endl;
 
-    // std::cout << "chainArray:" << std::endl;
+    // std::cerr << "chainArray:" << std::endl;
     // for (uint64_t i = 0; i < bucketSize; i++) {
-    //     std::cout << "\t" << i << ": " << (*chainArray)[i] << std::endl;
+    //     std::cerr << "\t" << i << ": " << (*chainArray)[i] << std::endl;
     // }
 }

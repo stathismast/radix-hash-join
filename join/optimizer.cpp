@@ -36,12 +36,12 @@ JoinTree::JoinTree (uint64_t rel, QueryInfo * queryInfo) {
     this->lastPredicate = reorderFilters(rel);
 
     this->myStats = copyStats(this->myStats, stats, queryInfo);
-    // std::cout << "Made " << predicateStr << '\n';
-    // std::cout << "lastPredicate = " << lastPredicate << '\n';
+    // std::cerr << "Made " << predicateStr << '\n';
+    // std::cerr << "lastPredicate = " << lastPredicate << '\n';
     // for (size_t i = 0; i < predicatesCount; i++) {
     //     printPredicate(&predicates[i]);
     // }
-    // std::cout << '\n';
+    // std::cerr << '\n';
     // printStats();
     // std::cerr << "===================================\n" << '\n';
 }
@@ -66,7 +66,7 @@ JoinTree::JoinTree (JoinTree * jt, uint64_t rel, QueryInfo * queryInfo) {
     // this->lastPredicate = reorderFilters();
     // this->lastPredicate = reorderFilters(rel);
     // this->cost += myStats[relations[rel]][0].f;
-    // std::cout << "Joining " << jt->predicateStr << " and " << rel << '\n';
+    // std::cerr << "Joining " << jt->predicateStr << " and " << rel << '\n';
 
     // Assing jt set to our set temporarily so in the calculation of the stats
     // this set will be used
@@ -89,7 +89,7 @@ JoinTree::JoinTree (JoinTree * jt, uint64_t rel, QueryInfo * queryInfo) {
             // Find if any of the relations of current join are in set
             bool f1 = isInVector(this->irSet, relPosA);
             bool f2 = isInVector(this->irSet, relPosB);
-            // std::cout << "relA = " << relA << " relB = " << relB << " rel = " << rel << '\n';
+            // std::cerr << "relA = " << relA << " relB = " << relB << " rel = " << rel << '\n';
             if ( (f1 || f2) && (rel == relPosA || rel == relPosB)) {
                 fflush(stdout);
                 // The first relation will be the one on this->irSet
@@ -113,9 +113,9 @@ JoinTree::JoinTree (JoinTree * jt, uint64_t rel, QueryInfo * queryInfo) {
     this->predicateStr = vectorToString(this->irSet);
     // this->lastPredicate = reorderFilters(rel);
 
-    // std::cout << "Made " << predicateStr << '\n';
-    // std::cout << "Connected " << jt->predicateStr << " and " << rel << '\n';
-    // std::cout << "Cost for " << predicateStr << " = " << jt->cost << " + " << myStats[relations[rel]][0].f << '\n';
+    // std::cerr << "Made " << predicateStr << '\n';
+    // std::cerr << "Connected " << jt->predicateStr << " and " << rel << '\n';
+    // std::cerr << "Cost for " << predicateStr << " = " << jt->cost << " + " << myStats[relations[rel]][0].f << '\n';
     // for (size_t i = 0; i < predicatesCount; i++) {
     //     printPredicate(&predicates[i]);
     // }
@@ -176,8 +176,8 @@ void JoinTree::updateLessFilterStatsIR(uint64_t rel, uint64_t col, uint64_t k) {
             myStats[rel][i].d = 0;
             myStats[rel][i].f = 0;
         } else {
-            // std::cout << fc/dc << std::endl;
-            // std::cout << 1-(newStats.f/f) << std::endl;
+            // std::cerr << fc/dc << std::endl;
+            // std::cerr << 1-(newStats.f/f) << std::endl;
             myStats[rel][i].d = dc * (1-pow((1-(newStats.f/f)), fc/dc));
             myStats[rel][i].f = newStats.f;
         }
@@ -185,7 +185,7 @@ void JoinTree::updateLessFilterStatsIR(uint64_t rel, uint64_t col, uint64_t k) {
 
     // Update the stats of every other column that would be in the intermediate
     for (uint64_t j = 0; j < this->irSet.size(); j++) {
-        // std::cout << "it = " << set[i] << '\n';
+        // std::cerr << "it = " << set[i] << '\n';
         uint64_t setRel = relations[this->irSet[j]];
         if (setRel != rel ) {
             for(uint64_t i=0; i<r[setRel].cols; i++){
@@ -202,8 +202,8 @@ void JoinTree::updateLessFilterStatsIR(uint64_t rel, uint64_t col, uint64_t k) {
                     myStats[setRel][i].d = 0;
                     myStats[setRel][i].f = 0;
                 } else {
-                    // std::cout << fc/dc << std::endl;
-                    // std::cout << 1-(newStats.f/f) << std::endl;
+                    // std::cerr << fc/dc << std::endl;
+                    // std::cerr << 1-(newStats.f/f) << std::endl;
                     myStats[setRel][i].d = dc * (1-pow((1-(newStats.f/f)), fc/dc));
                     myStats[setRel][i].f = newStats.f;
                 }
@@ -259,8 +259,8 @@ void JoinTree::updateGreaterFilterStatsIR(uint64_t rel, uint64_t col, uint64_t k
             myStats[rel][i].d = 0;
             myStats[rel][i].f = 0;
         } else {
-            // std::cout << fc/dc << std::endl;
-            // std::cout << 1-(newStats.f/f) << std::endl;
+            // std::cerr << fc/dc << std::endl;
+            // std::cerr << 1-(newStats.f/f) << std::endl;
             myStats[rel][i].d = dc * (1-pow((1-(newStats.f/f)), fc/dc));
             myStats[rel][i].f = newStats.f;
         }
@@ -268,7 +268,7 @@ void JoinTree::updateGreaterFilterStatsIR(uint64_t rel, uint64_t col, uint64_t k
 
     // Update the stats of every other column that would be in the intermediate
     for (uint64_t j = 0; j < this->irSet.size(); j++) {
-        // std::cout << "it = " << set[i] << '\n';
+        // std::cerr << "it = " << set[i] << '\n';
         uint64_t setRel = relations[this->irSet[j]];
         if (setRel != rel ) {
             for(uint64_t i=0; i<r[setRel].cols; i++){
@@ -284,8 +284,8 @@ void JoinTree::updateGreaterFilterStatsIR(uint64_t rel, uint64_t col, uint64_t k
                     myStats[setRel][i].d = 0;
                     myStats[setRel][i].f = 0;
                 } else {
-                    // std::cout << fc/dc << std::endl;
-                    // std::cout << 1-(newStats.f/f) << std::endl;
+                    // std::cerr << fc/dc << std::endl;
+                    // std::cerr << 1-(newStats.f/f) << std::endl;
                     myStats[setRel][i].d = dc * (1-pow((1-(newStats.f/f)), fc/dc));
                     myStats[setRel][i].f = newStats.f;
                 }
@@ -342,8 +342,8 @@ void JoinTree::updateLessFilterStats(uint64_t rel, uint64_t col, uint64_t k) {
             myStats[rel][i].d = 0;
             myStats[rel][i].f = 0;
         } else {
-            // std::cout << fc/dc << std::endl;
-            // std::cout << 1-(newStats.f/f) << std::endl;
+            // std::cerr << fc/dc << std::endl;
+            // std::cerr << 1-(newStats.f/f) << std::endl;
             myStats[rel][i].d = dc * (1-pow((1-(newStats.f/f)), fc/dc));
             myStats[rel][i].f = newStats.f;
         }
@@ -397,8 +397,8 @@ void JoinTree::updateGreaterFilterStats(uint64_t rel, uint64_t col, uint64_t k) 
             myStats[rel][i].d = 0;
             myStats[rel][i].f = 0;
         } else {
-            // std::cout << fc/dc << std::endl;
-            // std::cout << 1-(newStats.f/f) << std::endl;
+            // std::cerr << fc/dc << std::endl;
+            // std::cerr << 1-(newStats.f/f) << std::endl;
             myStats[rel][i].d = dc * (1-pow((1-(newStats.f/f)), fc/dc));
             myStats[rel][i].f = newStats.f;
         }
@@ -411,8 +411,8 @@ void JoinTree::updateJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint
     Stats newStatsB;
     double da = myStats[relA][colA].d;
     double db = myStats[relB][colB].d;
-    // std::cout << "relA = " << relA << ", relB = " << relB << '\n';
-    // std::cout << "colA = " << colA << ", colB = " << colB << '\n';
+    // std::cerr << "relA = " << relA << ", relB = " << relB << '\n';
+    // std::cerr << "colA = " << colA << ", colB = " << colB << '\n';
 
     double newL = max(myStats[relA][colA].l, myStats[relB][colB].l);
     double newU = min(myStats[relA][colA].u, myStats[relB][colB].u);
@@ -426,7 +426,7 @@ void JoinTree::updateJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint
     newStatsA.l = newStatsB.l = newL;
     newStatsA.u = newStatsB.u = newU;
     double n = newU - newL + 1;
-    // std::cout << "n = " << n << '\n';
+    // std::cerr << "n = " << n << '\n';
     if (n == 0) {
         newStatsA.f = newStatsA.d = newStatsB.f = newStatsB.d = 0;
     }
@@ -450,7 +450,7 @@ void JoinTree::updateJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint
             myStats[relA][i].d = 0;
             myStats[relA][i].f = 0;
         } else {
-            // std::cout << fc/dc << std::endl;
+            // std::cerr << fc/dc << std::endl;
             myStats[relA][i].d = dc * (1-pow((1-(newStatsA.d/da)), fc/dc));
             myStats[relA][i].f = newStatsA.f;
         }
@@ -468,7 +468,7 @@ void JoinTree::updateJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint
             myStats[relB][i].d = 0;
             myStats[relB][i].f = 0;
         } else {
-            // std::cout << fc/dc << std::endl;
+            // std::cerr << fc/dc << std::endl;
             myStats[relB][i].d = dc * (1-pow((1-(newStatsB.d/db)), fc/dc));
             myStats[relB][i].f = newStatsB.f;
         }
@@ -476,7 +476,7 @@ void JoinTree::updateJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint
 
     // Update the stats of every other column that would be in the intermediate
     for (uint64_t j = 0; j < this->irSet.size(); j++) {
-        // std::cout << "it = " << set[j] << '\n';
+        // std::cerr << "it = " << set[j] << '\n';
         uint64_t setRel = relations[this->irSet[j]];
         if (setRel != relB && setRel != relA) {
             for(uint64_t i=0; i<r[setRel].cols; i++){
@@ -493,8 +493,8 @@ void JoinTree::updateJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint
                     myStats[setRel][i].d = 0;
                     myStats[setRel][i].f = 0;
                 } else {
-                    // std::cout << fc/dc << std::endl;
-                    // std::cout << 1-(newStats.f/f) << std::endl;
+                    // std::cerr << fc/dc << std::endl;
+                    // std::cerr << 1-(newStats.f/f) << std::endl;
                     myStats[setRel][i].d = dc * (1-pow((1-(newStatsA.d/da)), fc/dc));
                     myStats[setRel][i].f = newStatsA.f;
                 }
@@ -602,7 +602,7 @@ Stats JoinTree::evalJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint6
     newStatsA.l = newStatsB.l = newL;
     newStatsA.u = newStatsB.u = newU;
     double n = newU - newL + 1;
-    // std::cout << "n = " << n << '\n';
+    // std::cerr << "n = " << n << '\n';
     if (n == 0) {
         newStatsA.f = 0;
     }
@@ -653,14 +653,14 @@ void JoinTree::printStats() {
     for (size_t j = 0; j < relationsCount; j++) {
         uint64_t rel = relations[j];
         for (size_t i = 0; i < r[rel].cols; i++) {
-            std::cout << rel << "." << i;
+            std::cerr << rel << "." << i;
             fflush(stdout);
-            std::cout << ": l=" << myStats[rel][i].l
+            std::cerr << ": l=" << myStats[rel][i].l
             << "  u=" << myStats[rel][i].u
             << "  f=" << myStats[rel][i].f
             << "  d=" << myStats[rel][i].d << "\n";
         }
-        std::cout << '\n';
+        std::cerr << '\n';
     }
 }
 
@@ -723,7 +723,7 @@ bool isConnected(std::vector<uint64_t> v, uint64_t relPos, QueryInfo* queryInfo)
     // uint64_t * relations = queryInfo->relations;
 
     // uint64_t rel = relations[relPos];
-    // std::cout << "Checking if realtion " << relPos << " is connectd with " << vectorToString(v) << '\n';
+    // std::cerr << "Checking if realtion " << relPos << " is connectd with " << vectorToString(v) << '\n';
     for (size_t i = 0; i < count; i++) {
         if (predicates[i].predicateType == JOIN) {
             uint64_t relPosA = predicates[i].relationA;
@@ -733,13 +733,13 @@ bool isConnected(std::vector<uint64_t> v, uint64_t relPos, QueryInfo* queryInfo)
 
             bool f1 = isInVector(v, relPosA);
             if (f1) {
-                // std::cout << "A:" << i << " in " << vectorToString(v) << '\n';
+                // std::cerr << "A:" << i << " in " << vectorToString(v) << '\n';
             }
             bool f2 = isInVector(v, relPosB);
             if (f2) {
-                // std::cout << "B:" << i << " in " << vectorToString(v) << '\n';
+                // std::cerr << "B:" << i << " in " << vectorToString(v) << '\n';
             }
-            // std::cout << "relPosA = " << relPosA << ", relPosB = " << relPosB << '\n';
+            // std::cerr << "relPosA = " << relPosA << ", relPosB = " << relPosB << '\n';
             if ( (f1 || f2) && (relPos == relPosA || relPos == relPosB))
                 return true;
         }
@@ -758,10 +758,10 @@ std::vector<std::vector<uint64_t>> makeRelationsSet(QueryInfo * queryInfo, uint6
     for (size_t i = 0; i < count; i++) {
         relations[i] = queryInfo->relations[i];
     }
-    // std::cout << "count = " << count << '\n';
+    // std::cerr << "count = " << count << '\n';
     // quickSort(relations, 0, count - 1);
     // for (size_t i = 0; i < count; i++) {
-    //     // std::cout << "ordered set = " << relations[i] << '\n';
+    //     // std::cerr << "ordered set = " << relations[i] << '\n';
     // }
     std::vector<std::vector<uint64_t>> relationsSet;
     // We use 14 here since we know we have at most 4 relations and all the
@@ -777,7 +777,7 @@ std::vector<std::vector<uint64_t>> makeRelationsSet(QueryInfo * queryInfo, uint6
     }
 
     // for (size_t i = 0; i < count; i++) {
-    //     std::cout << "set = " << vectorToString(relationsSet[i]) << '\n';
+    //     std::cerr << "set = " << vectorToString(relationsSet[i]) << '\n';
     // }
 
     size_t start = 0;
@@ -785,7 +785,7 @@ std::vector<std::vector<uint64_t>> makeRelationsSet(QueryInfo * queryInfo, uint6
     std::vector<uint64_t> newV;
     while (1) {
         // For every combination of sets
-        // std::cout << start << ", " << end << '\n';
+        // std::cerr << start << ", " << end << '\n';
         std::vector<uint64_t> newV;
         for (size_t i = start; i < end; i++) {
             std::vector<uint64_t> cur = relationsSet[i];
@@ -801,11 +801,11 @@ std::vector<std::vector<uint64_t>> makeRelationsSet(QueryInfo * queryInfo, uint6
                 }
             }
             for (size_t j = last; j < count; j++) {
-                // std::cout << "i = " << i << " last = " << last << " and count = " << count  << '\n';
+                // std::cerr << "i = " << i << " last = " << last << " and count = " << count  << '\n';
                 // Ignore non connected sets
-                // std::cout << "cur = " << curStr << " and rel = " << j << '\n';
+                // std::cerr << "cur = " << curStr << " and rel = " << j << '\n';
                 if (!isConnected(cur, j, queryInfo) || isInVector(cur, j)) {
-                    // std::cout << " are not connected" << "\n\n";
+                    // std::cerr << " are not connected" << "\n\n";
                     continue;
                 }
                 newV = makeSet(cur, j);
@@ -813,10 +813,10 @@ std::vector<std::vector<uint64_t>> makeRelationsSet(QueryInfo * queryInfo, uint6
                 // newV.push_back(relations[j]);
                 // sort(newV.begin(), newV.end());
                 relationsSet.push_back(newV);
-                // std::cout << "pushed " << vectorToString(newV) << '\n';
-                // std::cout << " are connected" << "\n\n";
+                // std::cerr << "pushed " << vectorToString(newV) << '\n';
+                // std::cerr << " are connected" << "\n\n";
             }
-            // std::cout << "start = " << start << " end = " << end << '\n';
+            // std::cerr << "start = " << start << " end = " << end << '\n';
         }
         // Stop when the last set that got added contained all the relations
         if (newV.size() >= count)
@@ -824,7 +824,7 @@ std::vector<std::vector<uint64_t>> makeRelationsSet(QueryInfo * queryInfo, uint6
         start = end;
         end = relationsSet.size();
     }
-    // std::cout << "\n" << '\n';
+    // std::cerr << "\n" << '\n';
     std::vector<std::vector<uint64_t>> finalRelationsSet;
     if (filterRelPos != (uint64_t) -1) {
         for (auto it: relationsSet) {
@@ -850,7 +850,7 @@ void joinEnumeration(QueryInfo* queryInfo) {
     for (size_t i = 0; i < predicatesCount; i++) {
         uint64_t relA = relations[predicates[i].relationA];
         if (predicates[i].predicateType == FILTER) {
-            // std::cout << "updating i = " << i << ", relA = " << predicates[i].relationA
+            // std::cerr << "updating i = " << i << ", relA = " << predicates[i].relationA
             //     << "." << predicates[i].columnA<< '\n';
             if (predicates[i].op == '=') {
                 updateEqualFilterStats(relA, \
@@ -876,7 +876,7 @@ void joinEnumeration(QueryInfo* queryInfo) {
         }
     }
     // if (filterRelPos != (uint64_t) -1) {
-    //     std::cout << "Filter exists for " << filterRelPos << '\n';
+    //     std::cerr << "Filter exists for " << filterRelPos << '\n';
     //     std::string relStr = std::to_string(filterRelPos);
     //     std::vector<uint64_t> v = { filterRelPos };
     //     JoinTree * jt = new JoinTree(filterRelPos, queryInfo);
@@ -884,7 +884,7 @@ void joinEnumeration(QueryInfo* queryInfo) {
     // }
     std::vector<std::vector<uint64_t>> relationsSet = makeRelationsSet(queryInfo, filterRelPos);
     // for (auto cur: relationsSet) {
-    //     // std::cout << "set = " << vectorToString(cur) << '\n';
+    //     // std::cerr << "set = " << vectorToString(cur) << '\n';
     // }
 
     std::unordered_map<std::string, JoinTree *> bestTree;
@@ -922,11 +922,11 @@ void joinEnumeration(QueryInfo* queryInfo) {
             JoinTree * best = bestTree[str];
 
             if (curTree == NULL) {
-                // std::cout << "For some unexpected reason curTree is null for " << curStr << '\n';
+                // std::cerr << "For some unexpected reason curTree is null for " << curStr << '\n';
             }
             // If we have not made joint tree for the current set make it
             if (best == NULL) {
-                // std::cout << "  Best does not exist for " << str << '\n';
+                // std::cerr << "  Best does not exist for " << str << '\n';
                 JoinTree * jt = new JoinTree(curTree, rel, queryInfo);
                 bestTree[str] = jt;
             } else {
@@ -937,11 +937,11 @@ void joinEnumeration(QueryInfo* queryInfo) {
                 // we just check for the reverse set. For example if we
                 // have 01 the, second time we check for 10. We don't need
                 // to do anything in this case
-                // std::cout << "  Best exists for " << str << " and we are gonna check"
+                // std::cerr << "  Best exists for " << str << " and we are gonna check"
                 // << " if the new cost is better" << '\n';
 
                 if (cur.size() == 1) {
-                    // std::cout << "    Actualy it's a case of a set of size 2 wealredy have so we move on" << '\n';
+                    // std::cerr << "    Actualy it's a case of a set of size 2 wealredy have so we move on" << '\n';
                     continue;
                 }
                 // Make the new tree with the different order and get the cost
@@ -949,7 +949,7 @@ void joinEnumeration(QueryInfo* queryInfo) {
                 double eval = jt->getCost();
                 // Replace the old one if the new cost is better
                 if (eval < best->getCost()) {
-                    // std::cout << eval << " < " << best->getCost() << '\n';
+                    // std::cerr << eval << " < " << best->getCost() << '\n';
                     delete best;
                     bestTree[str] = jt;
                 } else {
@@ -966,7 +966,7 @@ void joinEnumeration(QueryInfo* queryInfo) {
     copyPredicates(&queryInfo->predicates, jt->getPredicates(), queryInfo->predicatesCount);
     for (auto it: bestTree ) {
         delete it.second;
-        // std::cout << it.second->getCost() << '\n';
+        // std::cerr << it.second->getCost() << '\n';
     }
     // Predicate * predicates2 = jt->getPredicates();
     // for (size_t i = 0; i < queryInfo->predicatesCount; i++) {

@@ -22,7 +22,7 @@ class Job {
 public:
     Job() = default;
     virtual ~Job() {
-        //  std::cout << "A job will be destroyed!" << '\n';
+        //  std::cerr << "A job will be destroyed!" << '\n';
       }
 
     // This method should be implemented by subclasses.

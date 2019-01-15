@@ -88,8 +88,8 @@ void updateEqualFilterStats(uint64_t rel, uint64_t col, uint64_t k){
             stats[rel][i].d = 0;
             stats[rel][i].f = 0;
         } else {
-            // std::cout << fc/dc << std::endl;
-            // std::cout << 1-(newStats.f/f) << std::endl;
+            // std::cerr << fc/dc << std::endl;
+            // std::cerr << 1-(newStats.f/f) << std::endl;
             stats[rel][i].d = dc * (1-pow((1-(newStats.f/f)), fc/dc));
             stats[rel][i].f = newStats.f;
         }
@@ -144,8 +144,8 @@ void updateLessFilterStats(uint64_t rel, uint64_t col, uint64_t k) {
             stats[rel][i].d = 0;
             stats[rel][i].f = 0;
         } else {
-            // std::cout << fc/dc << std::endl;
-            // std::cout << 1-(newStats.f/f) << std::endl;
+            // std::cerr << fc/dc << std::endl;
+            // std::cerr << 1-(newStats.f/f) << std::endl;
             stats[rel][i].d = dc * (1-pow((1-(newStats.f/f)), fc/dc));
             stats[rel][i].f = newStats.f;
         }
@@ -199,8 +199,8 @@ void updateGreaterFilterStats(uint64_t rel, uint64_t col, uint64_t k) {
             stats[rel][i].d = 0;
             stats[rel][i].f = 0;
         } else {
-            // std::cout << fc/dc << std::endl;
-            // std::cout << 1-(newStats.f/f) << std::endl;
+            // std::cerr << fc/dc << std::endl;
+            // std::cerr << 1-(newStats.f/f) << std::endl;
             stats[rel][i].d = dc * (1-pow((1-(newStats.f/f)), fc/dc));
             stats[rel][i].f = newStats.f;
         }
@@ -211,7 +211,7 @@ void updateSelfJoinStats(uint64_t rel, uint64_t colA, uint64_t colB) {
 
     if (colA == colB) {
         /* code */
-        std::cout << "Corelation" << '\n';
+        std::cerr << "Corelation" << '\n';
         // call proper function
         return;
     }
@@ -257,8 +257,8 @@ void updateSelfJoinStats(uint64_t rel, uint64_t colA, uint64_t colB) {
             stats[rel][i].d = 0;
             stats[rel][i].f = 0;
         } else {
-            // std::cout << fc/dc << std::endl;
-            // std::cout << 1-(newStatsA.f/f) << std::endl;
+            // std::cerr << fc/dc << std::endl;
+            // std::cerr << 1-(newStatsA.f/f) << std::endl;
             stats[rel][i].d = dc * (1-pow((1-(newStatsA.f/f)), fc/dc));
             stats[rel][i].f = newStatsA.f;
         }
@@ -271,8 +271,8 @@ void updateJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB)
     Stats newStatsB;
     double da = stats[relA][colA].d;
     double db = stats[relB][colB].d;
-    // std::cout << "relA = " << relA << ", relB = " << relB << '\n';
-    // std::cout << "colA = " << colA << ", colB = " << colB << '\n';
+    // std::cerr << "relA = " << relA << ", relB = " << relB << '\n';
+    // std::cerr << "colA = " << colA << ", colB = " << colB << '\n';
 
     double newL = max(stats[relA][colA].l, stats[relB][colB].l);
     double newU = min(stats[relA][colA].u, stats[relB][colB].u);
@@ -286,7 +286,7 @@ void updateJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB)
     newStatsA.l = newStatsB.l = newL;
     newStatsA.u = newStatsB.u = newU;
     double n = newU - newL + 1;
-    // std::cout << "n = " << n << '\n';
+    // std::cerr << "n = " << n << '\n';
     if (n == 0) {
         newStatsA.f = newStatsA.d = newStatsB.f = newStatsB.d = 0;
     }
@@ -309,7 +309,7 @@ void updateJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB)
             stats[relA][i].d = 0;
             stats[relA][i].f = 0;
         } else {
-            // std::cout << fc/dc << std::endl;
+            // std::cerr << fc/dc << std::endl;
             stats[relA][i].d = dc * (1-pow((1-(newStatsA.d/da)), fc/dc));
             stats[relA][i].f = newStatsA.f;
         }
@@ -327,7 +327,7 @@ void updateJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB)
             stats[relB][i].d = 0;
             stats[relB][i].f = 0;
         } else {
-            // std::cout << fc/dc << std::endl;
+            // std::cerr << fc/dc << std::endl;
             stats[relB][i].d = dc * (1-pow((1-(newStatsB.d/db)), fc/dc));
             stats[relB][i].f = newStatsB.f;
         }
@@ -442,7 +442,7 @@ Stats evalSelfJoinStats(uint64_t rel, uint64_t colA, uint64_t colB) {
 
     if (colA == colB) {
         /* code */
-        std::cout << "Corelation" << '\n';
+        std::cerr << "Corelation" << '\n';
         // call proper function
         return newStatsA;
     }
@@ -505,7 +505,7 @@ Stats evalJoinStats(uint64_t relA, uint64_t colA, uint64_t relB, uint64_t colB) 
     newStatsA.l = newStatsB.l = newL;
     newStatsA.u = newStatsB.u = newU;
     double n = newU - newL + 1;
-    // std::cout << "n = " << n << '\n';
+    // std::cerr << "n = " << n << '\n';
     if (n == 0) {
         newStatsA.f = 0;
     }
@@ -526,7 +526,7 @@ void updateStats(uint64_t rel, uint64_t col, Stats newStats){
 
 void printStats(uint64_t rel) {
     for (size_t i = 0; i < r[rel].cols; i++) {
-        std::cout << rel << "." << i
+        std::cerr << rel << "." << i
                     << ": l=" << stats[rel][i].l
                     << "  u=" << stats[rel][i].u
                     << "  f=" << stats[rel][i].f

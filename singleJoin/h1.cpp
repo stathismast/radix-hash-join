@@ -38,8 +38,8 @@ uint64_t * calculateStartingPositions(uint64_t * histogram){
 // Print a given histogram (works with every uint64_t array of size = 1<<BITS)
 void printHistogram(uint64_t * histogram){
     for(uint64_t i=0; i<numberOfBuckets; i++)
-        std::cout << i << ". " << histogram[i] << std::endl;
-    std::cout << std::endl;
+        std::cerr << i << ". " << histogram[i] << std::endl;
+    std::cerr << std::endl;
 }
 
 // Create an array of tuples ordered by buckets

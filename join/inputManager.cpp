@@ -40,7 +40,7 @@ char ** getInputFiles(uint64_t * size){
 
     while(getline(&line, &s, stdin) > 0){
 
-        //std::cout << "line = " << line << '\n';
+        //std::cerr << "line = " << line << '\n';
         if(strcmp(line, "Done\n") == 0) {
             break;
         }
@@ -51,7 +51,7 @@ char ** getInputFiles(uint64_t * size){
 
         filePath = getFilePath(line);
         if(!fileExists(filePath)){
-            std::cout << "File " << filePath << " doesn't exist.\n\n";
+            std::cerr << "File " << filePath << " doesn't exist.\n\n";
             delete[] filePath;
             continue;
         }

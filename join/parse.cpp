@@ -118,25 +118,25 @@ QueryInfo * parseInput(char * query) {
     QueryInfo * queryInfo = new QueryInfo;
     queryInfo->predicatesCount = 0;
     queryInfo->sumsCount = 0;
-    std::cout << '\n' << "query: " << query;
+    std::cerr << '\n' << "query: " << query;
     char* relationsStr = strtok(query, "|");
     char* predicatesStr = strtok(NULL, "|");
     char* sumsStr = strtok(NULL, "|");
 
-    // std::cout << "RELATIONS" << '\n';
+    // std::cerr << "RELATIONS" << '\n';
     parseRelations(relationsStr, queryInfo);
 
-    // std::cout << "PREDICATES" << '\n';
+    // std::cerr << "PREDICATES" << '\n';
     parsePredicates(predicatesStr, queryInfo);
     // for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
-    //     std::cout << "\t";
+    //     std::cerr << "\t";
     //     printPredicate(&queryInfo->predicates[i]);
     // }
 
-    // std::cout << "SUMS" << '\n';
+    // std::cerr << "SUMS" << '\n';
     parseSums(sumsStr, queryInfo);
     // for (uint64_t i = 0; i < queryInfo->sumsCount; i++) {
-    //     std::cout << "\tsum = " << queryInfo->sums[i].relation
+    //     std::cerr << "\tsum = " << queryInfo->sums[i].relation
     //     << "." << queryInfo->sums[i].column << '\n';
     // }
 
@@ -169,7 +169,7 @@ void parseRelations(char * relationsStr, QueryInfo * queryInfo) {
 
     // print the relations of the query
     // for (uint64_t i = 0; i < relationsCount; i++) {
-    //     std::cout << "\trelation = " << queryInfo->relations[i] << '\n';
+    //     std::cerr << "\trelation = " << queryInfo->relations[i] << '\n';
     // }
 }
 

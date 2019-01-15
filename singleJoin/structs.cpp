@@ -85,8 +85,8 @@ void deleteColumn(Column * rel){
 
 void printColumn(Column * rel){
     for(uint64_t i=0; i<rel->size; i++){
-        std::cout << rel->rowid[i] << ". "
+        std::cerr << rel->rowid[i] << ". "
              << rel->value[i] << std::endl;
     }
-    std::cout << std::endl;
+    std::cerr << std::endl;
 }

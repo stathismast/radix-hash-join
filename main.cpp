@@ -24,7 +24,7 @@ void executeQueries() {
          }
 
         if (strcmp(line, "F\n") == 0) {
-            // std::cout << "**End of Batch**" << '\n';
+            // std::cerr << "**End of Batch**" << '\n';
             // free(line);
             continue;
         }
@@ -32,11 +32,11 @@ void executeQueries() {
         initializeStats();
         QueryInfo * queryInfo = parseInput(line);
         // joinEnumeration(queryInfo);
-        std::cout << '\n';
+        std::cerr << '\n';
 
-        // std::cout << "RE-ORDERED PREDICATES" << std::endl;
+        // std::cerr << "RE-ORDERED PREDICATES" << std::endl;
         // for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
-        //     std::cout << "\t";
+        //     std::cerr << "\t";
         //     printPredicate(&queryInfo->predicates[i]);
         // }
 
@@ -51,7 +51,7 @@ void executeQueries() {
 
         calculateSums(queryInfo, IR);
 
-        // std::cout << "Intermediate Results after query execution:" << '\n';
+        // std::cerr << "Intermediate Results after query execution:" << '\n';
         // printResult(IR->results, IR->relCount);
 
         deleteIntermediate(IR);
@@ -68,13 +68,13 @@ int main(void){
     stats = createStats();
 
     if( r == NULL ){ //no file found
-        std::cout << "No file found. Please try again. Bye!" << '\n';
+        std::cerr << "No file found. Please try again. Bye!" << '\n';
         return -1;
     }
 
     // Print the data from a given file
     // if(relationsSize) printData(r[0]);
-    std::cout << '\n';
+    std::cerr << '\n';
 
     myJobScheduler = new JobScheduler();
     myJobScheduler->Init(4);
@@ -83,39 +83,39 @@ int main(void){
     executeQueries();
 
     // Stats newStats = evalJoinStats(0,2,1,0);
-    // std::cout << "Evaluated = " << newStats.f << '\n';
+    // std::cerr << "Evaluated = " << newStats.f << '\n';
 
-    // std::cout << "\n\nBefore\n";
+    // std::cerr << "\n\nBefore\n";
     // printStats(0);
-    // std::cout << '\n';
+    // std::cerr << '\n';
     // printStats(1);
-    // std::cout << '\n';
-    // std::cout << '\n';
-    // std::cout << "0 JOIN 1" << '\n';
+    // std::cerr << '\n';
+    // std::cerr << '\n';
+    // std::cerr << "0 JOIN 1" << '\n';
     // updateJoinStats(0,1,1,1);
     // updateGreaterFilterStats(0,1,2500);
-    // std::cout << "\n\nAfter\n";
+    // std::cerr << "\n\nAfter\n";
     // printStats(0);
-    // std::cout << '\n';
+    // std::cerr << '\n';
     // printStats(1);
 
     // initializeStats();
-    // std::cout << "\n\nBefore\n";
+    // std::cerr << "\n\nBefore\n";
     // printStats(9);
     // updateGreaterFilterStats(9,3,3991);
     // updateJoinStats(9,2,1,0);
     // updateJoinStats(0,1,1,1);
-    // std::cout << "\n\nAfter\n";
+    // std::cerr << "\n\nAfter\n";
     // printStats(1);
-    // std::cout << '\n';
+    // std::cerr << '\n';
     // printStats(9);
-    // std::cout << '\n';
+    // std::cerr << '\n';
     // printStats(1);
-    // std::cout << '\n';
+    // std::cerr << '\n';
     // printStats(4);
 
     // if (stats[1][0].f == 0) {
-    //     std::cout << "uwu" << '\n';
+    //     std::cerr << "uwu" << '\n';
     // }
 
     // deleteStats();

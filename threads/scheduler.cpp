@@ -69,7 +69,7 @@ void * myRoutine(void *arg){
         pthread_mutex_unlock(&mutex);
 
         //pthread_mutex_lock(&printMutex);
-            //std::cout << "Hello from thread " << pthread_self() << '\n';
+            //std::cerr << "Hello from thread " << pthread_self() << '\n';
             curJob->Run();
             delete curJob;
         //pthread_mutex_unlock(&printMutex);
