@@ -2,6 +2,9 @@
 #include "../singleJoin/structs.hpp"
 #include "memmap.hpp"
 
+#ifndef INTERMEDIATE_HPP
+#define INTERMEDIATE_HPP
+
 struct Intermediate{
     uint64_t * results[4];
     uint64_t length;
@@ -44,3 +47,5 @@ uint64_t * fastResultToArray3(Result * res);
 uint64_t * resultToArray(Result * res, uint64_t count, uint64_t index);
 
 bool isEmpty(Intermediate *);
+
+#endif

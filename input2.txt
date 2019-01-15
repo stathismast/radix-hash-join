@@ -1,0 +1,16 @@
+workload/r0
+workload/r1
+workload/r2
+workload/r3
+workload/r4
+workload/r5
+workload/r6
+workload/r7
+workload/r8
+workload/r9
+workload/r10
+workload/r11
+workload/r12
+workload/r13
+Done
+1 12 2|0.0=1.2&0.0=2.1&1.1=0.0&1.0>25064|0.2 1.3

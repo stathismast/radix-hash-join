@@ -1,7 +1,8 @@
 #include "join/parse.hpp"
 #include "join/inputManager.hpp" //for ignoreLine
-#include "threads/scheduler.hpp"
 #include "join/stats.hpp"
+#include "threads/scheduler.hpp"
+#include "join/optimizer.hpp"
 
 //global
 Relation * r;
@@ -16,6 +17,7 @@ extern uint64_t * psums[4];
 void executeQueries() {
     char * line = NULL;
     size_t s = 0;
+
     while (getline(&line, &s, stdin) > 0) {
          if(ignoreLine(line)){
              continue;
@@ -29,6 +31,8 @@ void executeQueries() {
 
         initializeStats();
         QueryInfo * queryInfo = parseInput(line);
+        // joinEnumeration(queryInfo);
+        std::cout << '\n';
 
         // std::cout << "RE-ORDERED PREDICATES" << std::endl;
         // for (uint64_t i = 0; i < queryInfo->predicatesCount; i++) {
@@ -52,7 +56,6 @@ void executeQueries() {
 
         deleteIntermediate(IR);
 
-
         deleteQueryInfo(queryInfo);
         // free(line);
         // line = NULL;
@@ -62,7 +65,7 @@ void executeQueries() {
 
 int main(void){
     mapAllData(&r, &relationsSize);
-    createStats();
+    stats = createStats();
 
     if( r == NULL ){ //no file found
         std::cout << "No file found. Please try again. Bye!" << '\n';
@@ -79,41 +82,48 @@ int main(void){
     //execute queries etc
     executeQueries();
 
+    // Stats newStats = evalJoinStats(0,2,1,0);
+    // std::cout << "Evaluated = " << newStats.f << '\n';
 
+    // std::cout << "\n\nBefore\n";
+    // printStats(0);
+    // std::cout << '\n';
+    // printStats(1);
+    // std::cout << '\n';
+    // std::cout << '\n';
+    // std::cout << "0 JOIN 1" << '\n';
+    // updateJoinStats(0,1,1,1);
+    // updateGreaterFilterStats(0,1,2500);
+    // std::cout << "\n\nAfter\n";
+    // printStats(0);
+    // std::cout << '\n';
+    // printStats(1);
 
-        std::cout   << "Before\n"
-                    << "0.0" << ": l=" << stats[0][0].l
-                       << "  u=" << stats[0][0].u
-                       << "  f=" << stats[0][0].f
-                       << "  d=" << stats[0][0].d << "\n"
-                    << "0.1" << ": l=" << stats[0][1].l
-                       << "  u=" << stats[0][1].u
-                       << "  f=" << stats[0][1].f
-                       << "  d=" << stats[0][1].d << "\n"
-                    << "0.2" << ": l=" << stats[0][2].l
-                       << "  u=" << stats[0][2].u
-                       << "  f=" << stats[0][2].f
-                       << "  d=" << stats[0][2].d << "\n";
-        equalFilter(0,1,9403);
-        std::cout   << "\n\nAfter\n"
-                    << "0.0" << ": l=" << stats[0][0].l
-                       << "  u=" << stats[0][0].u
-                       << "  f=" << stats[0][0].f
-                       << "  d=" << stats[0][0].d << "\n"
-                    << "0.1" << ": l=" << stats[0][1].l
-                       << "  u=" << stats[0][1].u
-                       << "  f=" << stats[0][1].f
-                       << "  d=" << stats[0][1].d << "\n"
-                    << "0.2" << ": l=" << stats[0][2].l
-                       << "  u=" << stats[0][2].u
-                       << "  f=" << stats[0][2].f
-                       << "  d=" << stats[0][2].d << "\n";
+    // initializeStats();
+    // std::cout << "\n\nBefore\n";
+    // printStats(9);
+    // updateGreaterFilterStats(9,3,3991);
+    // updateJoinStats(9,2,1,0);
+    // updateJoinStats(0,1,1,1);
+    // std::cout << "\n\nAfter\n";
+    // printStats(1);
+    // std::cout << '\n';
+    // printStats(9);
+    // std::cout << '\n';
+    // printStats(1);
+    // std::cout << '\n';
+    // printStats(4);
 
-    deleteStats();
+    // if (stats[1][0].f == 0) {
+    //     std::cout << "uwu" << '\n';
+    // }
+
+    // deleteStats();
     unMapAllData(r, relationsSize);
 
     myJobScheduler->Stop();
     myJobScheduler->Destroy();
+    deleteStats();
     delete myJobScheduler;
 
     return 0;
