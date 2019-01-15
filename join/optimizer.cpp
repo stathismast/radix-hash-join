@@ -791,7 +791,7 @@ std::vector<std::vector<uint64_t>> makeRelationsSet(QueryInfo * queryInfo, uint6
             std::vector<uint64_t> cur = relationsSet[i];
             std::string curStr = vectorToString(cur);
             size_t lastRel = cur.back();
-            size_t last;
+            size_t last = 0;
             // Start always from the next of current next since combinations with
             // previous ones have already been found
             for (size_t j = 0; j < count; j++) {
