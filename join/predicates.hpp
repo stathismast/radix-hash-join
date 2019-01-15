@@ -4,6 +4,12 @@
 #include <cstdio>
 #include <sys/time.h>
 
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+
 #ifndef PREDICATES_HPP
 #define PREDICATES_HPP
 
@@ -65,5 +71,10 @@ void printSelfjoin(Predicate * predicate);
 void calculateSums(QueryInfo * queryInfo, Intermediate * IR);
 
 void copyPredicates(Predicate ** target, Predicate * source, uint64_t count);
+
+void writeSum(uint64_t sum);
+void writeWhitespace();
+void writeNewLine();
+char * readLine();
 
 #endif

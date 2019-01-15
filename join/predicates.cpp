@@ -393,8 +393,18 @@ void calculateSums(QueryInfo * qi, Intermediate *IR){
     << " (" << ((double)(currentTime() - startTime))/1000000
     << " seconds, " << IR->length << " entries)" << '\n';
 
+    if(j == 0){
+        writeSum(sum);
+    }
+    else{
+        writeWhitespace();
+        writeSum(sum);
+    }
+
         sum = 0;
     }
+
+    writeNewLine();
 }
 
 void makeFilter(QueryInfo * q, int relation, int column, char op, int rv, int index) {
@@ -460,4 +470,44 @@ void copyPredicates(Predicate ** target, Predicate * source, uint64_t count) {
     for (size_t i = 0; i < count; i++) {
         (*target)[i] = source[i];
     }
+}
+
+void writeSum(uint64_t sum){
+    char buffer[64] = {0};
+    sprintf(buffer, "%lu", sum);
+
+    if(sum == 0)
+        sprintf(buffer, "NULL");
+
+    ssize_t retval = write(1,buffer,strlen(buffer));
+    std::cerr << "Wrote " << retval << " bytes to stdout" << std::endl;
+    // fprintf(stderr, "Write: -%s-\n", buffer);
+}
+
+void writeWhitespace(){
+    char c = ' ';
+    ssize_t retval = write(1, &c, 1);
+    std::cerr << "Wrote " << retval << " bytes to stdout" << std::endl;
+}
+
+void writeNewLine(){
+    char c = '\n';
+    ssize_t retval = write(1, &c, 1);
+    std::cerr << "Wrote " << retval << " bytes to stdout" << std::endl;
+}
+
+char * readLine(){
+    char * line = new char[1024];
+    for(int i=0; i<1024; i++)
+        line[i] = 0;
+
+    char c;
+    int pos = 0;
+    while(read(0,&c,1) > 0){
+        if(c == '\n') break;
+        line[pos] = c;
+        pos++;
+    }
+
+    return line;
 }
