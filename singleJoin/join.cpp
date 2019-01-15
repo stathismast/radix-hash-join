@@ -12,7 +12,7 @@ Result *** globalResults;
 Column * orderedA;
 Column * orderedB;
 
-#define USE_THREADS 0
+#define USE_THREADS 1
 
 Result ** join(Column * A, Column * B){
     if(USE_THREADS){
