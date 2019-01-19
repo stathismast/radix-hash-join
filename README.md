@@ -1,12 +1,23 @@
-# Project_Databases
+# Radix Hash Join
 
-sdi1500039
-sdi1500092
-sdi1500147
+## Compile
+```
+make
+```
 
-TODO:
-- Support queries that don't use a filter
-- Support queries with more than one filters
+## Execute with 'small' workload
+```
+./main < input.txt
+```
 
+- If you want to suppress the output of everything but the sums, use:
+```
+./main < input.txt 2> /dev/null
+```
 
-
+## Execute with harness
+```
+cd workload
+make harness
+sh runHarness.sh
+```
