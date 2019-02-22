@@ -1,15 +1,16 @@
-## Ευαγγελίου Παναγιώτης - 1115201500039
-## Μαστοράκης Ευστάθιος-Ανδρέας - 1115201500092
-## Σπίθας Ευάγγελος - 1115201500147
-
 # Radix Hash Join
+# SIGMOD 2018 Programming Contest Task
+- Implementation includes multi-threaded query execution and query optimization
 
-## Compile
+## Task page
+http://sigmod18contest.db.in.tum.de/task.shtml
+
+## Compilation
 ```
 make
 ```
 
-## Execute with 'small' workload
+## To execute with 'small' workload
 ```
 ./main < input.txt
 ```
@@ -25,3 +26,8 @@ cd workload
 make harness
 sh runHarness.sh
 ```
+
+## Contributors
+https://github.com/PanosEvange
+https://github.com/stathismast
+https://github.com/VaggelisSpi
