@@ -1,5 +1,6 @@
 # Radix Hash Join
-# SIGMOD 2018 Programming Contest Task
+
+## SIGMOD 2018 Programming Contest Task
 - Implementation includes multi-threaded query execution and query optimization
 
 ## Task page
@@ -29,5 +30,7 @@ sh runHarness.sh
 
 ## Contributors
 https://github.com/PanosEvange
+
 https://github.com/stathismast
+
 https://github.com/VaggelisSpi
